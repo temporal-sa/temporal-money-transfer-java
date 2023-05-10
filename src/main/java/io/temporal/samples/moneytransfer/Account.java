@@ -26,6 +26,6 @@ public class Account {
 
   @Override
   public String toString() {
-    return accountId + ": $" + balance;
+    return accountId + " ($" + balance + ")";
   }
 }

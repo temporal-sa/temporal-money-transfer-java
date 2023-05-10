@@ -34,11 +34,31 @@ public class TransferRequester {
     String referenceNumber = generateReferenceNumber(); // random reference number
     int amountDollars = 620; // amount to transfer
 
+    String fromAccountId = "acct1";
+    Account fromAccount = new Account(fromAccountId, 1000);
+    // Account fromAccount = new Account(fromAccountId, 1000); // for invalid balance
+
+    String toAccountId = "acct2";
+    // UNCOMMENT THIS LINE TO TEST A ***VALID*** ACCOUNT (path #1 - happy)
+    Account toAccount = new Account(toAccountId, 290);
+
+    boolean simulateDepositRetries = false;
+    // set to true to simulate deposit retries (path #2 - retries)
+
+    // UNCOMMENT THIS LINE TO TEST AN ***INVALID*** ACCOUNT
+    // Account toAccount = new Account("acct2invalid", 290); // for invalid account (path #3 -
+    // rollback)
+
+    // path #4: Simulate a failure in the middle of the transfer
+    // Wait for "Withdrawal done" in the console, then kill the worker
+    // Look for 'WorkflowTaskTimedOut' event in the history
+
+    // Workflow execution code
+
     WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
     // client that can be used to start and signal workflows
     WorkflowClient workflowClient = WorkflowClient.newInstance(service);
 
-    // now we can start running instances of the saga - its state will be persisted
     WorkflowOptions options =
         WorkflowOptions.newBuilder()
             .setWorkflowId(referenceNumber)
@@ -47,21 +67,16 @@ public class TransferRequester {
     AccountTransferWorkflow transferWorkflow =
         workflowClient.newWorkflowStub(AccountTransferWorkflow.class, options);
 
-    String fromAccountId = "acct1";
-    Account fromAccount = new Account(fromAccountId, 1000);
-    // Account fromAccount = new Account(fromAccountId, 1000); // for invalid balance
-
-    String toAccountId = "acct2";
-    // Account toAccount = new Account(toAccountId, 290);
-
-    // UNCOMMENT THIS LINE TO TEST INVALID ACCOUNT
-    Account toAccount = new Account("acct2invalid", 290); // for invalid account
-
     WorkflowClient.start(
-        transferWorkflow::transfer, fromAccount, toAccount, referenceNumber, amountDollars);
+        transferWorkflow::transfer,
+        fromAccount,
+        toAccount,
+        referenceNumber,
+        amountDollars,
+        simulateDepositRetries);
     System.out.printf(
-        "\n\nTransfer of $%d from %s to %s requested",
-        amountDollars, fromAccount.getAccountId(), toAccount.getAccountId());
+        "\n\nTransfer of $%d from %s to %s requested [%s]\n",
+        amountDollars, fromAccount.getAccountId(), toAccount.getAccountId(), referenceNumber);
     System.exit(0);
   }
 

@@ -24,7 +24,8 @@ import io.temporal.activity.ActivityInterface;
 @ActivityInterface
 public interface TransferService {
 
-  Account deposit(Account toAccount, String referenceId, int amountDollars);
+  Account deposit(
+      Account toAccount, String referenceId, int amountDollars, boolean simulateDepositRetries);
 
   Account withdraw(Account fromAccount, String referenceId, int amountDollars);
 

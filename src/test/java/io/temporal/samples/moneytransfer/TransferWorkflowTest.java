@@ -53,9 +53,9 @@ public class TransferWorkflowTest {
     long starty = testWorkflowRule.getTestEnvironment().currentTimeMillis();
     Account fromAccount = new Account("account1", 1000);
     Account toAccount = new Account("account2", 0);
-    workflow.transfer(fromAccount, toAccount, "reference1", 123);
+    workflow.transfer(fromAccount, toAccount, "reference1", 123, false);
     verify(activities).withdraw(eq(fromAccount), eq("reference1"), eq(123));
-    verify(activities).deposit(eq(toAccount), eq("reference1"), eq(123));
+    verify(activities).deposit(eq(toAccount), eq("reference1"), eq(123), false);
     long duration = testWorkflowRule.getTestEnvironment().currentTimeMillis() - starty;
     System.out.println("Duration: " + duration);
 

@@ -1,7 +1,9 @@
+## Money Transfer Example (with retries and compensation)
+
 The Money Transfer sample has three separate processes.
 One to host Workflow Executions, another to host Activity Executions, and the third one to request transfers (start Workflow Executions).
 
-## Running the Workflow
+### Running the Workflow
 
 Start Workflow Worker:
 
@@ -21,10 +23,14 @@ Execute once per requested transfer:
 ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.TransferRequester
 ```
 
-## **Simulating errors**
+### **Simulating errors**
 
-- Uncomment the invalidAccount line in `TransferRequester.java` to simulate a **deposit** failure and rollback.
-```agsl
-Account toAccount = new Account("acct2invalid", 290); // for invalid account
-```
-
+- Path 1: Happy Path
+  - Leave as-is
+- Path 2: Simulate Multiple API call attempts before success
+  - - In `TransferRequester.java`, set `simulateDepositRetries = true`
+- Path 3: Rollback a deposit due to an invalid account 
+  - In `TransferRequester.java`, uncomment the `new Account("acct2invalid"...` line to simulate a **deposit** failure and rollback.
+- Path 4: Simulate resuming a workflow after losing all workers
+  - Wait for "Withdrawal done.." in the console, then kill the worker
+  - Restart the worker. The workflow will continue where it left off.

@@ -19,6 +19,10 @@
 
 package io.temporal.samples.moneytransfer;
 
+import io.temporal.activity.Activity;
+import io.temporal.activity.ActivityExecutionContext;
+import io.temporal.activity.ActivityInfo;
+
 public class TransferServiceImpl implements TransferService {
 
   @Override
@@ -43,18 +47,31 @@ public class TransferServiceImpl implements TransferService {
   }
 
   @Override
-  public Account deposit(Account toAccount, String referenceId, int amountDollars) {
+  public Account deposit(
+      Account toAccount, String referenceId, int amountDollars, boolean simulateRetryFailures) {
     System.out.printf(
         "\n\n/API/deposit to %s of $%d requested. (Ref=%s)\n",
         toAccount.getAccountId(), amountDollars, referenceId);
 
+    if (simulateRetryFailures) {
+      ActivityExecutionContext ctx = Activity.getExecutionContext();
+      ActivityInfo info = ctx.getInfo();
+      System.out.println("\n*** RETRY ATTEMPT: " + info.getAttempt() + "***\n");
+
+      if (info.getAttempt() < 5) {
+        throw new RuntimeException(
+            "FAILURE - Simulated failure for account: " + toAccount.getAccountId());
+      }
+
+      System.out.println(("*** RETRY SUCCESSFUL ***\n"));
+    }
+
     if ("acct2invalid".equals(toAccount.getAccountId())) {
       throw new RuntimeException(
           "FAILURE - Invalid Account ID (simulated) for account: " + toAccount.getAccountId());
-    } else {
-      // deposit money to the account
-      toAccount.setBalance(toAccount.getBalance() + amountDollars);
     }
+
+    toAccount.setBalance(toAccount.getBalance() + amountDollars);
 
     return toAccount;
   }
