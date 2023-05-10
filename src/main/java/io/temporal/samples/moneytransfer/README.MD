@@ -21,14 +21,10 @@ Execute once per requested transfer:
 ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.TransferRequester
 ```
 
-## **Simulating compensations**
+## **Simulating errors**
 
-Uncomment this line in `TransferRequester.java` to simulate a **withdrawal** failure:
+- Uncomment the invalidAccount line in `TransferRequester.java` to simulate a **deposit** failure and rollback.
 ```agsl
-String from = "account1_FAIL";
+Account toAccount = new Account("acct2invalid", 290); // for invalid account
 ```
 
-Uncomment this line in `TransferRequester.java` to simulate a **deposit** failure:
-```agsl
-String to = "account2_FAIL";
-```
