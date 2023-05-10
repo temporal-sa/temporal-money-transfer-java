@@ -20,19 +20,48 @@
 package io.temporal.samples.moneytransfer;
 
 import io.temporal.activity.ActivityOptions;
+import io.temporal.common.RetryOptions;
+import io.temporal.failure.ActivityFailure;
 import io.temporal.workflow.Workflow;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
 
+  private final RetryOptions retryoptions =
+      RetryOptions.newBuilder()
+          .setInitialInterval(Duration.ofSeconds(1))
+          .setMaximumInterval(Duration.ofSeconds(100))
+          .setBackoffCoefficient(2)
+          .setMaximumAttempts(3)
+          .build();
   private final ActivityOptions options =
-      ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(5)).build();
+      ActivityOptions.newBuilder()
+          .setRetryOptions(retryoptions)
+          .setStartToCloseTimeout(Duration.ofSeconds(5))
+          .build();
   private final Account account = Workflow.newActivityStub(Account.class, options);
 
   @Override
   public void transfer(
       String fromAccountId, String toAccountId, String referenceId, int amountCents) {
-    account.withdraw(fromAccountId, referenceId, amountCents);
-    account.deposit(toAccountId, referenceId, amountCents);
+    List<String> compensations = new ArrayList<>();
+    try {
+      compensations.add("undo_withdraw");
+      account.withdraw(fromAccountId, referenceId, amountCents);
+
+      compensations.add("undo_deposit");
+      account.deposit(toAccountId, referenceId, amountCents);
+    } catch (ActivityFailure e) {
+      for (int i = compensations.size() - 1; i >= 0; i--) {
+        String compensation = compensations.get(i);
+        if ("undo_deposit".equals(compensation)) {
+          account.undoDeposit(toAccountId, referenceId, amountCents);
+        } else if ("undo_withdraw".equals(compensation)) {
+          account.undoWithdraw(fromAccountId, referenceId, amountCents);
+        }
+      }
+    }
   }
 }

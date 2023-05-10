@@ -33,6 +33,26 @@ public class AccountImpl implements Account {
     System.out.printf(
         "Deposit to %s of %d cents requested. ReferenceId=%s\n",
         accountId, amountCents, referenceId);
+
+    if ("account2_FAIL".equals(accountId)) {
+      throw new RuntimeException("Simulated failure on withdrawal for account: " + accountId);
+    }
+
     //    throw new RuntimeException("simulated");
+  }
+
+  // Implement compensation methods
+  @Override
+  public void undoWithdraw(String accountId, String referenceId, int amountCents) {
+    System.out.printf(
+        "\nUndoing withdrawal of $%d from account %s. ReferenceId: %s\n",
+        amountCents, accountId, referenceId);
+  }
+
+  @Override
+  public void undoDeposit(String accountId, String referenceId, int amountCents) {
+    System.out.printf(
+        "\nUndoing deposit of $%d into account %s. ReferenceId: %s\n",
+        amountCents, accountId, referenceId);
   }
 }

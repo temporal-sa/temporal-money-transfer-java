@@ -27,4 +27,8 @@ public interface Account {
   void deposit(String accountId, String referenceId, int amountCents);
 
   void withdraw(String accountId, String referenceId, int amountCents);
+
+  void undoWithdraw(String accountId, String referenceId, int amountCents);
+
+  void undoDeposit(String accountId, String referenceId, int amountCents);
 }

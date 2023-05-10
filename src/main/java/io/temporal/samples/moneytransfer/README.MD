@@ -18,3 +18,9 @@ Execute once per requested transfer:
 ```bash
 ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.TransferRequester
 ```
+
+Simulating compensations:
+Uncomment this line in `TransferRequester.java` to simulate a withdrawal failure:
+```agsl
+String to = "account2_FAIL";
+```
