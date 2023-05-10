@@ -32,7 +32,7 @@ public class TransferRequester {
 
     // generate a random reference number
     String referenceNumber = generateReferenceNumber(); // random reference number
-    int amountDollars = 800; // amount to transfer
+    int amountDollars = 620; // amount to transfer
 
     WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
     // client that can be used to start and signal workflows
@@ -52,10 +52,10 @@ public class TransferRequester {
     // Account fromAccount = new Account(fromAccountId, 1000); // for invalid balance
 
     String toAccountId = "acct2";
-    // Account toAccount = new Account(toAccountId, 0);
+    // Account toAccount = new Account(toAccountId, 290);
 
     // UNCOMMENT THIS LINE TO TEST INVALID ACCOUNT
-    Account toAccount = new Account("acct2invalid", 1000); // for invalid account
+    Account toAccount = new Account("acct2invalid", 290); // for invalid account
 
     WorkflowClient.start(
         transferWorkflow::transfer, fromAccount, toAccount, referenceNumber, amountDollars);

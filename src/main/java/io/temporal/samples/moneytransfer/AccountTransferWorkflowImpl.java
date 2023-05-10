@@ -29,24 +29,36 @@ import java.util.List;
 
 public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
 
-  private final RetryOptions retryoptions =
+  private final RetryOptions retryOptions =
+      RetryOptions.newBuilder()
+          .setInitialInterval(Duration.ofSeconds(3))
+          .setMaximumInterval(Duration.ofSeconds(100))
+          .setBackoffCoefficient(1)
+          .setMaximumAttempts(3)
+          .build();
+  private final RetryOptions retryOptionsSingleRetry =
       RetryOptions.newBuilder()
           .setInitialInterval(Duration.ofSeconds(5))
           .setMaximumInterval(Duration.ofSeconds(100))
           .setBackoffCoefficient(2)
-          .setMaximumAttempts(3)
+          .setMaximumAttempts(1)
           .build();
-  private final ActivityOptions options =
+  private final ActivityOptions optionsSingleRetry =
       ActivityOptions.newBuilder()
-          .setRetryOptions(retryoptions)
+          .setRetryOptions(retryOptionsSingleRetry)
           .setStartToCloseTimeout(Duration.ofSeconds(5))
           .build();
   private final TransferService transferService =
-      Workflow.newActivityStub(TransferService.class, options);
+      Workflow.newActivityStub(TransferService.class, optionsSingleRetry);
 
   @Override
-  public void transfer(
+  public String transfer(
       Account fromAccount, Account toAccount, String referenceId, int amountDollars) {
+
+    // use these to slow down the workflow for demos
+    Duration shortTimer = Duration.ofSeconds(3);
+    Duration longTimer = Duration.ofSeconds(6);
+
     List<String> compensations = new ArrayList<>();
     try {
 
@@ -60,54 +72,78 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
           amountDollars, fromAccount.getAccountId(), toAccount.getAccountId(), referenceId);
 
       // print starting balance
+      Workflow.sleep(shortTimer);
       System.out.println("\n\nStarting Balance");
       System.out.println(fromAccount.toString());
       System.out.println(toAccount.toString());
-      Workflow.sleep(Duration.ofSeconds(5));
+      Workflow.sleep(shortTimer);
 
       // withdraw from fromAccount
       System.out.printf(
-          "\n\nWithdrawing %d from account %s (please wait..)\n\n",
+          "\n\nWithdrawing $%d from account %s (please wait..)\n\n",
           amountDollars, fromAccount.getAccountId());
-      Workflow.sleep(Duration.ofSeconds(5)); // simulated delay
-      compensations.add("undo_withdraw");
+      Workflow.sleep(shortTimer); // simulated delay
       fromAccount = transferService.withdraw(fromAccount, referenceId, amountDollars);
-      Workflow.sleep(Duration.ofSeconds(10)); // simulated delay
+      compensations.add("undo_withdraw");
+      Workflow.sleep(longTimer); // simulated delay
+
+      System.out.println("Withdrawal Done. Balances:");
+      System.out.println(fromAccount.toString());
+      System.out.println(toAccount.toString());
+
+      Workflow.sleep(longTimer); // simulated delay
 
       // deposit to toAccount
       System.out.printf(
-          "\n\nDepositing %d to account %s (please wait)\n\n",
-          amountDollars, fromAccount.getAccountId());
-      Workflow.sleep(Duration.ofSeconds(5)); // simulated delay
-      compensations.add("undo_deposit");
+          "\n\nDepositing $%d to account %s (please wait)\n\n",
+          amountDollars, toAccount.getAccountId());
+      Workflow.sleep(shortTimer); // simulated delay
       toAccount = transferService.deposit(toAccount, referenceId, amountDollars);
-      Workflow.sleep(Duration.ofSeconds(10)); // simulated delay
+      compensations.add("undo_deposit");
+      Workflow.sleep(longTimer); // simulated delay
+
+      System.out.println("Deposit Done. Balances:");
+      System.out.println(fromAccount.toString());
+      System.out.println(toAccount.toString());
 
     } catch (ActivityFailure e) {
       for (int i = compensations.size() - 1; i >= 0; i--) {
+        Workflow.sleep(shortTimer); // simulated delay
         String compensation = compensations.get(i);
         if ("undo_deposit".equals(compensation)) {
           System.out.printf(
               "\n\nUndoing deposit to account %s (check API response)\n\n",
               toAccount.getAccountId());
-          Workflow.sleep(Duration.ofSeconds(5));
+          Workflow.sleep(longTimer);
           toAccount = transferService.undoDeposit(toAccount, referenceId, amountDollars);
+          Workflow.sleep(shortTimer);
+
         } else if ("undo_withdraw".equals(compensation)) {
           System.out.printf(
               "\n\nUndoing withdrawal from account %s (check API response)\n\n",
-                  toAccount.getAccountId());
-          Workflow.sleep(Duration.ofSeconds(5));
+              fromAccount.getAccountId());
+          Workflow.sleep(longTimer);
           fromAccount = transferService.undoWithdraw(fromAccount, referenceId, amountDollars);
+          Workflow.sleep(shortTimer);
         }
       }
+      Workflow.sleep(shortTimer); // simulated delay
+
+      System.out.println("Transfer Rollback Complete. Final Account Balances");
+      System.out.println(fromAccount.toString());
+      System.out.println(toAccount.toString());
+      System.out.println("Workflow FAILED, check logs.");
+      return "FAIL";
     }
 
     // print starting balance
-    System.out.println("\nFinal Balance");
+    System.out.println("\nFinal Account Balances");
     System.out.println(fromAccount.toString());
     System.out.println(toAccount.toString());
-    Workflow.sleep(Duration.ofSeconds(3)); // simulated delay
+    Workflow.sleep(shortTimer); // simulated delay
 
-    System.out.println("\nWorkflow FINISHED.");
+    System.out.println("Workflow finished successfully.");
+
+    return "SUCCESS";
   }
 }

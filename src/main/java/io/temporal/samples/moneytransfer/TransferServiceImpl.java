@@ -23,6 +23,10 @@ public class TransferServiceImpl implements TransferService {
 
   @Override
   public Account withdraw(Account fromAccount, String referenceId, int amountDollars) {
+
+    System.out.println("WITHDRAW CALLED");
+    System.out.println(fromAccount.toString());
+
     System.out.printf(
         "\n\n/API/withdraw from %s of $%d requested. (Ref=%s)\n",
         fromAccount.getAccountId(), amountDollars, referenceId);
@@ -30,10 +34,10 @@ public class TransferServiceImpl implements TransferService {
     if (fromAccount.getBalance() < amountDollars) {
       throw new RuntimeException(
           "FAILURE - Insufficient Funds (simulated) for account: " + fromAccount.getAccountId());
-    } else {
-      // withdraw money from the account
-      fromAccount.setBalance(fromAccount.getBalance() - amountDollars);
     }
+
+    // withdraw money from the account
+    fromAccount.setBalance(fromAccount.getBalance() - amountDollars);
 
     return fromAccount;
   }
@@ -59,8 +63,12 @@ public class TransferServiceImpl implements TransferService {
   @Override
   public Account undoWithdraw(Account fromAccount, String referenceId, int amountDollars) {
     System.out.printf(
-        "\n\nMarking withdrawal of $%d from account %s as undone. (Ref=%s)\n",
+        "\n\nUndoing withdrawal of $%d from account %s. (Ref=%s)\n",
         amountDollars, fromAccount.getAccountId(), referenceId);
+
+    // undo withdrawal
+
+    fromAccount.setBalance(fromAccount.getBalance() + amountDollars);
 
     return fromAccount;
   }
