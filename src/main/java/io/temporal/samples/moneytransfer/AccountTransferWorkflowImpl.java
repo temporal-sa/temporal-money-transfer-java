@@ -41,25 +41,26 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
           .setRetryOptions(retryoptions)
           .setStartToCloseTimeout(Duration.ofSeconds(5))
           .build();
-  private final Account account = Workflow.newActivityStub(Account.class, options);
+  private final TransferService transferService =
+      Workflow.newActivityStub(TransferService.class, options);
 
   @Override
   public void transfer(
-      String fromAccountId, String toAccountId, String referenceId, int amountCents) {
+      Account fromAccount, Account toAccount, String referenceId, int amountCents) {
     List<String> compensations = new ArrayList<>();
     try {
       compensations.add("undo_withdraw");
-      account.withdraw(fromAccountId, referenceId, amountCents);
+      transferService.withdraw(fromAccount, referenceId, amountCents);
 
       compensations.add("undo_deposit");
-      account.deposit(toAccountId, referenceId, amountCents);
+      transferService.deposit(toAccount, referenceId, amountCents);
     } catch (ActivityFailure e) {
       for (int i = compensations.size() - 1; i >= 0; i--) {
         String compensation = compensations.get(i);
         if ("undo_deposit".equals(compensation)) {
-          account.undoDeposit(toAccountId, referenceId, amountCents);
+          transferService.undoDeposit(toAccount, referenceId, amountCents);
         } else if ("undo_withdraw".equals(compensation)) {
-          account.undoWithdraw(fromAccountId, referenceId, amountCents);
+          transferService.undoWithdraw(fromAccount, referenceId, amountCents);
         }
       }
     }

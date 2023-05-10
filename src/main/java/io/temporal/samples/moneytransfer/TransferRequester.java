@@ -48,16 +48,24 @@ public class TransferRequester {
     WorkflowOptions options = WorkflowOptions.newBuilder().setTaskQueue(TASK_QUEUE).build();
     AccountTransferWorkflow transferWorkflow =
         workflowClient.newWorkflowStub(AccountTransferWorkflow.class, options);
-    String from = "account1";
-    // uncomment below to force a withdrawal failure and compensation
-    // String from = "account1_FAIL";
+
+    String fromAccountId = "account1";
+
+    Account fromAccount = new Account(fromAccountId, 1000);
 
     String to = "account2";
 
-    // uncomment below to force a deposit failure and compensation
-    // String to = "account2_FAIL";
-    WorkflowClient.start(transferWorkflow::transfer, from, to, reference, amountCents);
-    System.out.printf("Transfer of %d cents from %s to %s requested", amountCents, from, to);
+    String toAccountId = "acct2";
+    String toInvalidAccountID = "acct2invalid";
+
+    Account toAccount = new Account(toAccountId, 0);
+    // Account toAccount = new AccountImpl(toInvalidAccountID, 1000);
+
+    WorkflowClient.start(
+        transferWorkflow::transfer, fromAccount, toAccount, reference, amountCents);
+    System.out.printf(
+        "Transfer of %d cents from %s to %s requested",
+        amountCents, fromAccount.getAccountId(), toAccount.getAccountId());
     System.exit(0);
   }
 }

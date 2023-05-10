@@ -39,7 +39,7 @@ public class TransferWorkflowTest {
 
   @Test
   public void testTransfer() {
-    Account activities = mock(Account.class);
+    TransferService activities = mock(TransferService.class);
     testWorkflowRule.getWorker().registerActivitiesImplementations(activities);
 
     testWorkflowRule.getTestEnvironment().start();
@@ -51,9 +51,11 @@ public class TransferWorkflowTest {
             .getWorkflowClient()
             .newWorkflowStub(AccountTransferWorkflow.class, options);
     long starty = testWorkflowRule.getTestEnvironment().currentTimeMillis();
-    workflow.transfer("account1", "account2", "reference1", 123);
-    verify(activities).withdraw(eq("account1"), eq("reference1"), eq(123));
-    verify(activities).deposit(eq("account2"), eq("reference1"), eq(123));
+    Account fromAccount = new Account("account1", 1000);
+    Account toAccount = new Account("account2", 0);
+    workflow.transfer(fromAccount, toAccount, "reference1", 123);
+    verify(activities).withdraw(eq(fromAccount), eq("reference1"), eq(123));
+    verify(activities).deposit(eq(toAccount), eq("reference1"), eq(123));
     long duration = testWorkflowRule.getTestEnvironment().currentTimeMillis() - starty;
     System.out.println("Duration: " + duration);
 

@@ -19,27 +19,29 @@
 
 package io.temporal.samples.moneytransfer;
 
-public class AccountImpl implements Account {
+public class TransferServiceImpl implements TransferService {
 
   @Override
-  public void withdraw(String accountId, String referenceId, int amountCents) {
+  public void withdraw(Account fromAccount, String referenceId, int amountCents) {
     System.out.printf(
         "Withdraw to %s of %d cents requested. ReferenceId=%s\n",
-        accountId, amountCents, referenceId);
+        fromAccount.getAccountId(), amountCents, referenceId);
 
-    if ("account1_FAIL".equals(accountId)) {
-      throw new RuntimeException("Simulated failure on withdrawal for account: " + accountId);
+    if ("account1_FAIL".equals(fromAccount.getAccountId())) {
+      throw new RuntimeException(
+          "Simulated failure on withdrawal for account: " + fromAccount.getAccountId());
     }
   }
 
   @Override
-  public void deposit(String accountId, String referenceId, int amountCents) {
+  public void deposit(Account toAccount, String referenceId, int amountCents) {
     System.out.printf(
         "Deposit to %s of %d cents requested. ReferenceId=%s\n",
-        accountId, amountCents, referenceId);
+        toAccount.getAccountId(), amountCents, referenceId);
 
-    if ("account2_FAIL".equals(accountId)) {
-      throw new RuntimeException("Simulated failure on deposit for account: " + accountId);
+    if ("acct2invalid".equals(toAccount.getAccountId())) {
+      throw new RuntimeException(
+          "Simulated failure on deposit for account: " + toAccount.getAccountId());
     }
 
     //    throw new RuntimeException("simulated");
@@ -47,16 +49,16 @@ public class AccountImpl implements Account {
 
   // Implement compensation methods
   @Override
-  public void undoWithdraw(String accountId, String referenceId, int amountCents) {
+  public void undoWithdraw(Account fromAccount, String referenceId, int amountCents) {
     System.out.printf(
         "\nUndoing withdrawal of $%d from account %s. ReferenceId: %s\n",
-        amountCents, accountId, referenceId);
+        amountCents, fromAccount.getAccountId(), referenceId);
   }
 
   @Override
-  public void undoDeposit(String accountId, String referenceId, int amountCents) {
+  public void undoDeposit(Account toAccount, String referenceId, int amountCents) {
     System.out.printf(
         "\nUndoing deposit of $%d into account %s. ReferenceId: %s\n",
-        amountCents, accountId, referenceId);
+        amountCents, toAccount.getAccountId(), referenceId);
   }
 }

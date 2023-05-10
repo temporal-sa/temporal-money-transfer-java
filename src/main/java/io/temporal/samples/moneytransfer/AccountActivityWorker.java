@@ -38,8 +38,8 @@ public class AccountActivityWorker {
     // worker factory that can be used to create workers for specific task queues
     WorkerFactory factory = WorkerFactory.newInstance(client);
     Worker worker = factory.newWorker(TASK_QUEUE);
-    Account account = new AccountImpl();
-    worker.registerActivitiesImplementations(account);
+    TransferService transferService = new TransferServiceImpl();
+    worker.registerActivitiesImplementations(transferService);
 
     // Start all workers created by this factory.
     factory.start();

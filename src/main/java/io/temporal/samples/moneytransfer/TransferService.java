@@ -19,11 +19,16 @@
 
 package io.temporal.samples.moneytransfer;
 
-import io.temporal.workflow.WorkflowInterface;
-import io.temporal.workflow.WorkflowMethod;
+import io.temporal.activity.ActivityInterface;
 
-@WorkflowInterface
-public interface AccountTransferWorkflow {
-  @WorkflowMethod
-  void transfer(Account fromAccount, Account toAccount, String referenceId, int amountCents);
+@ActivityInterface
+public interface TransferService {
+
+  void deposit(Account toAccount, String referenceId, int amountCents);
+
+  void withdraw(Account fromAccount, String referenceId, int amountCents);
+
+  void undoWithdraw(Account toAccount, String referenceId, int amountCents);
+
+  void undoDeposit(Account fromAccount, String referenceId, int amountCents);
 }
