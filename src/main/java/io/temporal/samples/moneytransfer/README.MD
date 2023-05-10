@@ -20,7 +20,12 @@ Execute once per requested transfer:
 ```
 
 Simulating compensations:
-Uncomment this line in `TransferRequester.java` to simulate a withdrawal failure:
+Uncomment this line in `TransferRequester.java` to simulate a **withdrawal** failure:
+```agsl
+String from = "account1_FAIL";
+```
+
+Uncomment this line in `TransferRequester.java` to simulate a **deposit** failure:
 ```agsl
 String to = "account2_FAIL";
 ```

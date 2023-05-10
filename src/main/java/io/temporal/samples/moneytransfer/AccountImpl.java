@@ -26,6 +26,10 @@ public class AccountImpl implements Account {
     System.out.printf(
         "Withdraw to %s of %d cents requested. ReferenceId=%s\n",
         accountId, amountCents, referenceId);
+
+    if ("account1_FAIL".equals(accountId)) {
+      throw new RuntimeException("Simulated failure on withdrawal for account: " + accountId);
+    }
   }
 
   @Override
@@ -35,7 +39,7 @@ public class AccountImpl implements Account {
         accountId, amountCents, referenceId);
 
     if ("account2_FAIL".equals(accountId)) {
-      throw new RuntimeException("Simulated failure on withdrawal for account: " + accountId);
+      throw new RuntimeException("Simulated failure on deposit for account: " + accountId);
     }
 
     //    throw new RuntimeException("simulated");
