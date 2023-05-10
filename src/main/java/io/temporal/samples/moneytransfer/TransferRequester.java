@@ -24,48 +24,55 @@ import static io.temporal.samples.moneytransfer.AccountActivityWorker.TASK_QUEUE
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.serviceclient.WorkflowServiceStubs;
-import java.util.Random;
-import java.util.UUID;
 
 public class TransferRequester {
 
   @SuppressWarnings("CatchAndPrintStackTrace")
   public static void main(String[] args) {
-    String reference;
-    int amountCents;
-    if (args.length == 0) {
-      reference = UUID.randomUUID().toString();
-      amountCents = new Random().nextInt(5000);
-    } else {
-      reference = args[0];
-      amountCents = Integer.parseInt(args[1]);
-    }
+
+    // generate a random reference number
+    String referenceNumber = generateReferenceNumber(); // random reference number
+    int amountDollars = 800; // amount to transfer
+
     WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
     // client that can be used to start and signal workflows
     WorkflowClient workflowClient = WorkflowClient.newInstance(service);
 
     // now we can start running instances of the saga - its state will be persisted
-    WorkflowOptions options = WorkflowOptions.newBuilder().setTaskQueue(TASK_QUEUE).build();
+    WorkflowOptions options =
+        WorkflowOptions.newBuilder()
+            .setWorkflowId(referenceNumber)
+            .setTaskQueue(TASK_QUEUE)
+            .build();
     AccountTransferWorkflow transferWorkflow =
         workflowClient.newWorkflowStub(AccountTransferWorkflow.class, options);
 
-    String fromAccountId = "account1";
-
+    String fromAccountId = "acct1";
     Account fromAccount = new Account(fromAccountId, 1000);
-
-    String to = "account2";
+    // Account fromAccount = new Account(fromAccountId, 1000); // for invalid balance
 
     String toAccountId = "acct2";
-    String toInvalidAccountID = "acct2invalid";
+    // Account toAccount = new Account(toAccountId, 0);
 
-    Account toAccount = new Account(toAccountId, 0);
-    // Account toAccount = new AccountImpl(toInvalidAccountID, 1000);
+    // UNCOMMENT THIS LINE TO TEST INVALID ACCOUNT
+    Account toAccount = new Account("acct2invalid", 1000); // for invalid account
 
     WorkflowClient.start(
-        transferWorkflow::transfer, fromAccount, toAccount, reference, amountCents);
+        transferWorkflow::transfer, fromAccount, toAccount, referenceNumber, amountDollars);
     System.out.printf(
-        "Transfer of %d cents from %s to %s requested",
-        amountCents, fromAccount.getAccountId(), toAccount.getAccountId());
+        "\n\nTransfer of $%d from %s to %s requested",
+        amountDollars, fromAccount.getAccountId(), toAccount.getAccountId());
     System.exit(0);
+  }
+
+  private static String generateReferenceNumber() {
+    return String.format(
+        "REF-%s-%03d",
+        (char) (Math.random() * 26 + 'A')
+            + ""
+            + (char) (Math.random() * 26 + 'A')
+            + ""
+            + (char) (Math.random() * 26 + 'A'),
+        (int) (Math.random() * 999));
   }
 }

@@ -34,7 +34,7 @@ public class TransferRequester {
   @SuppressWarnings("CatchAndPrintStackTrace")
   public static void main(String[] args) {
     String reference = UUID.randomUUID().toString();
-    int amountCents = (new Random().nextInt(5) + 1) * 25;
+    int amountDollars = (new Random().nextInt(5) + 1) * 25;
     WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
     WorkflowClient workflowClient = WorkflowClient.newInstance(service);
 
@@ -50,10 +50,10 @@ public class TransferRequester {
     // Signal with start sends a signal to a workflow starting it if not yet running
     BatchRequest request = workflowClient.newSignalWithStartRequest();
     request.add(transferWorkflow::deposit, to, BATCH_SIZE);
-    request.add(transferWorkflow::withdraw, from, reference, amountCents);
+    request.add(transferWorkflow::withdraw, from, reference, amountDollars);
     workflowClient.signalWithStart(request);
 
-    System.out.printf("Transfer of %d cents from %s to %s requested", amountCents, from, to);
+    System.out.printf("Transfer of $%d from %s to %s requested", amountDollars, from, to);
     System.exit(0);
   }
 }

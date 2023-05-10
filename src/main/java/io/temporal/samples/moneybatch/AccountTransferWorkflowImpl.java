@@ -52,12 +52,12 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
   }
 
   @Override
-  public void withdraw(String fromAccountId, String referenceId, int amountCents) {
+  public void withdraw(String fromAccountId, String referenceId, int amountDollars) {
     if (!references.add(referenceId)) {
       return; // duplicate
     }
-    account.withdraw(fromAccountId, referenceId, amountCents);
-    balance += amountCents;
+    account.withdraw(fromAccountId, referenceId, amountDollars);
+    balance += amountDollars;
     count++;
   }
 

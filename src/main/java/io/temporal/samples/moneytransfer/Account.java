@@ -20,7 +20,12 @@ public class Account {
     return balance;
   }
 
+  public void setBalance(int balance) {
+    this.balance = balance;
+  }
+
+  @Override
   public String toString() {
-    return accountId + " balance: " + balance;
+    return accountId + ": $" + balance;
   }
 }

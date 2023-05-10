@@ -25,5 +25,5 @@ import io.temporal.workflow.WorkflowMethod;
 @WorkflowInterface
 public interface AccountTransferWorkflow {
   @WorkflowMethod
-  void transfer(Account fromAccount, Account toAccount, String referenceId, int amountCents);
+  void transfer(Account fromAccount, Account toAccount, String referenceId, int amountDollars);
 }

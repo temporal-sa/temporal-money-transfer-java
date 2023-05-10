@@ -31,7 +31,7 @@ public interface AccountTransferWorkflow {
   void deposit(String toAccountId, int batchSize);
 
   @SignalMethod
-  void withdraw(String fromAccountId, String referenceId, int amountCents);
+  void withdraw(String fromAccountId, String referenceId, int amountDollars);
 
   @QueryMethod
   int getBalance();

@@ -24,11 +24,11 @@ import io.temporal.activity.ActivityInterface;
 @ActivityInterface
 public interface TransferService {
 
-  void deposit(Account toAccount, String referenceId, int amountCents);
+  Account deposit(Account toAccount, String referenceId, int amountDollars);
 
-  void withdraw(Account fromAccount, String referenceId, int amountCents);
+  Account withdraw(Account fromAccount, String referenceId, int amountDollars);
 
-  void undoWithdraw(Account toAccount, String referenceId, int amountCents);
+  Account undoWithdraw(Account toAccount, String referenceId, int amountDollars);
 
-  void undoDeposit(Account fromAccount, String referenceId, int amountCents);
+  Account undoDeposit(Account fromAccount, String referenceId, int amountDollars);
 }

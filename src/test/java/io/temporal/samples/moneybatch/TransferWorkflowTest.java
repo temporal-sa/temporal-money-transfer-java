@@ -64,9 +64,9 @@ public class TransferWorkflowTest {
     Random random = new Random();
     int total = 0;
     for (int i = 0; i < batchSize; i++) {
-      int amountCents = random.nextInt(1000);
-      transferWorkflow.withdraw(from, UUID.randomUUID().toString(), amountCents);
-      total += amountCents;
+      int amountDollars = random.nextInt(1000);
+      transferWorkflow.withdraw(from, UUID.randomUUID().toString(), amountDollars);
+      total += amountDollars;
     }
     // Wait for workflow to finish
     WorkflowStub.fromTyped(transferWorkflow).getResult(Void.class);
