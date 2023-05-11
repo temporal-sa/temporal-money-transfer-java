@@ -42,8 +42,8 @@ public class TransferRequester {
     // UNCOMMENT THIS LINE TO TEST A ***VALID*** ACCOUNT (path #1 - happy)
     Account toAccount = new Account(toAccountId, 350);
 
-    boolean simulateDepositRetries = false;
     // set to true to simulate deposit retries (path #2 - retries)
+    boolean simulateDepositRetries = false;
 
     // UNCOMMENT THIS LINE TO TEST AN ***INVALID*** ACCOUNT
     // Account toAccount = new Account("acct2invalid", 290); // for invalid account (path #3 -
