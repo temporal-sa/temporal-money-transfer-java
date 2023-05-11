@@ -35,8 +35,13 @@ public class TransferServiceImpl implements TransferService {
     log.info(fromAccount.toString());
 
     log.info(
-        "\n\n/API/withdraw from %s of $%d requested. (Ref=%s)\n",
-        fromAccount.getAccountId(), amountDollars, referenceId);
+        "\n\n/API/withdraw from "
+            + fromAccount.getAccountId()
+            + " of $"
+            + amountDollars
+            + " requested. (Ref="
+            + referenceId
+            + ")\n");
 
     if (fromAccount.getBalance() < amountDollars) {
       throw new RuntimeException(
@@ -52,9 +57,15 @@ public class TransferServiceImpl implements TransferService {
   @Override
   public Account deposit(
       Account toAccount, String referenceId, int amountDollars, boolean simulateRetryFailures) {
+
     log.info(
-        "\n\n/API/deposit to %s of $%d requested. (Ref=%s)\n",
-        toAccount.getAccountId(), amountDollars, referenceId);
+        "\n\n/API/deposit to "
+            + toAccount.getAccountId()
+            + " of $"
+            + amountDollars
+            + " requested. (Ref="
+            + referenceId
+            + ")\n");
 
     if (simulateRetryFailures) {
       ActivityExecutionContext ctx = Activity.getExecutionContext();
@@ -66,7 +77,7 @@ public class TransferServiceImpl implements TransferService {
             "FAILURE - Simulated failure for account: " + toAccount.getAccountId());
       }
 
-      log.info(("*** RETRY SUCCESSFUL ***\n"));
+      log.info("*** RETRY SUCCESSFUL ***\n");
     }
 
     if ("acct2invalid".equals(toAccount.getAccountId())) {
@@ -82,9 +93,15 @@ public class TransferServiceImpl implements TransferService {
   // Implement compensation methods
   @Override
   public Account undoWithdraw(Account fromAccount, String referenceId, int amountDollars) {
+
     log.info(
-        "\n\nUndoing withdrawal of $%d from account %s. (Ref=%s)\n",
-        amountDollars, fromAccount.getAccountId(), referenceId);
+        "\n\nUndoing withdrawal of "
+            + amountDollars
+            + " into account "
+            + fromAccount.getAccountId()
+            + ". (Ref="
+            + referenceId
+            + ")");
 
     // undo withdrawal
 
@@ -96,8 +113,13 @@ public class TransferServiceImpl implements TransferService {
   @Override
   public Account undoDeposit(Account toAccount, String referenceId, int amountDollars) {
     log.info(
-        "\n\nUndoing deposit of $%d into account %s. (Ref=%s)\n",
-        amountDollars, toAccount.getAccountId(), referenceId);
+        "\n\nUndoing deposit of "
+            + amountDollars
+            + " into account "
+            + toAccount.getAccountId()
+            + ". (Ref="
+            + referenceId
+            + ")");
 
     // undo deposit
     toAccount.setBalance(toAccount.getBalance() - amountDollars);

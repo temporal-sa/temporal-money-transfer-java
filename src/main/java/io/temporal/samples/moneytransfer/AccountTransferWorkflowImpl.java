@@ -82,15 +82,22 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
       boolean simulateDepositRetries) {
 
     // use these to slow down the workflow for demos
-    Duration shortTimer = Duration.ofSeconds(4);
-    Duration longTimer = Duration.ofSeconds(7);
+    Duration shortTimer = Duration.ofSeconds(7);
+    Duration longTimer = Duration.ofSeconds(12);
 
     List<String> compensations = new ArrayList<>();
     try {
 
       log.info(
-          "Transfer workflow STARTED ($%d from %s to %s [%s])\n",
-          amountDollars, fromAccount.getAccountId(), toAccount.getAccountId(), referenceId);
+          "Transfer workflow STARTED ($"
+              + amountDollars
+              + " from "
+              + fromAccount.getAccountId()
+              + " to "
+              + toAccount.getAccountId()
+              + "["
+              + referenceId
+              + "])");
 
       // print starting balance
       Workflow.sleep(shortTimer); // simulated delay
@@ -100,8 +107,7 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
 
       // withdraw from fromAccount
       log.info(
-          "Withdrawing $%d from account %s (please wait..)\n\n",
-          amountDollars, fromAccount.getAccountId());
+          "Withdrawing $" + amountDollars + " from account " + fromAccount + " (please wait..)");
 
       Workflow.sleep(shortTimer); // simulated delay
 
@@ -113,8 +119,7 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
       Workflow.sleep(longTimer); // simulated delay
 
       // deposit to toAccount
-      log.info(
-          "Depositing $%d to account %s (please wait)", amountDollars, toAccount.getAccountId());
+      log.info("Depositing $" + amountDollars + " to account " + fromAccount + " (please wait)");
       Workflow.sleep(shortTimer); // simulated delay
 
       // this code path is for the workflow that makes multiple withdraw activity attempts
@@ -136,7 +141,8 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
         Workflow.sleep(shortTimer); // simulated delay
         String compensation = compensations.get(i);
         if ("undo_deposit".equals(compensation)) {
-          log.info("Undoing deposit to account %s (check API response)", toAccount.getAccountId());
+          log.info(
+              "Undoing deposit to account " + toAccount.getAccountId() + " (check API response)");
           Workflow.sleep(longTimer); // simulated delay
 
           toAccount = transferService.undoDeposit(toAccount, referenceId, amountDollars);
@@ -145,8 +151,9 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
 
         } else if ("undo_withdraw".equals(compensation)) {
           log.info(
-              "Undoing withdrawal from account %s (check API response)",
-              fromAccount.getAccountId());
+              "Undoing withdrawal from account "
+                  + fromAccount.getAccountId()
+                  + " (check API response)");
           Workflow.sleep(longTimer); // simulated delay
 
           fromAccount = transferService.undoWithdraw(fromAccount, referenceId, amountDollars);
@@ -165,8 +172,15 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
     Workflow.sleep(shortTimer); // simulated delay
 
     log.info(
-        "Transferred $%d from %s to %s [%s])",
-        amountDollars, fromAccount.getAccountId(), toAccount.getAccountId(), referenceId);
+        "Transferred $"
+            + amountDollars
+            + " from "
+            + fromAccount.getAccountId()
+            + " to "
+            + toAccount.getAccountId()
+            + " ["
+            + referenceId
+            + "])");
     printAccountBalances("Final Account Balances", fromAccount, toAccount);
 
     log.info("Workflow finished successfully.");

@@ -32,7 +32,7 @@ public class TransferRequester {
 
     // generate a random reference number
     String referenceNumber = generateReferenceNumber(); // random reference number
-    int amountDollars = 620; // amount to transfer
+    int amountDollars = 45; // amount to transfer
 
     String fromAccountId = "acct1";
     Account fromAccount = new Account(fromAccountId, 1000);
@@ -40,7 +40,7 @@ public class TransferRequester {
 
     String toAccountId = "acct2";
     // UNCOMMENT THIS LINE TO TEST A ***VALID*** ACCOUNT (path #1 - happy)
-    Account toAccount = new Account(toAccountId, 290);
+    Account toAccount = new Account(toAccountId, 350);
 
     boolean simulateDepositRetries = false;
     // set to true to simulate deposit retries (path #2 - retries)
@@ -82,7 +82,7 @@ public class TransferRequester {
 
   private static String generateReferenceNumber() {
     return String.format(
-        "REF-%s-%03d",
+        "TRANSFER-%s-%03d",
         (char) (Math.random() * 26 + 'A')
             + ""
             + (char) (Math.random() * 26 + 'A')
