@@ -26,8 +26,11 @@ import io.temporal.workflow.Workflow;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
 
 public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
+
+  public static final Logger log = Workflow.getLogger(AccountTransferWorkflowImpl.class);
   private final RetryOptions retryOptionsSingleRetry =
       RetryOptions.newBuilder()
           .setInitialInterval(Duration.ofSeconds(5))
@@ -65,10 +68,9 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
       Workflow.newActivityStub(TransferService.class, optionsMultipleRetries);
 
   private static void printAccountBalances(String header, Account fromAccount, Account toAccount) {
-    System.out.println();
-    System.out.println(header);
-    System.out.println("From Account: " + fromAccount.toString());
-    System.out.println("To Account: " + toAccount.toString());
+    log.info(header);
+    log.info("From Account: " + fromAccount.toString());
+    log.info("To Account: " + toAccount.toString());
   }
 
   @Override
@@ -80,14 +82,14 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
       boolean simulateDepositRetries) {
 
     // use these to slow down the workflow for demos
-    Duration shortTimer = Duration.ofSeconds(3);
-    Duration longTimer = Duration.ofSeconds(6);
+    Duration shortTimer = Duration.ofSeconds(4);
+    Duration longTimer = Duration.ofSeconds(7);
 
     List<String> compensations = new ArrayList<>();
     try {
 
-      System.out.printf(
-          "\n\nTransfer workflow STARTED ($%d from %s to %s [%s])\n",
+      log.info(
+          "Transfer workflow STARTED ($%d from %s to %s [%s])\n",
           amountDollars, fromAccount.getAccountId(), toAccount.getAccountId(), referenceId);
 
       // print starting balance
@@ -97,8 +99,8 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
       Workflow.sleep(shortTimer); // simulated delay
 
       // withdraw from fromAccount
-      System.out.printf(
-          "\n\nWithdrawing $%d from account %s (please wait..)\n\n",
+      log.info(
+          "Withdrawing $%d from account %s (please wait..)\n\n",
           amountDollars, fromAccount.getAccountId());
 
       Workflow.sleep(shortTimer); // simulated delay
@@ -111,9 +113,8 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
       Workflow.sleep(longTimer); // simulated delay
 
       // deposit to toAccount
-      System.out.printf(
-          "\n\nDepositing $%d to account %s (please wait)\n\n",
-          amountDollars, toAccount.getAccountId());
+      log.info(
+          "Depositing $%d to account %s (please wait)", amountDollars, toAccount.getAccountId());
       Workflow.sleep(shortTimer); // simulated delay
 
       // this code path is for the workflow that makes multiple withdraw activity attempts
@@ -135,9 +136,7 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
         Workflow.sleep(shortTimer); // simulated delay
         String compensation = compensations.get(i);
         if ("undo_deposit".equals(compensation)) {
-          System.out.printf(
-              "\n\nUndoing deposit to account %s (check API response)\n\n",
-              toAccount.getAccountId());
+          log.info("Undoing deposit to account %s (check API response)", toAccount.getAccountId());
           Workflow.sleep(longTimer); // simulated delay
 
           toAccount = transferService.undoDeposit(toAccount, referenceId, amountDollars);
@@ -145,8 +144,8 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
           Workflow.sleep(shortTimer); // simulated delay
 
         } else if ("undo_withdraw".equals(compensation)) {
-          System.out.printf(
-              "\n\nUndoing withdrawal from account %s (check API response)\n\n",
+          log.info(
+              "Undoing withdrawal from account %s (check API response)",
               fromAccount.getAccountId());
           Workflow.sleep(longTimer); // simulated delay
 
@@ -160,17 +159,17 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
       printAccountBalances(
           "Transfer Rollback Complete. Final Account Balances", fromAccount, toAccount);
 
-      System.out.println("Workflow FAILED, check logs.");
+      log.info("Workflow FAILED, check logs.");
       return "FAIL";
     }
     Workflow.sleep(shortTimer); // simulated delay
 
-    System.out.printf(
-        "\n\nTransferred $%d from %s to %s [%s])\n",
+    log.info(
+        "Transferred $%d from %s to %s [%s])",
         amountDollars, fromAccount.getAccountId(), toAccount.getAccountId(), referenceId);
     printAccountBalances("Final Account Balances", fromAccount, toAccount);
 
-    System.out.println("Workflow finished successfully.");
+    log.info("Workflow finished successfully.");
 
     return "SUCCESS";
   }

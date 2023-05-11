@@ -22,16 +22,19 @@ package io.temporal.samples.moneytransfer;
 import io.temporal.activity.Activity;
 import io.temporal.activity.ActivityExecutionContext;
 import io.temporal.activity.ActivityInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TransferServiceImpl implements TransferService {
+  private static final Logger log = LoggerFactory.getLogger(TransferServiceImpl.class);
 
   @Override
   public Account withdraw(Account fromAccount, String referenceId, int amountDollars) {
 
-    System.out.println("WITHDRAW CALLED");
-    System.out.println(fromAccount.toString());
+    log.info("WITHDRAW CALLED");
+    log.info(fromAccount.toString());
 
-    System.out.printf(
+    log.info(
         "\n\n/API/withdraw from %s of $%d requested. (Ref=%s)\n",
         fromAccount.getAccountId(), amountDollars, referenceId);
 
@@ -49,21 +52,21 @@ public class TransferServiceImpl implements TransferService {
   @Override
   public Account deposit(
       Account toAccount, String referenceId, int amountDollars, boolean simulateRetryFailures) {
-    System.out.printf(
+    log.info(
         "\n\n/API/deposit to %s of $%d requested. (Ref=%s)\n",
         toAccount.getAccountId(), amountDollars, referenceId);
 
     if (simulateRetryFailures) {
       ActivityExecutionContext ctx = Activity.getExecutionContext();
       ActivityInfo info = ctx.getInfo();
-      System.out.println("\n*** RETRY ATTEMPT: " + info.getAttempt() + "***\n");
+      log.info("\n*** RETRY ATTEMPT: " + info.getAttempt() + "***\n");
 
       if (info.getAttempt() < 5) {
         throw new RuntimeException(
             "FAILURE - Simulated failure for account: " + toAccount.getAccountId());
       }
 
-      System.out.println(("*** RETRY SUCCESSFUL ***\n"));
+      log.info(("*** RETRY SUCCESSFUL ***\n"));
     }
 
     if ("acct2invalid".equals(toAccount.getAccountId())) {
@@ -79,7 +82,7 @@ public class TransferServiceImpl implements TransferService {
   // Implement compensation methods
   @Override
   public Account undoWithdraw(Account fromAccount, String referenceId, int amountDollars) {
-    System.out.printf(
+    log.info(
         "\n\nUndoing withdrawal of $%d from account %s. (Ref=%s)\n",
         amountDollars, fromAccount.getAccountId(), referenceId);
 
@@ -92,7 +95,7 @@ public class TransferServiceImpl implements TransferService {
 
   @Override
   public Account undoDeposit(Account toAccount, String referenceId, int amountDollars) {
-    System.out.printf(
+    log.info(
         "\n\nUndoing deposit of $%d into account %s. (Ref=%s)\n",
         amountDollars, toAccount.getAccountId(), referenceId);
 
