@@ -49,7 +49,7 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
       RetryOptions.newBuilder()
           .setInitialInterval(Duration.ofSeconds(3))
           .setMaximumInterval(Duration.ofSeconds(100))
-          .setBackoffCoefficient(1)
+          .setBackoffCoefficient(2)
           .setMaximumAttempts(5)
           .build();
 
