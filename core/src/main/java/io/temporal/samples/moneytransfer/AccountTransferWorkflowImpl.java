@@ -82,8 +82,8 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
       boolean simulateDepositRetries) {
 
     // use these to slow down the workflow for demos
-    Duration shortTimer = Duration.ofSeconds(7);
-    Duration longTimer = Duration.ofSeconds(12);
+    Duration shortTimer = Duration.ofSeconds(1); // 7
+    Duration longTimer = Duration.ofSeconds(2); // 12
 
     List<String> compensations = new ArrayList<>();
     try {
