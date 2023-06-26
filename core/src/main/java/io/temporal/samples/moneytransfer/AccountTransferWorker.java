@@ -75,7 +75,8 @@ public class AccountTransferWorker {
       builder.setDataConverter(
           new CodecDataConverter(
               DefaultDataConverter.newDefaultInstance(),
-              Collections.singletonList(new CryptCodec())));
+              Collections.singletonList(new CryptCodec()),
+              true /* encode failure attributes */));
     }
 
     WorkflowClientOptions clientOptions = builder.setNamespace(namespace).build();
