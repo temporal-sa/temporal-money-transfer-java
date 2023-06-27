@@ -1,5 +1,7 @@
 package io.temporal.samples.moneytransfer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
 import io.temporal.failure.ApplicationFailure;
@@ -7,7 +9,6 @@ import io.temporal.samples.moneytransfer.dataclasses.ChargeResponse;
 import io.temporal.samples.moneytransfer.dataclasses.ResultObj;
 import io.temporal.samples.moneytransfer.dataclasses.StateObj;
 import io.temporal.samples.moneytransfer.dataclasses.WorkflowParameterObj;
-import io.temporal.workflow.QueryMethod;
 import io.temporal.workflow.Workflow;
 import io.temporal.workflow.WorkflowInterface;
 import java.time.Duration;
@@ -15,9 +16,13 @@ import java.time.Duration;
 @WorkflowInterface
 public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
 
-  @QueryMethod
-  StateObj getStateQuery() {
-    return new StateObj(progressPercentage, transferState, chargeResult.getChargeId());
+  @Override
+  public String getStateQuery() throws JsonProcessingException {
+    StateObj stateObj = new StateObj(progressPercentage, transferState, chargeResult.getChargeId());
+    ObjectMapper mapper = new ObjectMapper();
+    String json = mapper.writeValueAsString(stateObj);
+
+    return json;
   }
 
   private final ActivityOptions options =
@@ -36,8 +41,6 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
 
   @Override
   public ResultObj transfer(WorkflowParameterObj params) {
-    // Query handler
-    getStateQuery();
 
     Workflow.sleep(Duration.ofSeconds(2));
 
