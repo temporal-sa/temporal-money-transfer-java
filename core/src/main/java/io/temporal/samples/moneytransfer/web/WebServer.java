@@ -23,18 +23,25 @@ import io.javalin.Javalin;
 
 public class WebServer {
   public static void main(String[] args) {
-    Javalin.create(
+    Javalin app =
+        Javalin.create(
             config -> {
               config.staticFiles.add(
                   staticFiles -> {
-                    staticFiles.hostedPath =
-                        "/";
+                    staticFiles.hostedPath = "/";
                     staticFiles.directory = "svelte_ui/build";
                     // are located
                   });
-            })
-        .get("/test", ctx -> ctx.result("Hello Javalin!"))
-        .start(7070);
-    ;
+            });
+
+    app.get(
+        "/serverinfo",
+        ctx -> {
+          // some code
+          ctx.json(ServerInfo.getServerInfo());
+        });
+    app.get("/test", ctx -> ctx.result("Hello Javalin!"));
+
+    app.start(7070);
   }
 }

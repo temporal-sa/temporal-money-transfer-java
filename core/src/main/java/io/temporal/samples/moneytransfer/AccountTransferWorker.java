@@ -21,50 +21,18 @@ package io.temporal.samples.moneytransfer;
 
 import static io.temporal.samples.moneytransfer.AccountActivityWorker.TASK_QUEUE;
 
-import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.common.converter.CodecDataConverter;
 import io.temporal.common.converter.DefaultDataConverter;
 import io.temporal.samples.moneytransfer.dataconverter.CryptCodec;
-import io.temporal.serviceclient.SimpleSslContextBuilder;
-import io.temporal.serviceclient.WorkflowServiceStubs;
-import io.temporal.serviceclient.WorkflowServiceStubsOptions;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.Collections;
 
 public class AccountTransferWorker {
 
   @SuppressWarnings("CatchAndPrintStackTrace")
   public static void main(String[] args) throws Exception {
-    // Get worker to poll the common task queue.
-    // gRPC stubs wrapper that talks to the local docker instance of temporal service.
-    // WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
-
-    // Load your client certificate, which should look like:
-    // -----BEGIN CERTIFICATE-----
-    // ...
-    // -----END CERTIFICATE-----
-    InputStream clientCert = new FileInputStream(System.getenv("TEMPORAL_CLIENT_CERT"));
-    // PKCS8 client key, which should look like:
-    // -----BEGIN PRIVATE KEY-----
-    // ...
-    // -----END PRIVATE KEY-----
-    InputStream clientKey = new FileInputStream(System.getenv("TEMPORAL_CLIENT_KEY"));
-    // For temporal cloud this would likely be ${namespace}.tmprl.cloud:7233
-    String targetEndpoint = System.getenv("TEMPORAL_ENDPOINT");
-    // Your registered namespace.
-    String namespace = System.getenv("TEMPORAL_NAMESPACE");
-
-    // Create SSL enabled client by passing SslContext, created by SimpleSslContextBuilder.
-    WorkflowServiceStubs service =
-        WorkflowServiceStubs.newServiceStubs(
-            WorkflowServiceStubsOptions.newBuilder()
-                .setSslContext(SimpleSslContextBuilder.forPKCS8(clientCert, clientKey).build())
-                .setTarget(targetEndpoint)
-                .build());
 
     // client that can be used to start and signal workflows
     WorkflowClientOptions.Builder builder = WorkflowClientOptions.newBuilder();
@@ -79,13 +47,8 @@ public class AccountTransferWorker {
               true /* encode failure attributes */));
     }
 
-    WorkflowClientOptions clientOptions = builder.setNamespace(namespace).build();
-
-    // client that can be used to start and signal workflows
-    WorkflowClient client = WorkflowClient.newInstance(service, clientOptions);
-
     // worker factory that can be used to create workers for specific task queues
-    WorkerFactory factory = WorkerFactory.newInstance(client);
+    WorkerFactory factory = WorkerFactory.newInstance(TemporalClient.get());
     Worker workerForCommonTaskQueue = factory.newWorker(TASK_QUEUE);
     workerForCommonTaskQueue.registerWorkflowImplementationTypes(AccountTransferWorkflowImpl.class);
     // Start all workers created by this factory.
