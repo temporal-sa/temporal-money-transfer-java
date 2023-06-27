@@ -21,31 +21,13 @@ package io.temporal.samples.moneytransfer;
 
 import static io.temporal.samples.moneytransfer.AccountActivityWorker.TASK_QUEUE;
 
-import io.temporal.client.WorkflowClientOptions;
-import io.temporal.common.converter.CodecDataConverter;
-import io.temporal.common.converter.DefaultDataConverter;
-import io.temporal.samples.moneytransfer.dataconverter.CryptCodec;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
-import java.util.Collections;
 
 public class AccountTransferWorker {
 
   @SuppressWarnings("CatchAndPrintStackTrace")
   public static void main(String[] args) throws Exception {
-
-    // client that can be used to start and signal workflows
-    WorkflowClientOptions.Builder builder = WorkflowClientOptions.newBuilder();
-
-    // if environment variable ENCRYPT_PAYLOADS is set to true, then use CryptCodec
-    if (System.getenv("ENCRYPT_PAYLOADS") != null
-        && System.getenv("ENCRYPT_PAYLOADS").equals("true")) {
-      builder.setDataConverter(
-          new CodecDataConverter(
-              DefaultDataConverter.newDefaultInstance(),
-              Collections.singletonList(new CryptCodec()),
-              true /* encode failure attributes */));
-    }
 
     // worker factory that can be used to create workers for specific task queues
     WorkerFactory factory = WorkerFactory.newInstance(TemporalClient.get());
