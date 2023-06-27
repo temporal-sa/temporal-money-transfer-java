@@ -23,6 +23,13 @@ Execute once per requested transfer:
 ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.TransferRequester
 ```
 
+Run web interface (requires svelte ui app from /server/build in https://github.com/steveandroulakis/temporal-money-transfer).
+
+Place build/ in resources/svelte_ui/
+```bash
+ENCRYPT_PAYLOADS=true ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.web.WebServer --console=plain
+```
+
 ### **Simulating errors**
 
 - Path 1: Happy Path

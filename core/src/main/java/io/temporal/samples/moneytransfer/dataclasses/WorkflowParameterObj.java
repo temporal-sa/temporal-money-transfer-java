@@ -4,24 +4,25 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class WorkflowParameterObj {
-  private int amountCents;
+  // in cents
+  private int amount;
 
   // No-arg constructor
   public WorkflowParameterObj() {}
 
   // Constructor
   @JsonCreator
-  public WorkflowParameterObj(@JsonProperty("amountCents") int amountCents) {
-    this.amountCents = amountCents;
+  public WorkflowParameterObj(@JsonProperty("amountCents") int amount) {
+    this.amount = amount;
   }
 
   // Getter
-  public int getAmountCents() {
-    return amountCents;
+  public int getAmount() {
+    return amount;
   }
 
   // Setter
-  public void setAmountCents(int amountCents) {
-    this.amountCents = amountCents;
+  public void setAmount(int amount) {
+    this.amount = amount;
   }
 }

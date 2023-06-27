@@ -28,9 +28,9 @@ import io.temporal.workflow.WorkflowMethod;
 
 @WorkflowInterface
 public interface AccountTransferWorkflow {
-  @WorkflowMethod
+  @WorkflowMethod(name = "AccountTransferWorkflowtransfer")
   ResultObj transfer(WorkflowParameterObj params);
 
-  @QueryMethod
+  @QueryMethod(name = "AccountTransferWorkflowquery")
   String getStateQuery() throws JsonProcessingException;
 }

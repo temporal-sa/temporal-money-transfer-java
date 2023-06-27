@@ -19,25 +19,51 @@
 
 package io.temporal.samples.moneytransfer;
 
-import static io.temporal.samples.moneytransfer.AccountActivityWorker.TASK_QUEUE;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.temporal.client.WorkflowClient;
-import io.temporal.client.WorkflowClientOptions;
 import io.temporal.client.WorkflowOptions;
-import io.temporal.common.converter.CodecDataConverter;
-import io.temporal.common.converter.DefaultDataConverter;
+import io.temporal.client.WorkflowStub;
+import io.temporal.samples.moneytransfer.dataclasses.ResultObj;
 import io.temporal.samples.moneytransfer.dataclasses.WorkflowParameterObj;
-import io.temporal.samples.moneytransfer.dataconverter.CryptCodec;
-import java.util.Collections;
+
+import javax.net.ssl.SSLException;
+import java.io.FileNotFoundException;
+
+import static io.temporal.samples.moneytransfer.AccountActivityWorker.TASK_QUEUE;
 
 public class TransferRequester {
 
-  @SuppressWarnings("CatchAndPrintStackTrace")
-  public static void main(String[] args) throws Exception {
+  public static ResultObj getWorkflowOutcome(String workflowId)
+      throws FileNotFoundException, SSLException {
 
+    WorkflowClient client = TemporalClient.get();
+
+    WorkflowStub workflowStub = client.newUntypedWorkflowStub(workflowId);
+
+    // Returns the result after waiting for the Workflow to complete.
+    ResultObj result = workflowStub.getResult(ResultObj.class);
+    return result;
+  }
+
+  public static String runQuery(String workflowId)
+      throws FileNotFoundException, SSLException, JsonProcessingException {
+
+    WorkflowClient client = TemporalClient.get();
+
+    // print workflow ID
+    System.out.println("Workflow ID runQuery helper: " + workflowId);
+
+    WorkflowStub workflowStub = client.newUntypedWorkflowStub(workflowId);
+
+    String result = workflowStub.query("AccountTransferWorkflowquery", String.class);
+
+    return result;
+  }
+
+  public static String runWorkflow(WorkflowParameterObj workflowParameterObj)
+      throws FileNotFoundException, SSLException {
     // generate a random reference number
     String referenceNumber = generateReferenceNumber(); // random reference number
-    int amountCents = 45; // amount to transfer
 
     String fromAccountId = "acct1";
     Account fromAccount = new Account(fromAccountId, 1000);
@@ -60,18 +86,6 @@ public class TransferRequester {
 
     // Workflow execution code
 
-    WorkflowClientOptions.Builder builder = WorkflowClientOptions.newBuilder();
-
-    // if environment variable ENCRYPT_PAYLOADS is set to true, then use CryptCodec
-    if (System.getenv("ENCRYPT_PAYLOADS") != null
-        && System.getenv("ENCRYPT_PAYLOADS").equals("true")) {
-      builder.setDataConverter(
-          new CodecDataConverter(
-              DefaultDataConverter.newDefaultInstance(),
-              Collections.singletonList(new CryptCodec()),
-              true /* encode failure attributes */));
-    }
-
     WorkflowClient client = TemporalClient.get();
 
     WorkflowOptions options =
@@ -82,10 +96,21 @@ public class TransferRequester {
     AccountTransferWorkflow transferWorkflow =
         client.newWorkflowStub(AccountTransferWorkflow.class, options);
 
+    WorkflowClient.start(transferWorkflow::transfer, workflowParameterObj);
+    System.out.printf("\n\nTransfer of $%d requested\n", workflowParameterObj.getAmount());
+
+    return referenceNumber;
+  }
+
+  @SuppressWarnings("CatchAndPrintStackTrace")
+  public static void main(String[] args) throws Exception {
+
+    int amountCents = 45; // amount to transfer
+
     WorkflowParameterObj params = new WorkflowParameterObj(amountCents);
 
-    WorkflowClient.start(transferWorkflow::transfer, params);
-    System.out.printf("\n\nTransfer of $%d requested\n", amountCents);
+    runWorkflow(params);
+
     System.exit(0);
   }
 

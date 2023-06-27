@@ -10,21 +10,9 @@ import io.temporal.samples.moneytransfer.dataclasses.ResultObj;
 import io.temporal.samples.moneytransfer.dataclasses.StateObj;
 import io.temporal.samples.moneytransfer.dataclasses.WorkflowParameterObj;
 import io.temporal.workflow.Workflow;
-import io.temporal.workflow.WorkflowInterface;
 import java.time.Duration;
 
-@WorkflowInterface
 public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
-
-  @Override
-  public String getStateQuery() throws JsonProcessingException {
-    StateObj stateObj = new StateObj(progressPercentage, transferState, chargeResult.getChargeId());
-    ObjectMapper mapper = new ObjectMapper();
-    String json = mapper.writeValueAsString(stateObj);
-
-    return json;
-  }
-
   private final ActivityOptions options =
       ActivityOptions.newBuilder()
           .setStartToCloseTimeout(Duration.ofSeconds(5))
@@ -50,7 +38,7 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
     String idempotencyKey = Workflow.randomUUID().toString();
 
     try {
-      chargeResult = transferService.createCharge(idempotencyKey, params.getAmountCents());
+      chargeResult = transferService.createCharge(idempotencyKey, params.getAmount());
     } catch (Exception err) {
       String message = "Failed to charge customer for. Error: " + err.getMessage();
       throw ApplicationFailure.newNonRetryableFailure(message, "Exception");
@@ -62,5 +50,12 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
     transferState = "finished";
 
     return new ResultObj(chargeResult);
+  }
+
+  @Override
+  public String getStateQuery() throws JsonProcessingException {
+    ObjectMapper mapper = new ObjectMapper();
+    StateObj stateObj = new StateObj(progressPercentage, transferState, chargeResult);
+    return mapper.writeValueAsString(stateObj);
   }
 }
