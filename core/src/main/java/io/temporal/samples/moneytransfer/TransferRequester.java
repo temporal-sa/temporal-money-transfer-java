@@ -19,16 +19,16 @@
 
 package io.temporal.samples.moneytransfer;
 
+import static io.temporal.samples.moneytransfer.AccountActivityWorker.TASK_QUEUE;
+
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.common.converter.CodecDataConverter;
 import io.temporal.common.converter.DefaultDataConverter;
+import io.temporal.samples.moneytransfer.dataclasses.WorkflowParameterObj;
 import io.temporal.samples.moneytransfer.dataconverter.CryptCodec;
-
 import java.util.Collections;
-
-import static io.temporal.samples.moneytransfer.AccountActivityWorker.TASK_QUEUE;
 
 public class TransferRequester {
 
@@ -37,7 +37,7 @@ public class TransferRequester {
 
     // generate a random reference number
     String referenceNumber = generateReferenceNumber(); // random reference number
-    int amountDollars = 45; // amount to transfer
+    int amountCents = 45; // amount to transfer
 
     String fromAccountId = "acct1";
     Account fromAccount = new Account(fromAccountId, 1000);
@@ -82,16 +82,10 @@ public class TransferRequester {
     AccountTransferWorkflow transferWorkflow =
         client.newWorkflowStub(AccountTransferWorkflow.class, options);
 
-    WorkflowClient.start(
-        transferWorkflow::transfer,
-        fromAccount,
-        toAccount,
-        referenceNumber,
-        amountDollars,
-        simulateDepositRetries);
-    System.out.printf(
-        "\n\nTransfer of $%d from %s to %s requested [%s]\n",
-        amountDollars, fromAccount.getAccountId(), toAccount.getAccountId(), referenceNumber);
+    WorkflowParameterObj params = new WorkflowParameterObj(amountCents);
+
+    WorkflowClient.start(transferWorkflow::transfer, params);
+    System.out.printf("\n\nTransfer of $%d requested\n", amountCents);
     System.exit(0);
   }
 

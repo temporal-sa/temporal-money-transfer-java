@@ -19,16 +19,13 @@
 
 package io.temporal.samples.moneytransfer;
 
+import io.temporal.samples.moneytransfer.dataclasses.ResultObj;
+import io.temporal.samples.moneytransfer.dataclasses.WorkflowParameterObj;
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
 
 @WorkflowInterface
 public interface AccountTransferWorkflow {
   @WorkflowMethod
-  String transfer(
-      Account fromAccount,
-      Account toAccount,
-      String referenceId,
-      int amountDollars,
-      boolean simulateDepositRetries);
+  ResultObj transfer(WorkflowParameterObj params);
 }

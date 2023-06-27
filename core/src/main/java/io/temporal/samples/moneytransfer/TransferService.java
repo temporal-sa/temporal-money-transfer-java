@@ -20,16 +20,9 @@
 package io.temporal.samples.moneytransfer;
 
 import io.temporal.activity.ActivityInterface;
+import io.temporal.samples.moneytransfer.dataclasses.ChargeResponse;
 
 @ActivityInterface
 public interface TransferService {
-
-  Account deposit(
-      Account toAccount, String referenceId, int amountDollars, boolean simulateDepositRetries);
-
-  Account withdraw(Account fromAccount, String referenceId, int amountDollars);
-
-  Account undoWithdraw(Account toAccount, String referenceId, int amountDollars);
-
-  Account undoDeposit(Account fromAccount, String referenceId, int amountDollars);
+  ChargeResponse createCharge(String idempotencyKey, float amountCents);
 }
