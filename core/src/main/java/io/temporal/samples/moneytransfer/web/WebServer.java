@@ -16,34 +16,14 @@
  *  express or implied. See the License for the specific language governing
  *  permissions and limitations under the License.
  */
-package io.temporal.samples.moneytransfer;
 
-public class Account {
+package io.temporal.samples.moneytransfer.web;
 
-  private String accountId;
-  private int balance;
+import io.javalin.Javalin;
 
-  public Account() {}
-
-  public Account(String accountId, int balance) {
-    this.accountId = accountId;
-    this.balance = balance;
-  }
-
-  public String getAccountId() {
-    return accountId;
-  }
-
-  public int getBalance() {
-    return balance;
-  }
-
-  public void setBalance(int balance) {
-    this.balance = balance;
-  }
-
-  @Override
-  public String toString() {
-    return accountId + " ($" + balance + ")";
+public class WebServer {
+  public static void main(String[] args) {
+    Javalin app =
+        Javalin.create(/*config*/ ).get("/", ctx -> ctx.result("Hello Javalin!")).start(7070);
   }
 }

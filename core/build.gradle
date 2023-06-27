@@ -1,4 +1,7 @@
 dependencies {
+    // Javalin Web
+    implementation 'io.javalin:javalin:5.6.0'
+
     // Temporal SDK
     implementation "io.temporal:temporal-sdk:$javaSDKVersion"
     implementation "io.temporal:temporal-opentracing:$javaSDKVersion"
