@@ -19,6 +19,9 @@
 
 package io.temporal.samples.moneytransfer;
 
+import static io.temporal.samples.moneytransfer.AccountActivityWorker.TASK_QUEUE;
+import static io.temporal.samples.moneytransfer.TemporalClient.getWorkflowServiceStubs;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionRequest;
@@ -32,12 +35,8 @@ import io.temporal.samples.moneytransfer.dataclasses.StateObj;
 import io.temporal.samples.moneytransfer.dataclasses.WorkflowParameterObj;
 import io.temporal.samples.moneytransfer.web.ServerInfo;
 import io.temporal.serviceclient.WorkflowServiceStubs;
-
-import javax.net.ssl.SSLException;
 import java.io.FileNotFoundException;
-
-import static io.temporal.samples.moneytransfer.AccountActivityWorker.TASK_QUEUE;
-import static io.temporal.samples.moneytransfer.TemporalClient.getWorkflowServiceStubs;
+import javax.net.ssl.SSLException;
 
 public class TransferRequester {
 

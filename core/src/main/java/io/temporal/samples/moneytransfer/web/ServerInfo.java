@@ -21,6 +21,12 @@ public class ServerInfo {
     return System.getenv("ADDRESS") != null ? System.getenv("ADDRESS") : "localhost:7233";
   }
 
+  public static String getWebServerURL() {
+    return System.getenv("TEMPORAL_JAVA_WEB_SERVER_URL") != null
+        ? System.getenv("TEMPORAL_JAVA_WEB_SERVER_URL")
+        : "http://localhost:7070/";
+  }
+
   public static Map<String, String> getServerInfo() {
     Map<String, String> info = new HashMap<>();
     info.put("certPath", getCertPath());

@@ -19,14 +19,16 @@
 
 package io.temporal.samples.moneytransfer.web;
 
-import static io.temporal.samples.moneytransfer.TransferRequester.*;
-
 import io.javalin.Javalin;
 import io.temporal.samples.moneytransfer.dataclasses.ResultObj;
 import io.temporal.samples.moneytransfer.dataclasses.StateObj;
 import io.temporal.samples.moneytransfer.dataclasses.WorkflowIdObj;
 import io.temporal.samples.moneytransfer.dataclasses.WorkflowParameterObj;
+
 import java.util.AbstractMap;
+import java.util.concurrent.TimeUnit;
+
+import static io.temporal.samples.moneytransfer.TransferRequester.*;
 
 public class WebServer {
   public static void main(String[] args) {
@@ -95,6 +97,21 @@ public class WebServer {
         });
 
     app.get("/test", ctx -> ctx.result("Hello Javalin!"));
+
+    app.get(
+        "/simulateDelay",
+        ctx -> {
+          String seconds_param = ctx.queryParam("s");
+
+          if (seconds_param != null) {
+            int seconds = Integer.parseInt(seconds_param);
+            System.out.println("simulateDelay seconds: " + seconds);
+            TimeUnit.SECONDS.sleep(seconds);
+            ctx.result("Delay finished after " + seconds + " seconds");
+          } else {
+            ctx.result("use query param s to specify seconds to delay");
+          }
+        });
 
     app.start(7070);
   }
