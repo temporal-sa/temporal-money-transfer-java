@@ -7,46 +7,53 @@ import io.temporal.samples.moneytransfer.dataclasses.ResultObj;
 import io.temporal.samples.moneytransfer.dataclasses.StateObj;
 import io.temporal.samples.moneytransfer.dataclasses.WorkflowParameterObj;
 import io.temporal.workflow.Workflow;
+
 import java.time.Duration;
 
 public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
-  private final ActivityOptions options =
-      ActivityOptions.newBuilder()
-          .setStartToCloseTimeout(Duration.ofSeconds(5))
-          .setRetryOptions(
-              RetryOptions.newBuilder().setDoNotRetry("StripeInvalidRequestError").build())
-          .build();
+    private final ActivityOptions options =
+            ActivityOptions.newBuilder()
+                    .setStartToCloseTimeout(Duration.ofSeconds(5))
+                    .setRetryOptions(
+                            RetryOptions.newBuilder().setDoNotRetry("StripeInvalidRequestError").build())
+                    .build();
 
-  private final TransferService transferService =
-      Workflow.newActivityStub(TransferService.class, options);
+    private final TransferService transferService =
+            Workflow.newActivityStub(TransferService.class, options);
 
-  private int progressPercentage = 25;
-  private String transferState = "starting";
-  private ChargeResponse chargeResult = new ChargeResponse("");
+    private int progressPercentage = 25;
+    private String transferState = "starting";
 
-  @Override
-  public ResultObj transfer(WorkflowParameterObj params) {
+    private ChargeResponse chargeResult = new ChargeResponse("");
 
-    Workflow.sleep(Duration.ofSeconds(2));
+    @Override
+    public ResultObj transfer(WorkflowParameterObj params) {
 
-    progressPercentage = 75;
-    transferState = "running";
+        Workflow.sleep(Duration.ofSeconds(2));
 
-    String idempotencyKey = Workflow.randomUUID().toString();
+        progressPercentage = 75;
+        transferState = "running";
 
-    chargeResult = transferService.createCharge(idempotencyKey, params.getAmount());
+        String idempotencyKey = Workflow.randomUUID().toString();
 
-    Workflow.sleep(Duration.ofSeconds(5));
+        if (params.getAmount() == 101) {
+            throw new RuntimeException("simulated"); // Uncomment to simulate failure
+        }
 
-    progressPercentage = 100;
-    transferState = "finished";
+        // run activity
+        chargeResult = transferService.createCharge(idempotencyKey, params.getAmount());
 
-    return new ResultObj(chargeResult);
-  }
+        Workflow.sleep(Duration.ofSeconds(5));
 
-  @Override
-  public StateObj getStateQuery() {
-    StateObj stateObj = new StateObj(progressPercentage, transferState, "", chargeResult);
-    return stateObj;
-  }
+        progressPercentage = 100;
+        transferState = "finished";
+
+        return new ResultObj(chargeResult);
+    }
+
+    @Override
+    public StateObj getStateQuery() {
+        StateObj stateObj = new StateObj(progressPercentage, transferState, "", chargeResult);
+        return stateObj;
+    }
 }

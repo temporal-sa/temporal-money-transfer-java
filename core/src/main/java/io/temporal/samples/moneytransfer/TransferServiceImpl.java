@@ -39,20 +39,20 @@ public class TransferServiceImpl implements TransferService {
   @Override
   public ChargeResponse createCharge(String idempotencyKey, float amountCents) {
 
+    log.info("\n\n/API/charge\n");
+
     ActivityExecutionContext ctx = Activity.getExecutionContext();
     ActivityInfo info = ctx.getInfo();
 
     if (amountCents == 99) {
       if (info.getAttempt() < 5) {
-        log.info("\n*** RETRY ATTEMPT: " + info.getAttempt() + "***\n");
+        log.info("\n*** Activity Attempt: #" + info.getAttempt() + "***\n");
         int delaySeconds = 7;
         log.info("\n\n/API/simulateDelay Seconds" + delaySeconds + "\n");
         String delayResponse = simulateDelay(delaySeconds);
-        log.info("\n\n/API/simulateDelay Response" + delayResponse + "\n");
       }
     }
 
-    log.info("\n\n/API/charge\n");
     if (amountCents > 1000) {
       throw ApplicationFailure.newNonRetryableFailure(
           "Insufficient Funds", "createCharge Activity Failed");

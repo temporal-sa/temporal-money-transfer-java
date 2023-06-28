@@ -104,7 +104,7 @@ public class WebServer {
 
           if (seconds_param != null) {
             int seconds = Integer.parseInt(seconds_param);
-            System.out.println("simulateDelay seconds: " + seconds);
+            System.out.println("Simulating API response delay: " + seconds);
             TimeUnit.SECONDS.sleep(seconds);
             ctx.result("Delay finished after " + seconds + " seconds");
           } else {
