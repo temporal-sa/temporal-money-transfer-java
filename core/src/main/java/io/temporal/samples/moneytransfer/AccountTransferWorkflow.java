@@ -21,6 +21,7 @@ package io.temporal.samples.moneytransfer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.temporal.samples.moneytransfer.dataclasses.ResultObj;
+import io.temporal.samples.moneytransfer.dataclasses.StateObj;
 import io.temporal.samples.moneytransfer.dataclasses.WorkflowParameterObj;
 import io.temporal.workflow.QueryMethod;
 import io.temporal.workflow.WorkflowInterface;
@@ -32,5 +33,5 @@ public interface AccountTransferWorkflow {
   ResultObj transfer(WorkflowParameterObj params);
 
   @QueryMethod(name = "AccountTransferWorkflowquery")
-  String getStateQuery() throws JsonProcessingException;
+  StateObj getStateQuery() throws JsonProcessingException;
 }

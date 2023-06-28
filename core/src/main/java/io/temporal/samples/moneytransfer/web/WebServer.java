@@ -23,6 +23,7 @@ import static io.temporal.samples.moneytransfer.TransferRequester.*;
 
 import io.javalin.Javalin;
 import io.temporal.samples.moneytransfer.dataclasses.ResultObj;
+import io.temporal.samples.moneytransfer.dataclasses.StateObj;
 import io.temporal.samples.moneytransfer.dataclasses.WorkflowIdObj;
 import io.temporal.samples.moneytransfer.dataclasses.WorkflowParameterObj;
 import java.util.AbstractMap;
@@ -68,9 +69,9 @@ public class WebServer {
 
           System.out.println("QUERY workflowId: " + workflowId);
 
-          String transferState = runQuery(workflowId);
+          StateObj transferState = runQuery(workflowId);
 
-          System.out.println("state: " + transferState);
+          // System.out.println("state: " + transferState);
 
           ctx.json(transferState);
         });

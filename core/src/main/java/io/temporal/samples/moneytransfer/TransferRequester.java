@@ -19,16 +19,25 @@
 
 package io.temporal.samples.moneytransfer;
 
-import static io.temporal.samples.moneytransfer.AccountActivityWorker.TASK_QUEUE;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.temporal.api.common.v1.WorkflowExecution;
+import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionRequest;
+import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionResponse;
+import io.temporal.api.workflowservice.v1.WorkflowServiceGrpc;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.client.WorkflowStub;
 import io.temporal.samples.moneytransfer.dataclasses.ResultObj;
+import io.temporal.samples.moneytransfer.dataclasses.StateObj;
 import io.temporal.samples.moneytransfer.dataclasses.WorkflowParameterObj;
-import java.io.FileNotFoundException;
+import io.temporal.samples.moneytransfer.web.ServerInfo;
+import io.temporal.serviceclient.WorkflowServiceStubs;
+
 import javax.net.ssl.SSLException;
+import java.io.FileNotFoundException;
+
+import static io.temporal.samples.moneytransfer.AccountActivityWorker.TASK_QUEUE;
+import static io.temporal.samples.moneytransfer.TemporalClient.getWorkflowServiceStubs;
 
 public class TransferRequester {
 
@@ -44,17 +53,21 @@ public class TransferRequester {
     return result;
   }
 
-  public static String runQuery(String workflowId)
+  public static StateObj runQuery(String workflowId)
       throws FileNotFoundException, SSLException, JsonProcessingException {
 
     WorkflowClient client = TemporalClient.get();
 
     // print workflow ID
-    System.out.println("Workflow ID runQuery helper: " + workflowId);
+    System.out.println("Workflow STATUS: " + getWorkflowStatus(workflowId));
 
     WorkflowStub workflowStub = client.newUntypedWorkflowStub(workflowId);
 
-    String result = workflowStub.query("AccountTransferWorkflowquery", String.class);
+    StateObj result = workflowStub.query("AccountTransferWorkflowquery", StateObj.class);
+
+    if ("WORKFLOW_EXECUTION_STATUS_FAILED".equals(getWorkflowStatus(workflowId))) {
+      result.setWorkflowStatus("FAILED");
+    }
 
     return result;
   }
@@ -122,5 +135,18 @@ public class TransferRequester {
             + ""
             + (char) (Math.random() * 26 + 'A'),
         (int) (Math.random() * 999));
+  }
+
+  private static String getWorkflowStatus(String workflowId)
+      throws FileNotFoundException, SSLException {
+    WorkflowServiceStubs service = getWorkflowServiceStubs();
+    WorkflowServiceGrpc.WorkflowServiceBlockingStub stub = service.blockingStub();
+    DescribeWorkflowExecutionRequest request =
+        DescribeWorkflowExecutionRequest.newBuilder()
+            .setNamespace(ServerInfo.getNamespace())
+            .setExecution(WorkflowExecution.newBuilder().setWorkflowId(workflowId))
+            .build();
+    DescribeWorkflowExecutionResponse response = stub.describeWorkflowExecution(request);
+    return response.getWorkflowExecutionInfo().getStatus().name();
   }
 }

@@ -16,12 +16,8 @@ import java.util.Collections;
 import javax.net.ssl.SSLException;
 
 public class TemporalClient {
-  public static WorkflowClient get() throws FileNotFoundException, SSLException {
-    // TODO support local server
-    // Get worker to poll the common task queue.
-    // gRPC stubs wrapper that talks to the local docker instance of temporal service.
-    // WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
-
+  public static WorkflowServiceStubs getWorkflowServiceStubs()
+      throws FileNotFoundException, SSLException {
     WorkflowServiceStubsOptions.Builder workflowServiceStubsOptionsBuilder =
         WorkflowServiceStubsOptions.newBuilder();
 
@@ -37,13 +33,23 @@ public class TemporalClient {
     // For temporal cloud this would likely be ${namespace}.tmprl.cloud:7233
     String targetEndpoint = ServerInfo.getAddress();
     // Your registered namespace.
-    String namespace = ServerInfo.getNamespace();
 
     workflowServiceStubsOptionsBuilder.setTarget(targetEndpoint);
 
     // Create SSL enabled client by passing SslContext, created by SimpleSslContextBuilder.
     WorkflowServiceStubs service =
         WorkflowServiceStubs.newServiceStubs(workflowServiceStubsOptionsBuilder.build());
+
+    return service;
+  }
+
+  public static WorkflowClient get() throws FileNotFoundException, SSLException {
+    // TODO support local server
+    // Get worker to poll the common task queue.
+    // gRPC stubs wrapper that talks to the local docker instance of temporal service.
+    // WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+
+    WorkflowServiceStubs service = getWorkflowServiceStubs();
 
     WorkflowClientOptions.Builder builder = WorkflowClientOptions.newBuilder();
 
@@ -57,7 +63,7 @@ public class TemporalClient {
               true /* encode failure attributes */));
     }
 
-    WorkflowClientOptions clientOptions = builder.setNamespace(namespace).build();
+    WorkflowClientOptions clientOptions = builder.setNamespace(ServerInfo.getNamespace()).build();
 
     // client that can be used to start and signal workflows
     WorkflowClient client = WorkflowClient.newInstance(service, clientOptions);

@@ -19,6 +19,7 @@
 
 package io.temporal.samples.moneytransfer;
 
+import io.temporal.failure.ApplicationFailure;
 import io.temporal.samples.moneytransfer.dataclasses.ChargeResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,10 @@ public class TransferServiceImpl implements TransferService {
 
     log.info("\n\n/API/charge\n");
 
-    // throw new runtimeexception
+    if (amountCents > 1000) {
+      throw ApplicationFailure.newNonRetryableFailure(
+          "Insufficient Funds", "createCharge Activity Failed");
+    }
 
     ChargeResponse response = new ChargeResponse("example-charge-id");
 
