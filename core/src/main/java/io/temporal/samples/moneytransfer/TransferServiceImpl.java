@@ -21,14 +21,25 @@ package io.temporal.samples.moneytransfer;
 
 import io.temporal.failure.ApplicationFailure;
 import io.temporal.samples.moneytransfer.dataclasses.ChargeResponse;
+import io.temporal.samples.moneytransfer.web.ServerInfo;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 public class TransferServiceImpl implements TransferService {
   private static final Logger log = LoggerFactory.getLogger(TransferServiceImpl.class);
 
   @Override
   public ChargeResponse createCharge(String idempotencyKey, float amountCents) {
+
+    int delaySeconds = 15;
+    log.info("\n\n/API/simulateDelay Seconds" + delaySeconds + "\n");
+    String delayResponse = simulateDelay(15);
+    log.info("\n\n/API/simulateDelay Response" + delayResponse + "\n");
 
     log.info("\n\n/API/charge\n");
 
@@ -40,5 +51,17 @@ public class TransferServiceImpl implements TransferService {
     ChargeResponse response = new ChargeResponse("example-charge-id");
 
     return response;
+  }
+
+  private static String simulateDelay(int seconds) {
+    Request request =
+        new Request.Builder()
+            .url(ServerInfo.getWebServerURL() + "/simulateDelay?s=" + seconds)
+            .build();
+    try (Response response = new OkHttpClient().newCall(request).execute()) {
+      return response.body().string();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 }
