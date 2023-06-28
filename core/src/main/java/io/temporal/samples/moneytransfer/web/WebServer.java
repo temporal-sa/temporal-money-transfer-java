@@ -19,16 +19,15 @@
 
 package io.temporal.samples.moneytransfer.web;
 
+import static io.temporal.samples.moneytransfer.TransferRequester.*;
+
 import io.javalin.Javalin;
 import io.temporal.samples.moneytransfer.dataclasses.ResultObj;
 import io.temporal.samples.moneytransfer.dataclasses.StateObj;
 import io.temporal.samples.moneytransfer.dataclasses.WorkflowIdObj;
 import io.temporal.samples.moneytransfer.dataclasses.WorkflowParameterObj;
-
 import java.util.AbstractMap;
 import java.util.concurrent.TimeUnit;
-
-import static io.temporal.samples.moneytransfer.TransferRequester.*;
 
 public class WebServer {
   public static void main(String[] args) {

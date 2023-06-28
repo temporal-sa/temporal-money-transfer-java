@@ -24,7 +24,7 @@ public class ServerInfo {
   public static String getWebServerURL() {
     return System.getenv("TEMPORAL_JAVA_WEB_SERVER_URL") != null
         ? System.getenv("TEMPORAL_JAVA_WEB_SERVER_URL")
-        : "http://localhost:7070/";
+        : "http://localhost:7070";
   }
 
   public static Map<String, String> getServerInfo() {

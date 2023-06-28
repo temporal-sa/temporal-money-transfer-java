@@ -19,6 +19,9 @@
 
 package io.temporal.samples.moneytransfer;
 
+import io.temporal.activity.Activity;
+import io.temporal.activity.ActivityExecutionContext;
+import io.temporal.activity.ActivityInfo;
 import io.temporal.failure.ApplicationFailure;
 import io.temporal.samples.moneytransfer.dataclasses.ChargeResponse;
 import io.temporal.samples.moneytransfer.web.ServerInfo;
@@ -36,13 +39,19 @@ public class TransferServiceImpl implements TransferService {
   @Override
   public ChargeResponse createCharge(String idempotencyKey, float amountCents) {
 
-    int delaySeconds = 15;
-    log.info("\n\n/API/simulateDelay Seconds" + delaySeconds + "\n");
-    String delayResponse = simulateDelay(15);
-    log.info("\n\n/API/simulateDelay Response" + delayResponse + "\n");
+    ActivityExecutionContext ctx = Activity.getExecutionContext();
+    ActivityInfo info = ctx.getInfo();
+
+    if (info.getAttempt() < 5) {
+      log.info("\n*** RETRY ATTEMPT: " + info.getAttempt() + "***\n");
+      int delaySeconds = 7;
+      log.info("\n\n/API/simulateDelay Seconds" + delaySeconds + "\n");
+      String delayResponse = simulateDelay(delaySeconds);
+      log.info("\n\n/API/simulateDelay Response" + delayResponse + "\n");
+
+    }
 
     log.info("\n\n/API/charge\n");
-
     if (amountCents > 1000) {
       throw ApplicationFailure.newNonRetryableFailure(
           "Insufficient Funds", "createCharge Activity Failed");
@@ -54,10 +63,9 @@ public class TransferServiceImpl implements TransferService {
   }
 
   private static String simulateDelay(int seconds) {
-    Request request =
-        new Request.Builder()
-            .url(ServerInfo.getWebServerURL() + "/simulateDelay?s=" + seconds)
-            .build();
+    String url = ServerInfo.getWebServerURL() + "/simulateDelay?s=" + seconds;
+    log.info("\n\n/API/simulateDelay URL: " + url + "\n");
+    Request request = new Request.Builder().url(url).build();
     try (Response response = new OkHttpClient().newCall(request).execute()) {
       return response.body().string();
     } catch (IOException e) {
