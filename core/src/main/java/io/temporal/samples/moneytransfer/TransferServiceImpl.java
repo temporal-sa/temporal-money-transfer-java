@@ -42,13 +42,14 @@ public class TransferServiceImpl implements TransferService {
     ActivityExecutionContext ctx = Activity.getExecutionContext();
     ActivityInfo info = ctx.getInfo();
 
-    if (info.getAttempt() < 5) {
-      log.info("\n*** RETRY ATTEMPT: " + info.getAttempt() + "***\n");
-      int delaySeconds = 7;
-      log.info("\n\n/API/simulateDelay Seconds" + delaySeconds + "\n");
-      String delayResponse = simulateDelay(delaySeconds);
-      log.info("\n\n/API/simulateDelay Response" + delayResponse + "\n");
-
+    if (amountCents == 99) {
+      if (info.getAttempt() < 5) {
+        log.info("\n*** RETRY ATTEMPT: " + info.getAttempt() + "***\n");
+        int delaySeconds = 7;
+        log.info("\n\n/API/simulateDelay Seconds" + delaySeconds + "\n");
+        String delayResponse = simulateDelay(delaySeconds);
+        log.info("\n\n/API/simulateDelay Response" + delayResponse + "\n");
+      }
     }
 
     log.info("\n\n/API/charge\n");
