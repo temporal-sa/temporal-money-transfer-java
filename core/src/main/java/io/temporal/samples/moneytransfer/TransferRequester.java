@@ -76,25 +76,6 @@ public class TransferRequester {
     // generate a random reference number
     String referenceNumber = generateReferenceNumber(); // random reference number
 
-    String fromAccountId = "acct1";
-    Account fromAccount = new Account(fromAccountId, 1000);
-    // Account fromAccount = new Account(fromAccountId, 1000); // for invalid balance
-
-    String toAccountId = "acct2";
-    // UNCOMMENT THIS LINE TO TEST A ***VALID*** ACCOUNT (path #1 - happy)
-    // Account toAccount = new Account(toAccountId, 350);
-
-    // set to true to simulate deposit retries (path #2 - retries)
-    boolean simulateDepositRetries = false;
-
-    // UNCOMMENT THIS LINE TO TEST AN ***INVALID*** ACCOUNT
-    Account toAccount = new Account("acct2invalid", 290); // for invalid account (path #3 -
-    // rollback)
-
-    // path #4: Simulate a failure in the middle of the transfer
-    // Wait for "Withdrawal done" in the console, then kill the worker
-    // Look for 'WorkflowTaskTimedOut' event in the history
-
     // Workflow execution code
 
     WorkflowClient client = TemporalClient.get();

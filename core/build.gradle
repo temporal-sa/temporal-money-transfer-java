@@ -59,6 +59,7 @@ dependencies {
     }
 }
 
+
 task execute(type: JavaExec) {
     mainClass = findProperty("mainClass") ?: ""
     classpath = sourceSets.main.runtimeClasspath
