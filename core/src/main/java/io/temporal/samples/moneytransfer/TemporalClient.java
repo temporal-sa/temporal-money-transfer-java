@@ -28,12 +28,11 @@ import io.temporal.samples.moneytransfer.web.ServerInfo;
 import io.temporal.serviceclient.SimpleSslContextBuilder;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
-
-import javax.net.ssl.SSLException;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Collections;
+import javax.net.ssl.SSLException;
 
 public class TemporalClient {
   public static WorkflowServiceStubs getWorkflowServiceStubs()
