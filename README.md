@@ -3,6 +3,19 @@
 The Money Transfer sample has four separate tasks.
 One to host Workflow Executions, another to host Activity Executions, and a Web UI for running transfers and a CLI for doing the same.
 
+### Connecting to a Temporal Server
+
+The sample is configured to connect to a Temporal Server running on localhost:7233.
+
+To connect to Temporal Cloud, set the following environment variables:
+
+```bash
+export TEMPORAL_ADDRESS=<your Temporal Cloud address>
+export TEMPORAL_NAMESPACE=<your Temporal Cloud namespace>
+export TEMPORAL_CERT_PATH="/path/to/file.pem"
+export TEMPORAL_KEY_PATH="/path/to/file.key"
+````
+
 ### Running the Workflow
 
 Remove the ENCRYPT_PAYLOADS variable to run without encryption.
@@ -19,10 +32,12 @@ Start Activity Worker:
 ENCRYPT_PAYLOADS=true ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.AccountActivityWorker --console=plain
 ```
 
-Place build/ in resources/svelte_ui/
+Run the money transfer form UI:
+
 ```bash
 ENCRYPT_PAYLOADS=true ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.web.WebServer --console=plain
 ```
+Then navigate to `http://localhost:7070/`
 
 OR
 

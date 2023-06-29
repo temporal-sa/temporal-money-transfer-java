@@ -40,7 +40,7 @@ public class TemporalClient {
     WorkflowServiceStubsOptions.Builder workflowServiceStubsOptionsBuilder =
         WorkflowServiceStubsOptions.newBuilder();
 
-    if (ServerInfo.getCertPath() != null && ServerInfo.getKeyPath() != null) {
+    if (ServerInfo.getCertPath() != "" && !"".equals(ServerInfo.getKeyPath())) {
       InputStream clientCert = new FileInputStream(ServerInfo.getCertPath());
 
       InputStream clientKey = new FileInputStream(ServerInfo.getKeyPath());
@@ -55,9 +55,11 @@ public class TemporalClient {
 
     workflowServiceStubsOptionsBuilder.setTarget(targetEndpoint);
 
-    // Create SSL enabled client by passing SslContext, created by SimpleSslContextBuilder.
-    WorkflowServiceStubs service =
-        WorkflowServiceStubs.newServiceStubs(workflowServiceStubsOptionsBuilder.build());
+    WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+    if (ServerInfo.getCertPath() != "" && !"".equals(ServerInfo.getKeyPath())) {
+      // Create SSL enabled client by passing SslContext, created by SimpleSslContextBuilder.
+      service = WorkflowServiceStubs.newServiceStubs(workflowServiceStubsOptionsBuilder.build());
+    }
 
     return service;
   }
@@ -82,6 +84,7 @@ public class TemporalClient {
               true /* encode failure attributes */));
     }
 
+    System.out.println("<<<<SERVER INFO>>>>:\n " + ServerInfo.getServerInfo());
     WorkflowClientOptions clientOptions = builder.setNamespace(ServerInfo.getNamespace()).build();
 
     // client that can be used to start and signal workflows
