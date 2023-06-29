@@ -5,16 +5,18 @@ One to host Workflow Executions, another to host Activity Executions, and a Web 
 
 ### Running the Workflow
 
+Remove the ENCRYPT_PAYLOADS variable to run without encryption.
+
 Start Workflow Worker:
 
 ```bash
-./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.AccountTransferWorker --console=plain
+ENCRYPT_PAYLOADS=true ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.AccountTransferWorker --console=plain
 ```
 
 Start Activity Worker:
 
 ```bash
-./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.AccountActivityWorker --console=plain
+ENCRYPT_PAYLOADS=true ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.AccountActivityWorker --console=plain
 ```
 
 Place build/ in resources/svelte_ui/
@@ -27,7 +29,7 @@ OR
 Execute a workflow from the CLI:
 
 ```bash
-./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.TransferRequester
+ENCRYPT_PAYLOADS=true ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.TransferRequester
 ```
 
 ## Demo various failures and recovery
