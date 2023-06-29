@@ -18,6 +18,8 @@ TEMPORAL_KEY_PATH="/path/to/file.key"
 
 ### Running the Workflow
 
+Note: Use a Java 18 SDK.
+
 Start Workflow Worker:
 
 ```bash
