@@ -1,7 +1,7 @@
 ## Money Transfer Example
 
-The Money Transfer sample has four separate tasks.
-One to host Workflow Executions, another to host Activity Executions, and a Web UI for running transfers and a CLI for doing the same.
+The Money Transfer sample has four separate Gradle tasks.
+One to host Workflow Executions, another to host Activity Executions, a Web UI for running transfers, and a CLI for doing the same.
 
 ### Connecting to a Temporal Server
 
