@@ -3,6 +3,11 @@
 The Money Transfer sample has four separate Gradle tasks.
 One to host Workflow Executions, another to host Activity Executions, a Web UI for running transfers, and a CLI for doing the same.
 
+### Demos
+- Activity retries (simulated API delay)
+- Recoverable failures
+- Unrecoverable failures
+
 ### Connecting to a Temporal Server
 
 The sample is configured by default to connect to a [local Temporal Server](https://docs.temporal.io/cli#starting-the-temporal-server) running on localhost:7233.
