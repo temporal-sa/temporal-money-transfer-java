@@ -1,4 +1,4 @@
-## Money Transfer Example (with retries and compensation)
+## Money Transfer Example
 
 The Money Transfer sample has four separate tasks.
 One to host Workflow Executions, another to host Activity Executions, and a Web UI for running transfers and a CLI for doing the same.
@@ -30,7 +30,7 @@ Execute a workflow from the CLI:
 ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.TransferRequester
 ```
 
-## Demo various functionality
+## Demo various failures and recovery
 
 ```
 Set dollar amounts in the UI to these to demonstrate various functionality
