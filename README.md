@@ -5,20 +5,18 @@ One to host Workflow Executions, another to host Activity Executions, and a Web 
 
 ### Connecting to a Temporal Server
 
-The sample is configured to connect to a Temporal Server running on localhost:7233.
+The sample is configured by default to connect to a [local Temporal Server](https://docs.temporal.io/cli#starting-the-temporal-server) running on localhost:7233.
 
-To connect to Temporal Cloud, set the following environment variables:
+To instead connect to Temporal Cloud, set the following environment variables, replacing them with your own Temporal Cloud credentials:
 
 ```bash
-export TEMPORAL_ADDRESS=<your Temporal Cloud address>
-export TEMPORAL_NAMESPACE=<your Temporal Cloud namespace>
-export TEMPORAL_CERT_PATH="/path/to/file.pem"
-export TEMPORAL_KEY_PATH="/path/to/file.key"
+TEMPORAL_ADDRESS=testnamespace.sdvdw.tmprl.cloud:7233
+TEMPORAL_NAMESPACE=testnamespace.sdvdw
+TEMPORAL_CERT_PATH="/path/to/file.pem"
+TEMPORAL_KEY_PATH="/path/to/file.key"
 ````
 
 ### Running the Workflow
-
-Remove the ENCRYPT_PAYLOADS variable to run without encryption.
 
 Start Workflow Worker:
 
@@ -46,6 +44,10 @@ Execute a workflow from the CLI:
 ```bash
 ENCRYPT_PAYLOADS=true ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.TransferRequester
 ```
+
+Remove the `ENCRYPT_PAYLOADS` variable in each command to run without encryption.
+
+You can decrypt these payloads in Temporal Cloud's UI/cli using the codec server: `https://codec.tmprl-demo.cloud/` ([source](https://github.com/steveandroulakis/temporal-codec-server)). Ensure you switch on "Pass the user access token with your endpoint". Note: The codec server is only compatible with workflows running in Temporal Cloud.
 
 ## Demo various failures and recovery
 
