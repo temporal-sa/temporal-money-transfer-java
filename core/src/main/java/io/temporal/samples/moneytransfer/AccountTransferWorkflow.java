@@ -24,6 +24,7 @@ import io.temporal.samples.moneytransfer.dataclasses.ResultObj;
 import io.temporal.samples.moneytransfer.dataclasses.StateObj;
 import io.temporal.samples.moneytransfer.dataclasses.WorkflowParameterObj;
 import io.temporal.workflow.QueryMethod;
+import io.temporal.workflow.SignalMethod;
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
 
@@ -34,4 +35,7 @@ public interface AccountTransferWorkflow {
 
   @QueryMethod(name = "AccountTransferWorkflowquery")
   StateObj getStateQuery() throws JsonProcessingException;
+
+  @SignalMethod(name = "approveTransfer")
+  void approveTransfer();
 }

@@ -46,11 +46,20 @@ Then navigate to `http://localhost:7070/`
 
 OR
 
-Execute a workflow from the CLI:
+Execute a workflow from the CLI (activity retry flow not supported):
 
 ```bash
 ENCRYPT_PAYLOADS=true ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.TransferRequester
 ```
+
+Send approval signal (for transfers > $100):
+
+```bash
+# where TRANSFER-EZF-249 is the workflowId
+./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.TransferApprover -Parg=TRANSFER-EZF-249
+````
+
+## Encryption
 
 Remove the `ENCRYPT_PAYLOADS` variable in each command to run without encryption.
 
@@ -61,12 +70,15 @@ You can decrypt these payloads in Temporal Cloud's UI/cli using the codec server
 ```
 Set dollar amounts in the UI to these to demonstrate various functionality
 
+## Human-in-loop Demo
+amount > 100 -> wait for approval signal # see 'Send approval signal' code above
+
 ## Recoverable Failures Demo
 amount == 101 -> workflow exception (non-failure)
 amount == 99 -> activity timeout then recovery on 5th attempt
 
 ## UnRecoverable failure 'insufficient funds' exception
-amount > 1000 -> fails workflow
+amount > 10000 -> fails workflow
 
 ## Reset Workflows
 ### List failed workflows

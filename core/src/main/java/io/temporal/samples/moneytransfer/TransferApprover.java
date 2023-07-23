@@ -19,10 +19,14 @@
 
 package io.temporal.samples.moneytransfer;
 
-import io.temporal.activity.ActivityInterface;
-import io.temporal.samples.moneytransfer.dataclasses.ChargeResponse;
+import static io.temporal.samples.moneytransfer.TransferRequester.runApproveSignal;
 
-@ActivityInterface
-public interface TransferService {
-  ChargeResponse createCharge(String idempotencyKey, float amountDollars);
+public class TransferApprover {
+  public static void main(String[] args) {
+    // get command line argument for string WorkflowId
+    String workflowId = args[0];
+    // print workflow ID
+    System.out.println("Signalling workflow: " + workflowId);
+    runApproveSignal(workflowId);
+  }
 }

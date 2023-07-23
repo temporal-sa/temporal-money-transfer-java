@@ -36,14 +36,14 @@ public class TransferServiceImpl implements TransferService {
   private static final Logger log = LoggerFactory.getLogger(TransferServiceImpl.class);
 
   @Override
-  public ChargeResponse createCharge(String idempotencyKey, float amountCents) {
+  public ChargeResponse createCharge(String idempotencyKey, float amountDollars) {
 
     log.info("\n\n/API/charge\n");
 
     ActivityExecutionContext ctx = Activity.getExecutionContext();
     ActivityInfo info = ctx.getInfo();
 
-    if (amountCents == 99) {
+    if (amountDollars == 99) {
       if (info.getAttempt() < 5) {
         log.info("\n*** Activity Attempt: #" + info.getAttempt() + "***\n");
         int delaySeconds = 7;
@@ -52,7 +52,7 @@ public class TransferServiceImpl implements TransferService {
       }
     }
 
-    if (amountCents > 1000) {
+    if (amountDollars > 10000) {
       throw ApplicationFailure.newNonRetryableFailure(
           "Insufficient Funds", "createCharge Activity Failed");
     }

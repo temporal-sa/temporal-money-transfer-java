@@ -22,7 +22,6 @@ package io.temporal.samples.moneytransfer;
 import static io.temporal.samples.moneytransfer.AccountActivityWorker.TASK_QUEUE;
 import static io.temporal.samples.moneytransfer.TemporalClient.getWorkflowServiceStubs;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionRequest;
 import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionResponse;
@@ -52,8 +51,7 @@ public class TransferRequester {
     return result;
   }
 
-  public static StateObj runQuery(String workflowId)
-      throws FileNotFoundException, SSLException, JsonProcessingException {
+  public static StateObj runQuery(String workflowId) throws FileNotFoundException, SSLException {
 
     WorkflowClient client = TemporalClient.get();
 
@@ -69,6 +67,19 @@ public class TransferRequester {
     }
 
     return result;
+  }
+
+  public static void runApproveSignal(String workflowId) {
+
+    try {
+      WorkflowClient client = TemporalClient.get();
+
+      WorkflowStub workflowStub = client.newUntypedWorkflowStub(workflowId);
+
+      workflowStub.signal("approveTransfer", null);
+    } catch (Exception e) {
+      System.out.println("Exception: " + e);
+    }
   }
 
   public static String runWorkflow(WorkflowParameterObj workflowParameterObj)

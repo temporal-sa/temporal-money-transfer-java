@@ -27,8 +27,12 @@ import io.temporal.samples.moneytransfer.dataclasses.StateObj;
 import io.temporal.samples.moneytransfer.dataclasses.WorkflowParameterObj;
 import io.temporal.workflow.Workflow;
 import java.time.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
+
+  private static final Logger log = LoggerFactory.getLogger(AccountTransferWorkflowImpl.class);
   private final ActivityOptions options =
       ActivityOptions.newBuilder()
           .setStartToCloseTimeout(Duration.ofSeconds(5))
@@ -44,6 +48,8 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
 
   private ChargeResponse chargeResult = new ChargeResponse("");
 
+  private boolean approved = false;
+
   @Override
   public ResultObj transfer(WorkflowParameterObj params) {
 
@@ -55,7 +61,14 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
     String idempotencyKey = Workflow.randomUUID().toString();
 
     if (params.getAmount() == 101) {
-      throw new RuntimeException("simulated"); // Uncomment to simulate failure
+      log.info("\n\nSimulating workflow task failure.\n\n");
+      throw new RuntimeException("simulated"); // comment out to fix the workflow
+    }
+
+    // Wait for approval
+    if (params.getAmount() == 100) {
+      log.info("\n\nWaiting for transfer approval.\n\n");
+      Workflow.await(() -> approved);
     }
 
     // run activity
@@ -73,5 +86,11 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
   public StateObj getStateQuery() {
     StateObj stateObj = new StateObj(progressPercentage, transferState, "", chargeResult);
     return stateObj;
+  }
+
+  @Override
+  public void approveTransfer() {
+    log.info("\n\nApprove Signal Received\n\n");
+    this.approved = true;
   }
 }
