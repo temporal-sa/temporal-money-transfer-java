@@ -53,7 +53,7 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
   @Override
   public ResultObj transfer(WorkflowParameterObj params) {
 
-    Workflow.sleep(Duration.ofSeconds(2));
+    Workflow.sleep(Duration.ofSeconds(5));
 
     progressPercentage = 75;
     transferState = "running";
@@ -74,7 +74,7 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
     // run activity
     chargeResult = transferService.createCharge(idempotencyKey, params.getAmount());
 
-    Workflow.sleep(Duration.ofSeconds(5));
+    Workflow.sleep(Duration.ofSeconds(10));
 
     progressPercentage = 100;
     transferState = "finished";
