@@ -53,8 +53,6 @@ public class WebServer {
         "/runWorkflow",
         ctx -> {
           WorkflowParameterObj workflowParameterObj = ctx.bodyAsClass(WorkflowParameterObj.class);
-          System.out.println("AMOUNT");
-          System.out.println();
 
           String transferId = runWorkflow(workflowParameterObj);
 

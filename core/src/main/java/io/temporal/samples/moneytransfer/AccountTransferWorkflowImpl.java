@@ -21,10 +21,7 @@ package io.temporal.samples.moneytransfer;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
-import io.temporal.samples.moneytransfer.dataclasses.ChargeResponse;
-import io.temporal.samples.moneytransfer.dataclasses.ResultObj;
-import io.temporal.samples.moneytransfer.dataclasses.StateObj;
-import io.temporal.samples.moneytransfer.dataclasses.WorkflowParameterObj;
+import io.temporal.samples.moneytransfer.dataclasses.*;
 import io.temporal.workflow.Workflow;
 import java.time.Duration;
 import org.slf4j.Logger;
@@ -60,19 +57,23 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
 
     String idempotencyKey = Workflow.randomUUID().toString();
 
-    if (params.getAmount() == 101) {
+    if (params.getScenario() == ExecutionScenario.BUG_IN_WORKFLOW) {
       log.info("\n\nSimulating workflow task failure.\n\n");
       throw new RuntimeException("simulated"); // comment out to fix the workflow
     }
 
     // Wait for approval
-    if (params.getAmount() == 100) {
+    if (params.getScenario() == ExecutionScenario.HUMAN_IN_LOOP) {
       log.info("\n\nWaiting for transfer approval.\n\n");
+      transferState = "waiting";
       Workflow.await(() -> approved);
     }
 
+    transferState = "running";
+
     // run activity
-    chargeResult = transferService.createCharge(idempotencyKey, params.getAmount());
+    chargeResult =
+        transferService.createCharge(idempotencyKey, params.getAmount(), params.getScenario());
 
     Workflow.sleep(Duration.ofSeconds(10));
 

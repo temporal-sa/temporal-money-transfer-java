@@ -26,22 +26,35 @@ public class WorkflowParameterObj {
   // in cents
   private int amount;
 
+  private ExecutionScenario scenario;
+
   // No-arg constructor
   public WorkflowParameterObj() {}
 
   // Constructor
   @JsonCreator
-  public WorkflowParameterObj(@JsonProperty("amountCents") int amount) {
+  public WorkflowParameterObj(
+      @JsonProperty("amountCents") int amount,
+      @JsonProperty("scenario") ExecutionScenario scenario) {
     this.amount = amount;
+    this.scenario = scenario;
   }
 
-  // Getter
+  // Getters
   public int getAmount() {
     return amount;
   }
 
-  // Setter
+  public ExecutionScenario getScenario() {
+    return scenario;
+  }
+
+  // Setters
   public void setAmount(int amount) {
     this.amount = amount;
+  }
+
+  public void setScenario(ExecutionScenario scenario) {
+    this.scenario = scenario;
   }
 }

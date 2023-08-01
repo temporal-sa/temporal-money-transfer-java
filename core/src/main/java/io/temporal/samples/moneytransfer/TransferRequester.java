@@ -29,6 +29,7 @@ import io.temporal.api.workflowservice.v1.WorkflowServiceGrpc;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.client.WorkflowStub;
+import io.temporal.samples.moneytransfer.dataclasses.ExecutionScenario;
 import io.temporal.samples.moneytransfer.dataclasses.ResultObj;
 import io.temporal.samples.moneytransfer.dataclasses.StateObj;
 import io.temporal.samples.moneytransfer.dataclasses.WorkflowParameterObj;
@@ -110,7 +111,8 @@ public class TransferRequester {
 
     int amountCents = 45; // amount to transfer
 
-    WorkflowParameterObj params = new WorkflowParameterObj(amountCents);
+    WorkflowParameterObj params =
+        new WorkflowParameterObj(amountCents, ExecutionScenario.HAPPY_PATH);
 
     runWorkflow(params);
 

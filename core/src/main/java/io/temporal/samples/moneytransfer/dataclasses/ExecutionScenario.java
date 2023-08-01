@@ -17,14 +17,12 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.samples.moneytransfer;
+package io.temporal.samples.moneytransfer.dataclasses;
 
-import io.temporal.activity.ActivityInterface;
-import io.temporal.samples.moneytransfer.dataclasses.ChargeResponse;
-import io.temporal.samples.moneytransfer.dataclasses.ExecutionScenario;
-
-@ActivityInterface
-public interface TransferService {
-  ChargeResponse createCharge(
-      String idempotencyKey, float amountDollars, ExecutionScenario scenario);
+public enum ExecutionScenario {
+  HAPPY_PATH,
+  HUMAN_IN_LOOP,
+  API_DOWNTIME,
+  BUG_IN_WORKFLOW,
+  INSUFFICIENT_FUNDS
 }

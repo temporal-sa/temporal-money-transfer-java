@@ -24,6 +24,7 @@ import io.temporal.activity.ActivityExecutionContext;
 import io.temporal.activity.ActivityInfo;
 import io.temporal.failure.ApplicationFailure;
 import io.temporal.samples.moneytransfer.dataclasses.ChargeResponse;
+import io.temporal.samples.moneytransfer.dataclasses.ExecutionScenario;
 import io.temporal.samples.moneytransfer.web.ServerInfo;
 import java.io.IOException;
 import okhttp3.OkHttpClient;
@@ -36,14 +37,16 @@ public class TransferServiceImpl implements TransferService {
   private static final Logger log = LoggerFactory.getLogger(TransferServiceImpl.class);
 
   @Override
-  public ChargeResponse createCharge(String idempotencyKey, float amountDollars) {
+  public ChargeResponse createCharge(
+      String idempotencyKey, float amountDollars, ExecutionScenario scenario) {
 
     log.info("\n\n/API/charge\n");
 
     ActivityExecutionContext ctx = Activity.getExecutionContext();
     ActivityInfo info = ctx.getInfo();
 
-    if (amountDollars == 99) {
+    if (scenario == ExecutionScenario.API_DOWNTIME) {
+      log.info("\n\n*** Simulating API Downtime\n");
       if (info.getAttempt() < 5) {
         log.info("\n*** Activity Attempt: #" + info.getAttempt() + "***\n");
         int delaySeconds = 7;
@@ -52,7 +55,7 @@ public class TransferServiceImpl implements TransferService {
       }
     }
 
-    if (amountDollars > 10000) {
+    if (scenario == ExecutionScenario.INSUFFICIENT_FUNDS) {
       throw ApplicationFailure.newNonRetryableFailure(
           "Insufficient Funds", "createCharge Activity Failed");
     }
