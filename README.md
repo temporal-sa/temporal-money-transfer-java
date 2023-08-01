@@ -67,18 +67,20 @@ You can decrypt these payloads in Temporal Cloud's UI/cli using the codec server
 
 ## Demo various failures and recovery
 
+UI dropdown simulates the following scenarios
+
 ```
-Set dollar amounts in the UI to these to demonstrate various functionality
+## Require Human-In-Loop Approval
+wait for approval signal # see 'Send approval signal' code above
 
-## Human-in-loop Demo
-amount > 100 -> wait for approval signal # see 'Send approval signal' code above
+## Bug in Workflow (recoverable failure)
+comment out exception in workflow code (`AccountTransferWorkflowImpl.java`) and restart worker to fix
 
-## Recoverable Failures Demo
-amount == 101 -> workflow exception (non-failure)
-amount == 99 -> activity timeout then recovery on 5th attempt
+## API Downtime (recover on 5th attempt)
+activity timeout then recovery on 5th attempt
 
-## UnRecoverable failure 'insufficient funds' exception
-amount > 10000 -> fails workflow
+## Insufficient Funds (unrecoverable failure)
+Fails workflow
 
 ## Reset Workflows
 ### List failed workflows
