@@ -56,8 +56,8 @@ public class TemporalClient {
     workflowServiceStubsOptionsBuilder.setTarget(targetEndpoint);
 
     WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
-    if (ServerInfo.getCertPath() != "" && !"".equals(ServerInfo.getKeyPath())) {
-      // Create SSL enabled client by passing SslContext, created by SimpleSslContextBuilder.
+    if (ServerInfo.getAddress() != "localhost:7233") {
+      // if not local server, then use the workflowServiceStubsOptionsBuilder
       service = WorkflowServiceStubs.newServiceStubs(workflowServiceStubsOptionsBuilder.build());
     }
 
