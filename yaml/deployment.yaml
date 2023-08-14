@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: temporal-money-transfer-java-worker
+  labels:
+    app: temporal-money-transfer-java-worker
 spec:
   replicas: 1
   selector:
@@ -11,7 +13,6 @@ spec:
     metadata:
       labels:
         app: temporal-money-transfer-java-worker
-        namespace: temporal-money-transfer-java-worker
     spec:
       serviceAccountName: cicd
       containers:
