@@ -54,7 +54,7 @@ jobs:
       - uses: Azure/k8s-deploy@v4
         with:
           namespace: 'stevea-worker-as-a-service'
-          images: 'steveandroulakis/temporal-money-transfer-java-worker:${{ github.ref_name }}'
+          images: 'steveandroulakis/temporal-money-transfer-java-worker:${{ event.run_id }}'
           action: deploy
           strategy: basic
           manifests: |
