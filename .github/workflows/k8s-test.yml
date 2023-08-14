@@ -2,6 +2,11 @@ name: Publish Docker image
 
 on: [push]
 
+permissions:
+  id-token: write
+  contents: read
+  actions: read
+
 jobs:
   build:
     name: Build
