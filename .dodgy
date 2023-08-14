@@ -1,3 +1,2 @@
 removed licence check
 removed sa-demo kubernetes cluster ip allowlisting
-k8s deployment is hard coded to 'latest' docker image tag

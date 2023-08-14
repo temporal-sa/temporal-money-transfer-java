@@ -56,7 +56,7 @@ jobs:
           namespace: 'stevea-worker-as-a-service'
           images: 'steveandroulakis/temporal-money-transfer-java-worker:${{ github.ref_name }}'
           action: deploy
-          strategy: blue-green
+          strategy: basic
           route-method: service
           manifests: |
               yaml/deployment.yaml
