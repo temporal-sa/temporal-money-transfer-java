@@ -1,2 +1,3 @@
 removed licence check
 removed sa-demo kubernetes cluster ip allowlisting
+unsure how to genericize for other java programs

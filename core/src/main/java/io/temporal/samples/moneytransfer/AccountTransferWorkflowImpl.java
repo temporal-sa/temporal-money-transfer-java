@@ -68,7 +68,7 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
       log.info(
           "\n\nWaiting on 'approveTransfer' signal for workflow ID: "
               + Workflow.getInfo().getWorkflowId()
-              + ".\n\n");
+              + "\n\n");
       transferState = "waiting";
       Workflow.await(() -> approved);
     }
