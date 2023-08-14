@@ -65,7 +65,7 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
 
     // Wait for approval
     if (params.getScenario() == ExecutionScenario.HUMAN_IN_LOOP) {
-      log.info("\n\nTMP Waiting for 'approveTransfer' signal for "
+      log.info("\n\nWaiting for 'approveTransfer' signal for "
               + Workflow.getInfo().getWorkflowId() + ".\n\n");
       transferState = "waiting";
       Workflow.await(() -> approved);
