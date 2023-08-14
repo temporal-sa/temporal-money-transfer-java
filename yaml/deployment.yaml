@@ -13,6 +13,7 @@ spec:
         app: temporal-money-transfer-java-worker
         namespace: temporal-money-transfer-java-worker
     spec:
+      serviceAccountName: cicd
       containers:
         - name: worker-workflow
           image: steveandroulakis/temporal-money-transfer-java-worker:latest
