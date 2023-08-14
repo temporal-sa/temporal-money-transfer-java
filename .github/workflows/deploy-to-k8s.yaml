@@ -54,9 +54,9 @@ jobs:
       - uses: Azure/k8s-deploy@v4
         with:
           namespace: 'stevea-worker-as-a-service'
+          images: 'steveandroulakis/temporal-money-transfer-java-worker:${{ github.ref_name }}'
           action: deploy
           strategy: blue-green
           route-method: service
-          version-switch-buffer: 3
           manifests: |
               yaml/deployment.yaml
