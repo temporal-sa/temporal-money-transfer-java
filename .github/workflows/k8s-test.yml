@@ -12,6 +12,8 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
       - uses: azure/setup-kubectl@v2.0
       - name: set kubernetes context
         uses: azure/k8s-set-context@v1
