@@ -25,4 +25,4 @@ jobs:
         with:
           action: deploy
           manifests: |
-              ../yaml/deployment.yaml
+              ../../yaml/deployment.yaml
