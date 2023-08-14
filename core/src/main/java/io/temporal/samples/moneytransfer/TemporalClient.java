@@ -40,7 +40,7 @@ public class TemporalClient {
     WorkflowServiceStubsOptions.Builder workflowServiceStubsOptionsBuilder =
         WorkflowServiceStubsOptions.newBuilder();
 
-    if (ServerInfo.getCertPath() != "" && !"".equals(ServerInfo.getKeyPath())) {
+    if (!ServerInfo.getCertPath().equals("") && !"".equals(ServerInfo.getKeyPath())) {
       InputStream clientCert = new FileInputStream(ServerInfo.getCertPath());
 
       InputStream clientKey = new FileInputStream(ServerInfo.getKeyPath());
@@ -56,7 +56,7 @@ public class TemporalClient {
     workflowServiceStubsOptionsBuilder.setTarget(targetEndpoint);
 
     WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
-    if (ServerInfo.getAddress() != "localhost:7233") {
+    if (!ServerInfo.getAddress().equals("localhost:7233")) {
       // if not local server, then use the workflowServiceStubsOptionsBuilder
       service = WorkflowServiceStubs.newServiceStubs(workflowServiceStubsOptionsBuilder.build());
     }

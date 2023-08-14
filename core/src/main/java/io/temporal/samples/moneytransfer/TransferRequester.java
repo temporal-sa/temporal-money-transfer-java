@@ -76,7 +76,7 @@ public class TransferRequester {
 
       WorkflowStub workflowStub = client.newUntypedWorkflowStub(workflowId);
 
-      workflowStub.signal("approveTransfer", null);
+      workflowStub.signal("approveTransfer");
     } catch (Exception e) {
       System.out.println("Exception: " + e);
     }

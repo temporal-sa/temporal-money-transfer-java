@@ -51,7 +51,7 @@ public class TransferServiceImpl implements TransferService {
         log.info("\n*** Activity Attempt: #" + info.getAttempt() + "***\n");
         int delaySeconds = 7;
         log.info("\n\n/API/simulateDelay Seconds" + delaySeconds + "\n");
-        String delayResponse = simulateDelay(delaySeconds);
+        simulateDelay(delaySeconds);
       }
     }
 
