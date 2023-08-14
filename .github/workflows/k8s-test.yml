@@ -25,6 +25,7 @@ jobs:
 
       - uses: Azure/k8s-deploy@v4
         with:
+          namespace: 'stevea-worker-as-a-service'
           action: deploy
           manifests: |
               yaml/deployment.yaml
