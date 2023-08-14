@@ -57,6 +57,6 @@ jobs:
           images: 'steveandroulakis/temporal-money-transfer-java-worker:${{ github.ref_name }}'
           action: deploy
           strategy: basic
-          route-method: service
           manifests: |
               yaml/deployment.yaml
+          force: true
