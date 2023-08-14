@@ -16,7 +16,7 @@ spec:
       serviceAccountName: cicd
       containers:
         - name: worker-workflow
-          image: steveandroulakis/temporal-money-transfer-java-worker:latest
+          image: steveandroulakis/temporal-money-transfer-java-worker:cicd
           imagePullPolicy: Always
           env:
             - name: ENCRYPT_PAYLOADS
