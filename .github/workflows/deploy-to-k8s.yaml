@@ -12,8 +12,8 @@ name: Build and Deploy to Kubernetes
 on: [push]
 
 jobs:
-  push_to_registry:
-    name: Push Docker image to Docker Hub
+  push_to_registry_deploy_to_k8s:
+    name: Push Docker image to Docker Hub and Deploy to Kubernetes
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
@@ -57,6 +57,6 @@ jobs:
           action: deploy
           strategy: blue-green
           route-method: service
-          version-switch-buffer: 3
+          version-switch-buffer: 0
           manifests: |
               yaml/deployment.yaml
