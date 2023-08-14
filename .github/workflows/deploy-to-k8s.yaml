@@ -9,7 +9,10 @@
 
 name: Build and Deploy to Kubernetes
 
-on: [push]
+on:
+  push:
+    branches:
+      - cicd
 
 jobs:
   push_to_registry_deploy_to_k8s:
@@ -19,6 +22,10 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v3
       
+      - name: Define Docker tag
+        id: define-tag
+        run: echo "DOCKER_TAG=steveandroulakis/temporal-money-transfer-java-worker:${GITHUB_SHA}" >> $GITHUB_ENV
+
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
@@ -38,7 +45,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          labels: ${{ env.DOCKER_TAG }}
 
       - name: Check out the repo
         uses: actions/checkout@v3
@@ -54,7 +61,7 @@ jobs:
       - uses: Azure/k8s-deploy@v4
         with:
           namespace: 'stevea-worker-as-a-service'
-          images: 'steveandroulakis/temporal-money-transfer-java-worker:${{ steps.meta.outputs.tags }}'
+          images: ${{ env.DOCKER_TAG }}
           action: deploy
           strategy: basic
           manifests: |
