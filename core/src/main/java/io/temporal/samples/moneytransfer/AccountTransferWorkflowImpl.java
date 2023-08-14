@@ -40,7 +40,7 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
   private final TransferService transferService =
       Workflow.newActivityStub(TransferService.class, options);
 
-  private int progressPercentage = 25;
+  private int progressPercentage = 10;
   private String transferState = "starting";
 
   private ChargeResponse chargeResult = new ChargeResponse("");
@@ -50,13 +50,14 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
   @Override
   public ResultObj transfer(WorkflowParameterObj params) {
 
+    progressPercentage = 25;
+
     Workflow.sleep(Duration.ofSeconds(5));
 
-    progressPercentage = 75;
+    progressPercentage = 50;
     transferState = "running";
 
-    String idempotencyKey = Workflow.randomUUID().toString();
-
+    // Simulate bug in workflow
     if (params.getScenario() == ExecutionScenario.BUG_IN_WORKFLOW) {
       log.info("\n\nSimulating workflow task failure.\n\n");
       throw new RuntimeException("simulated"); // comment out to fix the workflow
@@ -72,10 +73,12 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
     transferState = "running";
 
     // run activity
+    String idempotencyKey = Workflow.randomUUID().toString();
     chargeResult =
         transferService.createCharge(idempotencyKey, params.getAmount(), params.getScenario());
 
-    Workflow.sleep(Duration.ofSeconds(10));
+    progressPercentage = 80;
+    Workflow.sleep(Duration.ofSeconds(5));
 
     progressPercentage = 100;
     transferState = "finished";

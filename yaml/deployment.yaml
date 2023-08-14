@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temporal-money-transfer-java-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: temporal-money-transfer-java-worker
+  template:
+    metadata:
+      labels:
+        app: temporal-money-transfer-java-worker
+        namespace: temporal-money-transfer-java-worker
+    spec:
+      containers:
+        - name: worker-workflow
+          image: steveandroulakis/temporal-money-transfer-java-worker:latest
+          imagePullPolicy: Always
+          env:
+            - name: ENCRYPT_PAYLOADS
+              value: "true"
+            - name: TEMPORAL_ADDRESS
+              value: steveandroulakis-test-1.sdvdw.tmprl.cloud:7233
+            - name: TEMPORAL_NAMESPACE
+              value: steveandroulakis-test-1.sdvdw
+            - name: TEMPORAL_MONEYTRANSFER_TASKQUEUE
+              value: MoneyTransferSampleJava-WaaS
+            - name: TEMPORAL_CERT_PATH
+              value: /etc/certs/tls.crt
+            - name: TEMPORAL_KEY_PATH
+              value: /etc/certs/tls.key
+          volumeMounts:
+            - mountPath: /etc/certs
+              name: certs
+      volumes:
+        - name: certs
+          secret:
+            defaultMode: 420
+            secretName: temporal-steveandroulakis-tls

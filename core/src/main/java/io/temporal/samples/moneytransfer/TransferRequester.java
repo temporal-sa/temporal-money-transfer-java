@@ -19,7 +19,6 @@
 
 package io.temporal.samples.moneytransfer;
 
-import static io.temporal.samples.moneytransfer.AccountActivityWorker.TASK_QUEUE;
 import static io.temporal.samples.moneytransfer.TemporalClient.getWorkflowServiceStubs;
 
 import io.temporal.api.common.v1.WorkflowExecution;
@@ -91,6 +90,7 @@ public class TransferRequester {
     // Workflow execution code
 
     WorkflowClient client = TemporalClient.get();
+    final String TASK_QUEUE = ServerInfo.getTaskqueue();
 
     WorkflowOptions options =
         WorkflowOptions.newBuilder()

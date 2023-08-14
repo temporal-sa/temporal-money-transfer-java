@@ -21,36 +21,27 @@ TEMPORAL_CERT_PATH="/path/to/file.pem"
 TEMPORAL_KEY_PATH="/path/to/file.key"
 ````
 
+(optional) set a task queue name
+```bash
+export TEMPORAL_MONEYTRANSFER_TASKQUEUE="MoneyTransferSampleJava"
+```
+
 ### Running the Workflow
 
 Note: Use a Java 18 SDK.
 
-Start Workflow Worker:
+Start a worker:
 
 ```bash
 ENCRYPT_PAYLOADS=true ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.AccountTransferWorker --console=plain
 ```
 
-Start Activity Worker:
-
-```bash
-ENCRYPT_PAYLOADS=true ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.AccountActivityWorker --console=plain
-```
-
-Run the money transfer form UI:
+Run the money transfer web UI:
 
 ```bash
 ENCRYPT_PAYLOADS=true ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.web.WebServer --console=plain
 ```
 Then navigate to `http://localhost:7070/`
-
-OR
-
-Execute a workflow from the CLI (activity retry flow not supported):
-
-```bash
-ENCRYPT_PAYLOADS=true ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.TransferRequester
-```
 
 Send approval signal (for transfers > $100):
 
@@ -58,6 +49,15 @@ Send approval signal (for transfers > $100):
 # where TRANSFER-EZF-249 is the workflowId
 ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.TransferApprover -Parg=TRANSFER-EZF-249
 ````
+
+You can also do this through the temporal cli
+```bash
+temporal workflow signal \
+ --env prod \
+ --query 'WorkflowId="TRANSFER-XXX-XXX"' \
+ --name approveTransfer \
+ --reason 'approving transfer'
+```
 
 ## Encryption
 
@@ -81,7 +81,10 @@ activity timeout then recovery on 5th attempt
 
 ## Insufficient Funds (unrecoverable failure)
 Fails workflow
+```
 
+Advanced: You can also simulate these scenarios using the Temporal CLI
+```
 ## Reset Workflows
 ### List failed workflows
 temporal workflow list --env prod -q 'ExecutionStatus="Failed" OR ExecutionStatus="Terminated"'

@@ -42,6 +42,11 @@ public class ServerInfo {
     return address != null && !address.isEmpty() ? address : "localhost:7233";
   }
 
+  public static String getTaskqueue() {
+    String taskqueue = System.getenv("TEMPORAL_MONEYTRANSFER_TASKQUEUE");
+    return taskqueue != null && !taskqueue.isEmpty() ? taskqueue : "MoneyTransferSampleJava";
+  }
+
   public static String getWebServerURL() {
     String webServerURL = System.getenv("TEMPORAL_JAVA_WEB_SERVER_URL");
     return webServerURL != null && !webServerURL.isEmpty() ? webServerURL : "http://localhost:7070";
@@ -53,6 +58,7 @@ public class ServerInfo {
     info.put("keyPath", getKeyPath());
     info.put("namespace", getNamespace());
     info.put("address", getAddress());
+    info.put("taskQueue", getTaskqueue());
     return info;
   }
 }

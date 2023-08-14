@@ -1,5 +1,4 @@
 plugins {
-    id 'org.cadixdev.licenser' version '0.6.1'
     id "net.ltgt.errorprone" version "3.1.0"
     id 'com.diffplug.spotless' version '6.17.0' apply false
     id 'org.springframework.boot' version '2.7.12'
@@ -7,7 +6,6 @@ plugins {
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'org.cadixdev.licenser'
     apply plugin: 'net.ltgt.errorprone'
     apply plugin: 'com.diffplug.spotless'
 
@@ -31,16 +29,6 @@ subprojects {
 
     dependencies {
 
-    }
-
-    license {
-        header rootProject.file('license-header.txt')
-        exclude '**/*.json'
-        exclude '**/*.yaml'
-        exclude '**/*.yml'
-        exclude '**/*.html'
-        exclude '**/*.js'
-        exclude '**/*.css'
     }
 
     if (JavaVersion.current().isJava11Compatible()) {
