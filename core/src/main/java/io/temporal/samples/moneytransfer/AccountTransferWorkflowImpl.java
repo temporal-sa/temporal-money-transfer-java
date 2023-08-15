@@ -37,13 +37,13 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
               RetryOptions.newBuilder().setDoNotRetry("StripeInvalidRequestError").build())
           .build();
 
-  private final TransferService transferService =
-      Workflow.newActivityStub(TransferService.class, options);
+  private final AccountTransferActivities accountTransferActivities =
+      Workflow.newActivityStub(AccountTransferActivities.class, options);
 
   private int progressPercentage = 10;
   private String transferState = "starting";
 
-  private ChargeResponse chargeResult = new ChargeResponse("");
+  private ChargeResponseObj chargeResult = new ChargeResponseObj("");
 
   private boolean approved = false;
 
@@ -58,13 +58,13 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
     transferState = "running";
 
     // Simulate bug in workflow
-    if (params.getScenario() == ExecutionScenario.BUG_IN_WORKFLOW) {
+    if (params.getScenario() == ExecutionScenarioObj.BUG_IN_WORKFLOW) {
       log.info("\n\nSimulating workflow task failure.\n\n");
       throw new RuntimeException("simulated"); // comment out to fix the workflow
     }
 
     // Wait for approval
-    if (params.getScenario() == ExecutionScenario.HUMAN_IN_LOOP) {
+    if (params.getScenario() == ExecutionScenarioObj.HUMAN_IN_LOOP) {
       log.info(
           "\n\nWaiting on 'approveTransfer' signal for workflow ID: "
               + Workflow.getInfo().getWorkflowId()
@@ -78,7 +78,8 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
     // run activity
     String idempotencyKey = Workflow.randomUUID().toString();
     chargeResult =
-        transferService.createCharge(idempotencyKey, params.getAmount(), params.getScenario());
+        accountTransferActivities.createCharge(
+            idempotencyKey, params.getAmount(), params.getScenario());
 
     progressPercentage = 80;
     Workflow.sleep(Duration.ofSeconds(5));

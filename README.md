@@ -47,10 +47,10 @@ Send approval signal (for transfers > $100):
 
 ```bash
 # where TRANSFER-EZF-249 is the workflowId
-./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.TransferApprover -Parg=TRANSFER-EZF-249
+./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.TransferApprover -Parg=TRANSFER-XXX-XXX
 ````
 
-You can also do this through the temporal cli
+You can also do this through the `temporal` cli:
 ```bash
 temporal workflow signal \
  --env prod \
@@ -58,6 +58,8 @@ temporal workflow signal \
  --name approveTransfer \
  --reason 'approving transfer'
 ```
+
+Or in the Temporal workflow UI.
 
 ## Encryption
 

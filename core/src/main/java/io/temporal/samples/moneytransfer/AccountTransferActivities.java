@@ -20,11 +20,11 @@
 package io.temporal.samples.moneytransfer;
 
 import io.temporal.activity.ActivityInterface;
-import io.temporal.samples.moneytransfer.dataclasses.ChargeResponse;
-import io.temporal.samples.moneytransfer.dataclasses.ExecutionScenario;
+import io.temporal.samples.moneytransfer.dataclasses.ChargeResponseObj;
+import io.temporal.samples.moneytransfer.dataclasses.ExecutionScenarioObj;
 
 @ActivityInterface
-public interface TransferService {
-  ChargeResponse createCharge(
-      String idempotencyKey, float amountDollars, ExecutionScenario scenario);
+public interface AccountTransferActivities {
+  ChargeResponseObj createCharge(
+      String idempotencyKey, float amountDollars, ExecutionScenarioObj scenario);
 }

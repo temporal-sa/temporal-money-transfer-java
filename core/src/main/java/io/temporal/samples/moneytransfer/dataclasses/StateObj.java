@@ -26,7 +26,7 @@ public class StateObj {
   private int progressPercentage;
   private String transferState;
   private String workflowStatus; // this is nullable
-  private ChargeResponse chargeResult; // this can be null
+  private ChargeResponseObj chargeResult; // this can be null
 
   // no-arg constructor
   public StateObj() {}
@@ -37,7 +37,7 @@ public class StateObj {
       @JsonProperty("progressPercentage") int progressPercentage,
       @JsonProperty("transferState") String transferState,
       @JsonProperty("workflowStatus") String workflowStatus,
-      @JsonProperty("chargeResult") ChargeResponse chargeResult) {
+      @JsonProperty("chargeResult") ChargeResponseObj chargeResult) {
     this.progressPercentage = progressPercentage;
     this.transferState = transferState;
     this.workflowStatus = workflowStatus;
@@ -57,7 +57,7 @@ public class StateObj {
     return workflowStatus;
   }
 
-  public ChargeResponse getChargeResult() {
+  public ChargeResponseObj getChargeResult() {
     return chargeResult;
   }
 
@@ -74,7 +74,7 @@ public class StateObj {
     this.workflowStatus = workflowStatus;
   }
 
-  public void setChargeResult(ChargeResponse chargeResult) {
+  public void setChargeResult(ChargeResponseObj chargeResult) {
     this.chargeResult = chargeResult;
   }
 }

@@ -23,24 +23,24 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ResultObj {
-  private ChargeResponse chargeResponse;
+  private ChargeResponseObj chargeResponseObj;
 
   // no-arg constructor
   public ResultObj() {}
 
   // Constructor with JsonProperty annotation
   @JsonCreator
-  public ResultObj(@JsonProperty("chargeResponse") ChargeResponse chargeResponse) {
-    this.chargeResponse = chargeResponse;
+  public ResultObj(@JsonProperty("chargeResponse") ChargeResponseObj chargeResponseObj) {
+    this.chargeResponseObj = chargeResponseObj;
   }
 
   // Getter
-  public ChargeResponse getChargeResponse() {
-    return chargeResponse;
+  public ChargeResponseObj getChargeResponse() {
+    return chargeResponseObj;
   }
 
   // Setter
-  public void setChargeResponse(ChargeResponse chargeResponse) {
-    this.chargeResponse = chargeResponse;
+  public void setChargeResponse(ChargeResponseObj chargeResponseObj) {
+    this.chargeResponseObj = chargeResponseObj;
   }
 }

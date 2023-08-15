@@ -34,8 +34,8 @@ public class AccountTransferWorker {
     WorkerFactory factory = WorkerFactory.newInstance(TemporalClient.get());
     Worker workerForCommonTaskQueue = factory.newWorker(TASK_QUEUE);
     workerForCommonTaskQueue.registerWorkflowImplementationTypes(AccountTransferWorkflowImpl.class);
-    TransferService transferService = new TransferServiceImpl();
-    workerForCommonTaskQueue.registerActivitiesImplementations(transferService);
+    AccountTransferActivities accountTransferActivities = new AccountTransferActivitiesImpl();
+    workerForCommonTaskQueue.registerActivitiesImplementations(accountTransferActivities);
     // Start all workers created by this factory.
     factory.start();
     System.out.println("Worker started for task queue: " + TASK_QUEUE);

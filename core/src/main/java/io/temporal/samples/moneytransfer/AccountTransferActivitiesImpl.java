@@ -23,8 +23,8 @@ import io.temporal.activity.Activity;
 import io.temporal.activity.ActivityExecutionContext;
 import io.temporal.activity.ActivityInfo;
 import io.temporal.failure.ApplicationFailure;
-import io.temporal.samples.moneytransfer.dataclasses.ChargeResponse;
-import io.temporal.samples.moneytransfer.dataclasses.ExecutionScenario;
+import io.temporal.samples.moneytransfer.dataclasses.ChargeResponseObj;
+import io.temporal.samples.moneytransfer.dataclasses.ExecutionScenarioObj;
 import io.temporal.samples.moneytransfer.web.ServerInfo;
 import java.io.IOException;
 import okhttp3.OkHttpClient;
@@ -33,19 +33,19 @@ import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TransferServiceImpl implements TransferService {
-  private static final Logger log = LoggerFactory.getLogger(TransferServiceImpl.class);
+public class AccountTransferActivitiesImpl implements AccountTransferActivities {
+  private static final Logger log = LoggerFactory.getLogger(AccountTransferActivitiesImpl.class);
 
   @Override
-  public ChargeResponse createCharge(
-      String idempotencyKey, float amountDollars, ExecutionScenario scenario) {
+  public ChargeResponseObj createCharge(
+      String idempotencyKey, float amountDollars, ExecutionScenarioObj scenario) {
 
     log.info("\n\n/API/charge\n");
 
     ActivityExecutionContext ctx = Activity.getExecutionContext();
     ActivityInfo info = ctx.getInfo();
 
-    if (scenario == ExecutionScenario.API_DOWNTIME) {
+    if (scenario == ExecutionScenarioObj.API_DOWNTIME) {
       log.info("\n\n*** Simulating API Downtime\n");
       if (info.getAttempt() < 5) {
         log.info("\n*** Activity Attempt: #" + info.getAttempt() + "***\n");
@@ -55,12 +55,12 @@ public class TransferServiceImpl implements TransferService {
       }
     }
 
-    if (scenario == ExecutionScenario.INSUFFICIENT_FUNDS) {
+    if (scenario == ExecutionScenarioObj.INSUFFICIENT_FUNDS) {
       throw ApplicationFailure.newNonRetryableFailure(
           "Insufficient Funds", "createCharge Activity Failed");
     }
 
-    ChargeResponse response = new ChargeResponse("example-charge-id");
+    ChargeResponseObj response = new ChargeResponseObj("example-charge-id");
 
     return response;
   }

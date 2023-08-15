@@ -19,7 +19,7 @@
 
 package io.temporal.samples.moneytransfer.dataclasses;
 
-public enum ExecutionScenario {
+public enum ExecutionScenarioObj {
   HAPPY_PATH,
   HUMAN_IN_LOOP,
   API_DOWNTIME,

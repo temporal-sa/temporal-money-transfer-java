@@ -28,7 +28,7 @@ import io.temporal.api.workflowservice.v1.WorkflowServiceGrpc;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.client.WorkflowStub;
-import io.temporal.samples.moneytransfer.dataclasses.ExecutionScenario;
+import io.temporal.samples.moneytransfer.dataclasses.ExecutionScenarioObj;
 import io.temporal.samples.moneytransfer.dataclasses.ResultObj;
 import io.temporal.samples.moneytransfer.dataclasses.StateObj;
 import io.temporal.samples.moneytransfer.dataclasses.WorkflowParameterObj;
@@ -60,7 +60,7 @@ public class TransferRequester {
 
     WorkflowStub workflowStub = client.newUntypedWorkflowStub(workflowId);
 
-    StateObj result = workflowStub.query("AccountTransferWorkflowquery", StateObj.class);
+    StateObj result = workflowStub.query("transferStatus", StateObj.class);
 
     if ("WORKFLOW_EXECUTION_STATUS_FAILED".equals(getWorkflowStatus(workflowId))) {
       result.setWorkflowStatus("FAILED");
@@ -112,7 +112,7 @@ public class TransferRequester {
     int amountCents = 45; // amount to transfer
 
     WorkflowParameterObj params =
-        new WorkflowParameterObj(amountCents, ExecutionScenario.HAPPY_PATH);
+        new WorkflowParameterObj(amountCents, ExecutionScenarioObj.HAPPY_PATH);
 
     runWorkflow(params);
 
