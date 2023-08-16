@@ -1,5 +1,5 @@
 # Use an official Gradle image from the Docker Hub
-FROM --platform=linux/amd64 gradle:7.3.0-jdk11 AS build
+FROM --platform=linux/amd64 gradle:jdk17-jammy AS build
 
 # Set the working directory
 WORKDIR /home/gradle/project
@@ -19,8 +19,7 @@ RUN chmod +x ./gradlew
 RUN ./gradlew build
 
 # Use a JDK base image for running the gradle task
-FROM adoptopenjdk:11-jdk-hotspot
-
+FROM amazoncorretto:17-al2-native-headless
 WORKDIR /app
 
 # Copy the build output from the builder stage
