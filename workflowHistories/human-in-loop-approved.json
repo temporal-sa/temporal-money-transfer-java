@@ -1,0 +1,545 @@
+{
+  "events": [
+    {
+      "eventId": "1",
+      "eventTime": "2023-08-19T17:48:06.145470374Z",
+      "eventType": "WorkflowExecutionStarted",
+      "version": "1076",
+      "taskId": "31676166",
+      "workerMayIgnore": false,
+      "workflowExecutionStartedEventAttributes": {
+        "workflowType": {
+          "name": "transfer"
+        },
+        "parentWorkflowNamespace": "",
+        "parentWorkflowNamespaceId": "",
+        "parentWorkflowExecution": null,
+        "parentInitiatedEventId": "0",
+        "taskQueue": {
+          "name": "MoneyTransferSampleJava",
+          "kind": "Normal",
+          "normalName": ""
+        },
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "YmluYXJ5L2VuY3J5cHRlZA==",
+                "encryption-cipher": "QUVTL0dDTS9Ob1BhZGRpbmc=",
+                "encryption-key-id": "c2Etcm9ja3Mhc2Etcm9ja3Mhc2Etcm9ja3MheWVhaCE="
+              },
+              "data": "xTf8XBfKn4HxiRv53eGaWSUXgosWAFwWR6x3VXzVrJcThC6nlrS9pU3tvO35Pug/4e3GyB3onA4JcSL2aXAHr/OEz6advufmVpq5ILXhNQdjil5Ck388tWpeJg1ypA=="
+            }
+          ]
+        },
+        "workflowExecutionTimeout": "0s",
+        "workflowRunTimeout": "0s",
+        "workflowTaskTimeout": "10s",
+        "continuedExecutionRunId": "",
+        "initiator": "Unspecified",
+        "continuedFailure": null,
+        "lastCompletionResult": null,
+        "originalExecutionRunId": "ac9e495a-2cdf-4ec3-8c1f-cf70bf4fad39",
+        "identity": "41899@Steves-MacBook-Pro.local",
+        "firstExecutionRunId": "ac9e495a-2cdf-4ec3-8c1f-cf70bf4fad39",
+        "retryPolicy": null,
+        "attempt": 1,
+        "workflowExecutionExpirationTime": null,
+        "cronSchedule": "",
+        "firstWorkflowTaskBackoff": "0s",
+        "memo": null,
+        "searchAttributes": null,
+        "prevAutoResetPoints": null,
+        "header": {
+          "fields": {}
+        },
+        "parentInitiatedEventVersion": "0",
+        "workflowId": "TRANSFER-QWX-861",
+        "sourceVersionStamp": null
+      }
+    },
+    {
+      "eventId": "2",
+      "eventTime": "2023-08-19T17:48:06.145501595Z",
+      "eventType": "WorkflowTaskScheduled",
+      "version": "1076",
+      "taskId": "31676167",
+      "workerMayIgnore": false,
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "MoneyTransferSampleJava",
+          "kind": "Normal",
+          "normalName": ""
+        },
+        "startToCloseTimeout": "10s",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "3",
+      "eventTime": "2023-08-19T17:48:06.169314118Z",
+      "eventType": "WorkflowTaskStarted",
+      "version": "1076",
+      "taskId": "31676172",
+      "workerMayIgnore": false,
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "2",
+        "identity": "41455@Steves-MacBook-Pro.local",
+        "requestId": "ce50af66-2eac-429b-9e8f-ae40e45f64b1",
+        "suggestContinueAsNew": false,
+        "historySizeBytes": "508"
+      }
+    },
+    {
+      "eventId": "4",
+      "eventTime": "2023-08-19T17:48:06.298125692Z",
+      "eventType": "WorkflowTaskCompleted",
+      "version": "1076",
+      "taskId": "31676176",
+      "workerMayIgnore": false,
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "2",
+        "startedEventId": "3",
+        "identity": "41455@Steves-MacBook-Pro.local",
+        "binaryChecksum": "",
+        "workerVersion": {
+          "buildId": "",
+          "bundleId": "",
+          "useVersioning": false
+        },
+        "sdkMetadata": null,
+        "meteringMetadata": {
+          "nonfirstLocalActivityExecutionAttempts": 0
+        }
+      }
+    },
+    {
+      "eventId": "5",
+      "eventTime": "2023-08-19T17:48:06.298161793Z",
+      "eventType": "TimerStarted",
+      "version": "1076",
+      "taskId": "31676177",
+      "workerMayIgnore": false,
+      "timerStartedEventAttributes": {
+        "timerId": "8e961158-2d9c-3ff1-872b-2eec1f413c67",
+        "startToFireTimeout": "5s",
+        "workflowTaskCompletedEventId": "4"
+      }
+    },
+    {
+      "eventId": "6",
+      "eventTime": "2023-08-19T17:48:11.303082030Z",
+      "eventType": "TimerFired",
+      "version": "1076",
+      "taskId": "31676181",
+      "workerMayIgnore": false,
+      "timerFiredEventAttributes": {
+        "timerId": "8e961158-2d9c-3ff1-872b-2eec1f413c67",
+        "startedEventId": "5"
+      }
+    },
+    {
+      "eventId": "7",
+      "eventTime": "2023-08-19T17:48:11.303086850Z",
+      "eventType": "WorkflowTaskScheduled",
+      "version": "1076",
+      "taskId": "31676182",
+      "workerMayIgnore": false,
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "41455@Steves-MacBook-Pro.local:c6453b47-f2c5-4859-847d-c75ebe87c29d",
+          "kind": "Sticky",
+          "normalName": "MoneyTransferSampleJava"
+        },
+        "startToCloseTimeout": "10s",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "8",
+      "eventTime": "2023-08-19T17:48:11.316818396Z",
+      "eventType": "WorkflowTaskStarted",
+      "version": "1076",
+      "taskId": "31676186",
+      "workerMayIgnore": false,
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "7",
+        "identity": "41455@Steves-MacBook-Pro.local",
+        "requestId": "21b442b2-5f78-4ba8-be7c-01b812f0f4a2",
+        "suggestContinueAsNew": false,
+        "historySizeBytes": "963"
+      }
+    },
+    {
+      "eventId": "9",
+      "eventTime": "2023-08-19T17:48:11.350142871Z",
+      "eventType": "WorkflowTaskCompleted",
+      "version": "1076",
+      "taskId": "31676190",
+      "workerMayIgnore": false,
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "7",
+        "startedEventId": "8",
+        "identity": "41455@Steves-MacBook-Pro.local",
+        "binaryChecksum": "",
+        "workerVersion": {
+          "buildId": "",
+          "bundleId": "",
+          "useVersioning": false
+        },
+        "sdkMetadata": null,
+        "meteringMetadata": {
+          "nonfirstLocalActivityExecutionAttempts": 0
+        }
+      }
+    },
+    {
+      "eventId": "10",
+      "eventTime": "2023-08-19T17:48:11.350187733Z",
+      "eventType": "TimerStarted",
+      "version": "1076",
+      "taskId": "31676191",
+      "workerMayIgnore": false,
+      "timerStartedEventAttributes": {
+        "timerId": "5e88862b-dad6-30e2-993f-e3b2c9b4ad03",
+        "startToFireTimeout": "30s",
+        "workflowTaskCompletedEventId": "9"
+      }
+    },
+    {
+      "eventId": "11",
+      "eventTime": "2023-08-19T17:48:34.359744179Z",
+      "eventType": "WorkflowExecutionSignaled",
+      "version": "1076",
+      "taskId": "31676194",
+      "workerMayIgnore": false,
+      "workflowExecutionSignaledEventAttributes": {
+        "signalName": "approveTransfer",
+        "input": null,
+        "identity": "",
+        "header": null,
+        "skipGenerateWorkflowTask": false
+      }
+    },
+    {
+      "eventId": "12",
+      "eventTime": "2023-08-19T17:48:34.359749279Z",
+      "eventType": "WorkflowTaskScheduled",
+      "version": "1076",
+      "taskId": "31676195",
+      "workerMayIgnore": false,
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "41455@Steves-MacBook-Pro.local:c6453b47-f2c5-4859-847d-c75ebe87c29d",
+          "kind": "Sticky",
+          "normalName": "MoneyTransferSampleJava"
+        },
+        "startToCloseTimeout": "10s",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "13",
+      "eventTime": "2023-08-19T17:48:34.375106449Z",
+      "eventType": "WorkflowTaskStarted",
+      "version": "1076",
+      "taskId": "31676199",
+      "workerMayIgnore": false,
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "12",
+        "identity": "41455@Steves-MacBook-Pro.local",
+        "requestId": "41a67c17-4603-4311-9d99-0ee7725cd9b1",
+        "suggestContinueAsNew": false,
+        "historySizeBytes": "1396"
+      }
+    },
+    {
+      "eventId": "14",
+      "eventTime": "2023-08-19T17:48:34.424557247Z",
+      "eventType": "WorkflowTaskCompleted",
+      "version": "1076",
+      "taskId": "31676204",
+      "workerMayIgnore": false,
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "12",
+        "startedEventId": "13",
+        "identity": "41455@Steves-MacBook-Pro.local",
+        "binaryChecksum": "",
+        "workerVersion": {
+          "buildId": "",
+          "bundleId": "",
+          "useVersioning": false
+        },
+        "sdkMetadata": null,
+        "meteringMetadata": {
+          "nonfirstLocalActivityExecutionAttempts": 0
+        }
+      }
+    },
+    {
+      "eventId": "15",
+      "eventTime": "2023-08-19T17:48:34.424606898Z",
+      "eventType": "ActivityTaskScheduled",
+      "version": "1076",
+      "taskId": "31676205",
+      "workerMayIgnore": false,
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "4a32ce88-1777-3552-8fa7-f9e01acda70b",
+        "activityType": {
+          "name": "CreateCharge"
+        },
+        "taskQueue": {
+          "name": "MoneyTransferSampleJava",
+          "kind": "Normal",
+          "normalName": ""
+        },
+        "header": {
+          "fields": {}
+        },
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "YmluYXJ5L2VuY3J5cHRlZA==",
+                "encryption-cipher": "QUVTL0dDTS9Ob1BhZGRpbmc=",
+                "encryption-key-id": "c2Etcm9ja3Mhc2Etcm9ja3Mhc2Etcm9ja3MheWVhaCE="
+              },
+              "data": "pq3KvXKVN6TeRCUY0/LRSjedpI6GyGXnaGIcvbXV5xB3kMmptsZqR2yDAXf0Nw8jsr4u/umeYVxHujAaBY6iuwnt0To+F/WtOE/9ctwvrq0QYYyxDNt5vtxapeU="
+            },
+            {
+              "metadata": {
+                "encoding": "YmluYXJ5L2VuY3J5cHRlZA==",
+                "encryption-cipher": "QUVTL0dDTS9Ob1BhZGRpbmc=",
+                "encryption-key-id": "c2Etcm9ja3Mhc2Etcm9ja3Mhc2Etcm9ja3MheWVhaCE="
+              },
+              "data": "rQMY8F0oRUdpyrObZW4sW8I7zK15XAewm7vv9ftt5jSEVDM3YD8uOpWB3/ei+UHpSOV3B/sQTQql+Q=="
+            },
+            {
+              "metadata": {
+                "encoding": "YmluYXJ5L2VuY3J5cHRlZA==",
+                "encryption-cipher": "QUVTL0dDTS9Ob1BhZGRpbmc=",
+                "encryption-key-id": "c2Etcm9ja3Mhc2Etcm9ja3Mhc2Etcm9ja3MheWVhaCE="
+              },
+              "data": "jPz2NbKE4Einim2k5uow0VTg6OwBt4wvQAkXiw3wf/gyb+o70oxLCrHD7pcsPk/Fx+jwgq1uVz6QJ6mNg7KO+WseqALN"
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": "0s",
+        "scheduleToStartTimeout": "0s",
+        "startToCloseTimeout": "5s",
+        "heartbeatTimeout": "0s",
+        "workflowTaskCompletedEventId": "14",
+        "retryPolicy": {
+          "initialInterval": "1s",
+          "backoffCoefficient": 2,
+          "maximumInterval": "100s",
+          "maximumAttempts": 0,
+          "nonRetryableErrorTypes": [
+            "StripeInvalidRequestError"
+          ]
+        },
+        "useCompatibleVersion": false
+      }
+    },
+    {
+      "eventId": "16",
+      "eventTime": "2023-08-19T17:48:34.424624519Z",
+      "eventType": "ActivityTaskStarted",
+      "version": "1076",
+      "taskId": "31676208",
+      "workerMayIgnore": false,
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "15",
+        "identity": "41455@Steves-MacBook-Pro.local",
+        "requestId": "8f22aa40-1e92-4e0b-8eef-0711611fc0e1",
+        "attempt": 1,
+        "lastFailure": null
+      }
+    },
+    {
+      "eventId": "17",
+      "eventTime": "2023-08-19T17:48:34.452663086Z",
+      "eventType": "ActivityTaskCompleted",
+      "version": "1076",
+      "taskId": "31676209",
+      "workerMayIgnore": false,
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "YmluYXJ5L2VuY3J5cHRlZA==",
+                "encryption-cipher": "QUVTL0dDTS9Ob1BhZGRpbmc=",
+                "encryption-key-id": "c2Etcm9ja3Mhc2Etcm9ja3Mhc2Etcm9ja3MheWVhaCE="
+              },
+              "data": "5Q8GazT1WkLIROw6a//wI0gp/7BRBtG90DbWFllqi+huNl5YbG1nSuSwVl1xg0NHAEIphyAoP2bNghtcxtGhWLx3CYnt4bFTuoObH/n7chrf+PhvDRY="
+            }
+          ]
+        },
+        "scheduledEventId": "15",
+        "startedEventId": "16",
+        "identity": "41455@Steves-MacBook-Pro.local",
+        "workerVersion": null
+      }
+    },
+    {
+      "eventId": "18",
+      "eventTime": "2023-08-19T17:48:34.452667976Z",
+      "eventType": "WorkflowTaskScheduled",
+      "version": "1076",
+      "taskId": "31676210",
+      "workerMayIgnore": false,
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "41455@Steves-MacBook-Pro.local:c6453b47-f2c5-4859-847d-c75ebe87c29d",
+          "kind": "Sticky",
+          "normalName": "MoneyTransferSampleJava"
+        },
+        "startToCloseTimeout": "10s",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "19",
+      "eventTime": "2023-08-19T17:48:34.463956637Z",
+      "eventType": "WorkflowTaskStarted",
+      "version": "1076",
+      "taskId": "31676214",
+      "workerMayIgnore": false,
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "18",
+        "identity": "41455@Steves-MacBook-Pro.local",
+        "requestId": "29cc0c62-4471-485a-8a7f-0bfd53194bf4",
+        "suggestContinueAsNew": false,
+        "historySizeBytes": "2886"
+      }
+    },
+    {
+      "eventId": "20",
+      "eventTime": "2023-08-19T17:48:34.501165379Z",
+      "eventType": "WorkflowTaskCompleted",
+      "version": "1076",
+      "taskId": "31676218",
+      "workerMayIgnore": false,
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "18",
+        "startedEventId": "19",
+        "identity": "41455@Steves-MacBook-Pro.local",
+        "binaryChecksum": "",
+        "workerVersion": {
+          "buildId": "",
+          "bundleId": "",
+          "useVersioning": false
+        },
+        "sdkMetadata": null,
+        "meteringMetadata": {
+          "nonfirstLocalActivityExecutionAttempts": 0
+        }
+      }
+    },
+    {
+      "eventId": "21",
+      "eventTime": "2023-08-19T17:48:34.501191610Z",
+      "eventType": "TimerStarted",
+      "version": "1076",
+      "taskId": "31676219",
+      "workerMayIgnore": false,
+      "timerStartedEventAttributes": {
+        "timerId": "c3a92544-337a-3f96-a1b4-1956984d1ea8",
+        "startToFireTimeout": "5s",
+        "workflowTaskCompletedEventId": "20"
+      }
+    },
+    {
+      "eventId": "22",
+      "eventTime": "2023-08-19T17:48:39.502941744Z",
+      "eventType": "TimerFired",
+      "version": "1076",
+      "taskId": "31676222",
+      "workerMayIgnore": false,
+      "timerFiredEventAttributes": {
+        "timerId": "c3a92544-337a-3f96-a1b4-1956984d1ea8",
+        "startedEventId": "21"
+      }
+    },
+    {
+      "eventId": "23",
+      "eventTime": "2023-08-19T17:48:39.502947644Z",
+      "eventType": "WorkflowTaskScheduled",
+      "version": "1076",
+      "taskId": "31676223",
+      "workerMayIgnore": false,
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "41455@Steves-MacBook-Pro.local:c6453b47-f2c5-4859-847d-c75ebe87c29d",
+          "kind": "Sticky",
+          "normalName": "MoneyTransferSampleJava"
+        },
+        "startToCloseTimeout": "10s",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "24",
+      "eventTime": "2023-08-19T17:48:39.515078747Z",
+      "eventType": "WorkflowTaskStarted",
+      "version": "1076",
+      "taskId": "31676227",
+      "workerMayIgnore": false,
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "23",
+        "identity": "41455@Steves-MacBook-Pro.local",
+        "requestId": "d2712806-2d02-43dc-914c-276e7e88c957",
+        "suggestContinueAsNew": false,
+        "historySizeBytes": "3342"
+      }
+    },
+    {
+      "eventId": "25",
+      "eventTime": "2023-08-19T17:48:39.562322417Z",
+      "eventType": "WorkflowTaskCompleted",
+      "version": "1076",
+      "taskId": "31676231",
+      "workerMayIgnore": false,
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "23",
+        "startedEventId": "24",
+        "identity": "41455@Steves-MacBook-Pro.local",
+        "binaryChecksum": "",
+        "workerVersion": {
+          "buildId": "",
+          "bundleId": "",
+          "useVersioning": false
+        },
+        "sdkMetadata": null,
+        "meteringMetadata": {
+          "nonfirstLocalActivityExecutionAttempts": 0
+        }
+      }
+    },
+    {
+      "eventId": "26",
+      "eventTime": "2023-08-19T17:48:39.562355378Z",
+      "eventType": "WorkflowExecutionCompleted",
+      "version": "1076",
+      "taskId": "31676232",
+      "workerMayIgnore": false,
+      "workflowExecutionCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "YmluYXJ5L2VuY3J5cHRlZA==",
+                "encryption-cipher": "QUVTL0dDTS9Ob1BhZGRpbmc=",
+                "encryption-key-id": "c2Etcm9ja3Mhc2Etcm9ja3Mhc2Etcm9ja3MheWVhaCE="
+              },
+              "data": "7bfQzDA3nMC/6yXMcphKgptprWhNueCYgRhzjZfVIHK/sUYF3ehHH/8Kepm9AAsowjYlwHEkvZE1LgrX/uFif4O8JKVwe2kWQgi+7wzgHZxQwO/cYllOeGzd60CfuyeI5lGnLfM4sTnSDNtgyT937QwGo92A2Vql58n5nYBk2iay7eWUZpuzsXl1pBZQITe5UIluS8zrxtFcfJWtHHc="
+            }
+          ]
+        },
+        "workflowTaskCompletedEventId": "25",
+        "newExecutionRunId": ""
+      }
+    }
+  ]
+}
