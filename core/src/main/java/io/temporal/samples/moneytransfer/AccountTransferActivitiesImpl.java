@@ -40,7 +40,7 @@ public class AccountTransferActivitiesImpl implements AccountTransferActivities 
   public ChargeResponseObj createCharge(
       String idempotencyKey, float amountDollars, ExecutionScenarioObj scenario) {
 
-    log.info("\n\n/API/charge\n");
+    log.info("\n\nCalled API /charge\n");
 
     ActivityExecutionContext ctx = Activity.getExecutionContext();
     ActivityInfo info = ctx.getInfo();

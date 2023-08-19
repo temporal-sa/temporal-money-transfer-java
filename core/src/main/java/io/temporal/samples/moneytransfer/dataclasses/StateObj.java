@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class StateObj {
+  private int approvalTime;
   private int progressPercentage;
   private String transferState;
   private String workflowStatus; // this is nullable
@@ -37,11 +38,13 @@ public class StateObj {
       @JsonProperty("progressPercentage") int progressPercentage,
       @JsonProperty("transferState") String transferState,
       @JsonProperty("workflowStatus") String workflowStatus,
-      @JsonProperty("chargeResult") ChargeResponseObj chargeResult) {
+      @JsonProperty("chargeResult") ChargeResponseObj chargeResult,
+      @JsonProperty("approvalTime") int approvalTime) {
     this.progressPercentage = progressPercentage;
     this.transferState = transferState;
     this.workflowStatus = workflowStatus;
     this.chargeResult = chargeResult;
+    this.approvalTime = approvalTime;
   }
 
   // Getters
@@ -61,6 +64,10 @@ public class StateObj {
     return chargeResult;
   }
 
+  public int getApprovalTime() {
+    return approvalTime;
+  }
+
   // Setters
   public void setProgressPercentage(int progressPercentage) {
     this.progressPercentage = progressPercentage;
@@ -76,5 +83,9 @@ public class StateObj {
 
   public void setChargeResult(ChargeResponseObj chargeResult) {
     this.chargeResult = chargeResult;
+  }
+
+  public void setApprovalTime(int approvalTime) {
+    this.approvalTime = approvalTime;
   }
 }

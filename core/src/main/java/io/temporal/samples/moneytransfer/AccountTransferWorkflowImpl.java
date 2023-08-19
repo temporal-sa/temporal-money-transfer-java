@@ -21,6 +21,7 @@ package io.temporal.samples.moneytransfer;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
+import io.temporal.failure.ApplicationFailure;
 import io.temporal.samples.moneytransfer.dataclasses.*;
 import io.temporal.workflow.Workflow;
 import java.time.Duration;
@@ -45,6 +46,8 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
 
   private ChargeResponseObj chargeResult = new ChargeResponseObj("");
 
+  private int approvalTime = 30;
+
   private boolean approved = false;
 
   @Override
@@ -57,12 +60,6 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
     progressPercentage = 50;
     transferState = "running";
 
-    // Simulate bug in workflow
-    if (params.getScenario() == ExecutionScenarioObj.BUG_IN_WORKFLOW) {
-      log.info("\n\nSimulating workflow task failure.\n\n");
-      throw new RuntimeException("simulated"); // comment out to fix the workflow
-    }
-
     // Wait for approval
     if (params.getScenario() == ExecutionScenarioObj.HUMAN_IN_LOOP) {
       log.info(
@@ -70,7 +67,26 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
               + Workflow.getInfo().getWorkflowId()
               + "\n\n");
       transferState = "waiting";
-      Workflow.await(() -> approved);
+
+      // Wait for the approval signal for up to approvalTime
+      boolean receivedSignal = Workflow.await(Duration.ofSeconds(approvalTime), () -> approved);
+
+      // If the signal was not received within the timeout, fail the workflow
+      if (!receivedSignal) {
+        log.error(
+            "Approval not received within the "
+                + approvalTime
+                + "-second time window: "
+                + "Failing the workflow.");
+        throw ApplicationFailure.newFailure(
+            "Approval not received within " + approvalTime + " seconds", "ApprovalTimeout");
+      }
+    }
+
+    // Simulate bug in workflow
+    if (params.getScenario() == ExecutionScenarioObj.BUG_IN_WORKFLOW) {
+      log.info("\n\nSimulating workflow task failure.\n\n");
+      throw new RuntimeException("simulated"); // comment out to fix the workflow
     }
 
     transferState = "running";
@@ -92,7 +108,8 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
 
   @Override
   public StateObj getStateQuery() {
-    StateObj stateObj = new StateObj(progressPercentage, transferState, "", chargeResult);
+    StateObj stateObj =
+        new StateObj(progressPercentage, transferState, "", chargeResult, approvalTime);
     return stateObj;
   }
 
