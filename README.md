@@ -73,7 +73,7 @@ UI dropdown simulates the following scenarios
 
 ```
 ## Require Human-In-Loop Approval
-wait for approval signal # see 'Send approval signal' code above
+wait for approval signal # see 'Send approval signal' code above. Workflow will fail after 30s if not approved
 
 ## Bug in Workflow (recoverable failure)
 comment out exception in workflow code (`AccountTransferWorkflowImpl.java`) and restart worker to fix
