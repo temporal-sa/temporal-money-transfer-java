@@ -113,3 +113,4 @@ Introduce a non-determinism error by adding Workflow.Sleep or re-arranging activ
   Failure handling event 15 of type 'EVENT_TYPE_ACTIVITY_TASK_SCHEDULED' during replay.
   No command scheduled that corresponds to event_id: 15
 ```
+Note: This replayer doesn't work with histories using ENCRYPT_PAYLOADS=true
