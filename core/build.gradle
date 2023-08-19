@@ -7,6 +7,7 @@ dependencies {
     // Temporal SDK
     implementation "io.temporal:temporal-sdk:$javaSDKVersion"
     implementation "io.temporal:temporal-opentracing:$javaSDKVersion"
+    implementation "io.temporal:temporal-testing:$javaSDKVersion"
     testImplementation("io.temporal:temporal-testing:$javaSDKVersion")
 
     // Needed for SDK related functionality

@@ -98,3 +98,18 @@ temporal workflow show --env prod --workflow-id=<your failed workflow ID>
 # then reset to a point before that, e.g.
 temporal workflow reset --workflow-id=your failed workflow ID> --event-id 8 --reason "fix"
 ```
+
+## Test for non-determinism errors (Replay)
+
+Example command (run from root directory)
+```bash
+./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.Replayer \
+ -Parg=../workflowHistories/human-in-loop-approved.json
+```
+
+Introduce a non-determinism error by adding Workflow.Sleep or re-arranging activity executions:
+```bash
+ error=io.temporal.worker.NonDeterministicException:
+  Failure handling event 15 of type 'EVENT_TYPE_ACTIVITY_TASK_SCHEDULED' during replay.
+  No command scheduled that corresponds to event_id: 15
+```
