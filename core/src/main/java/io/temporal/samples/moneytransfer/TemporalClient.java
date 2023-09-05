@@ -54,11 +54,13 @@ public class TemporalClient {
     // Your registered namespace.
 
     workflowServiceStubsOptionsBuilder.setTarget(targetEndpoint);
+    WorkflowServiceStubs service = null;
 
-    WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
     if (!ServerInfo.getAddress().equals("localhost:7233")) {
       // if not local server, then use the workflowServiceStubsOptionsBuilder
       service = WorkflowServiceStubs.newServiceStubs(workflowServiceStubsOptionsBuilder.build());
+    } else {
+      service = WorkflowServiceStubs.newLocalServiceStubs();
     }
 
     return service;
