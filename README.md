@@ -43,13 +43,13 @@ Then navigate to `http://localhost:7070/`
 
 A dropdown menu simulates the following scenarios
 
-### Happy Path
+#### Happy Path
 - The transfer will run to completion
 
-### Require Human-In-Loop Approval
+#### Require Human-In-Loop Approval
 The transfer will pause and wait for approval. If the user doesn't approve the transfer within a set time, the workflow will fail.
 
-#### Approve a transfer using Signals
+Approve a transfer using **Signals**
 ```bash
 # where TRANSFER-EZF-249 is the workflowId
 ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.TransferApprover -Parg=TRANSFER-XXX-XXX
@@ -64,7 +64,7 @@ temporal workflow signal \
  --reason 'approving transfer'
 ```
 
-#### Approve a transfer using Updates
+Approve a transfer using **Updates**
 
 You can do this through the `temporal` cli:
 ```bash
@@ -78,30 +78,29 @@ The workflow's Update function has a [validator](https://docs.temporal.io/dev-gu
 - The transfer isn't waiting for approval
 - The transfer has already been approved
 
-### Bug in Workflow (recoverable failure)
+#### Simulate a Bug in the Workflow (recoverable failure)
 Comment out the RuntimeException in the workflow code (`AccountTransferWorkflowImpl.java`) and restart the worker to fix the 'bug'.
 
-### API Downtime (recover on 5th attempt)
+#### Simulate API Downtime (recover on 5th attempt)
 Will introduce artifical delays in the `charge` activity's API calls. This will cause activity retries. After 5 retries, the delay will be removed and the workflow will proceed.
 
-### Insufficient Funds (unrecoverable failure)
+#### Insufficient Funds (unrecoverable failure)
 Fails a workflow with a message.
 
-Advanced: You can also simulate these scenarios using the Temporal CLI
-```
-## Reset Workflows
-### List failed workflows
+## Advanced: Reset workflows
+
+#### List failed workflows
 temporal workflow list --env prod -q 'ExecutionStatus="Failed" OR ExecutionStatus="Terminated"'
 
-## Simulating a reset that re-runs a failed workflow which becomes successful
-temporal workflow show --env prod --workflow-id=<your failed workflow ID>
-# from the event list, find a [WorkflowTaskScheduled +1, WorkflowTaskStarted + 1] event id before the charge activity
-### comment out insufficient funds code in TransferServiceImpl so it succeeds on reset
-# then reset to a point before that, e.g.
-temporal workflow reset --workflow-id=your failed workflow ID> --event-id 8 --reason "fix"
-```
+#### Simulating a reset that re-runs a failed workflow which becomes successful
+`temporal workflow show --env prod --workflow-id=<your failed workflow ID>`
 
-Or in the Temporal workflow UI.
+From the event list, find a [WorkflowTaskScheduled +1, WorkflowTaskStarted + 1] event id before the charge activity
+
+Then reset to a point before that, e.g.
+`temporal workflow reset --workflow-id=your failed workflow ID> --event-id 8 --reason "fix"`
+
+You can also reset workflows in the Temporal UI.
 
 ## Enable Encryption
 
