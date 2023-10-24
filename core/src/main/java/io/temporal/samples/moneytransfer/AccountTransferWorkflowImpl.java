@@ -118,4 +118,11 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
     log.info("\n\nApprove Signal Received\n\n");
     this.approved = true;
   }
+
+  @Override
+  public String approveTransferUpdate() {
+    log.info("\n\nApprove Signal Received\n\n");
+    this.approved = true;
+    return "successfully approved transfer";
+  }
 }

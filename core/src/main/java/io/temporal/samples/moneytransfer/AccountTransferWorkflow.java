@@ -23,10 +23,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.temporal.samples.moneytransfer.dataclasses.ResultObj;
 import io.temporal.samples.moneytransfer.dataclasses.StateObj;
 import io.temporal.samples.moneytransfer.dataclasses.WorkflowParameterObj;
-import io.temporal.workflow.QueryMethod;
-import io.temporal.workflow.SignalMethod;
-import io.temporal.workflow.WorkflowInterface;
-import io.temporal.workflow.WorkflowMethod;
+import io.temporal.workflow.*;
 
 @WorkflowInterface
 public interface AccountTransferWorkflow {
@@ -38,4 +35,7 @@ public interface AccountTransferWorkflow {
 
   @SignalMethod(name = "approveTransfer")
   void approveTransfer();
+
+  @UpdateMethod
+  String approveTransferUpdate();
 }
