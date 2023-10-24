@@ -87,21 +87,20 @@ Will introduce artifical delays in the `charge` activity's API calls. This will 
 ### Insufficient Funds (unrecoverable failure)
 Fails a workflow with a message.
 
-Advanced: You can also simulate these scenarios using the Temporal CLI
-```
-## Reset Workflows
+### Advanced: Reset workflows
+
 ### List failed workflows
 temporal workflow list --env prod -q 'ExecutionStatus="Failed" OR ExecutionStatus="Terminated"'
 
-## Simulating a reset that re-runs a failed workflow which becomes successful
-temporal workflow show --env prod --workflow-id=<your failed workflow ID>
-# from the event list, find a [WorkflowTaskScheduled +1, WorkflowTaskStarted + 1] event id before the charge activity
-### comment out insufficient funds code in TransferServiceImpl so it succeeds on reset
-# then reset to a point before that, e.g.
-temporal workflow reset --workflow-id=your failed workflow ID> --event-id 8 --reason "fix"
-```
+### Simulating a reset that re-runs a failed workflow which becomes successful
+`temporal workflow show --env prod --workflow-id=<your failed workflow ID>`
 
-Or in the Temporal workflow UI.
+From the event list, find a [WorkflowTaskScheduled +1, WorkflowTaskStarted + 1] event id before the charge activity
+
+Then reset to a point before that, e.g.
+`temporal workflow reset --workflow-id=your failed workflow ID> --event-id 8 --reason "fix"`
+
+You can also reset workflows in the Temporal UI.
 
 ## Enable Encryption
 
