@@ -4,7 +4,7 @@ Demos various aspects of [Temporal](https://temporal.io) using the Java SDK.
 
 ![UI Screenshot](./ui.png)
 
-## Connecting to a Temporal Server
+## Configuration
 
 The sample is configured by default to connect to a [local Temporal Server](https://docs.temporal.io/cli#starting-the-temporal-server) running on localhost:7233.
 
@@ -22,7 +22,7 @@ TEMPORAL_KEY_PATH="/path/to/file.key"
 export TEMPORAL_MONEYTRANSFER_TASKQUEUE="MoneyTransferSampleJava"
 ```
 
-## Running the Workflow
+## Run a Workflow
 
 Note: Use a Java 18 SDK.
 
