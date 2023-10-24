@@ -23,10 +23,7 @@ import static io.temporal.samples.moneytransfer.TransferRequester.*;
 import static io.temporal.samples.moneytransfer.TransferScheduler.runSchedule;
 
 import io.javalin.Javalin;
-import io.temporal.samples.moneytransfer.dataclasses.ResultObj;
-import io.temporal.samples.moneytransfer.dataclasses.StateObj;
-import io.temporal.samples.moneytransfer.dataclasses.WorkflowIdObj;
-import io.temporal.samples.moneytransfer.dataclasses.WorkflowParameterObj;
+import io.temporal.samples.moneytransfer.dataclasses.*;
 import java.util.AbstractMap;
 import java.util.concurrent.TimeUnit;
 
@@ -60,12 +57,14 @@ public class WebServer {
           ctx.json(new AbstractMap.SimpleEntry<>("transferId", transferId));
         });
 
-    app.get(
-        "/runSchedule",
+    app.post(
+        "/scheduleWorkflow",
         ctx -> {
-          runSchedule();
+          ScheduleParameterObj scheduleParameterObj = ctx.bodyAsClass(ScheduleParameterObj.class);
 
-          // ctx.json(new AbstractMap.SimpleEntry<>("transferId", transferId));
+          String transferId = runSchedule(scheduleParameterObj);
+
+          ctx.json(new AbstractMap.SimpleEntry<>("transferId", transferId));
         });
 
     app.post(

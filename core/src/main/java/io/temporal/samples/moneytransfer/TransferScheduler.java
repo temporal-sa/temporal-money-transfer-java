@@ -30,10 +30,7 @@ import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.client.WorkflowStub;
 import io.temporal.client.schedules.*;
-import io.temporal.samples.moneytransfer.dataclasses.ExecutionScenarioObj;
-import io.temporal.samples.moneytransfer.dataclasses.ResultObj;
-import io.temporal.samples.moneytransfer.dataclasses.StateObj;
-import io.temporal.samples.moneytransfer.dataclasses.WorkflowParameterObj;
+import io.temporal.samples.moneytransfer.dataclasses.*;
 import io.temporal.samples.moneytransfer.web.ServerInfo;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import java.io.FileNotFoundException;
@@ -110,10 +107,11 @@ public class TransferScheduler {
     return referenceNumber;
   }
 
-  public static void runSchedule() {
+  public static String runSchedule(ScheduleParameterObj scheduleParameterObj) {
 
+    String scheduleNumber = null;
     try {
-      int amountCents = 45; // amount to transfer
+      int amountCents = scheduleParameterObj.getAmount(); // amount to transfer
 
       WorkflowParameterObj params =
           new WorkflowParameterObj(amountCents, ExecutionScenarioObj.HAPPY_PATH);
@@ -121,7 +119,7 @@ public class TransferScheduler {
       ScheduleClient scheduleClient = getScheduleClient();
 
       String referenceNumber = generateReferenceNumber(); // random reference number
-      String scheduleNumber = referenceNumber + "-schedule";
+      scheduleNumber = referenceNumber + "-schedule";
       final String TASK_QUEUE = ServerInfo.getTaskqueue();
 
       WorkflowOptions options =
@@ -166,14 +164,16 @@ public class TransferScheduler {
                                 .build()))
                     // Run the schedule every 15s
                     .setIntervals(
-                        Collections.singletonList(new ScheduleIntervalSpec(Duration.ofSeconds(15))))
+                        Collections.singletonList(
+                            new ScheduleIntervalSpec(
+                                Duration.ofSeconds(scheduleParameterObj.getInterval()))))
                     .build());
             // Make the schedule paused to demonstrate how to unpause a schedule
             builder.setState(
                 ScheduleState.newBuilder()
                     //                                .setPaused(true)
                     .setLimitedAction(true)
-                    .setRemainingActions(4)
+                    .setRemainingActions(scheduleParameterObj.getCount())
                     .build());
             return new ScheduleUpdate(builder.build());
           });
@@ -183,6 +183,7 @@ public class TransferScheduler {
     } catch (Exception e) {
       System.out.println("Exception: " + e);
     }
+    return scheduleNumber;
   }
 
   @SuppressWarnings("CatchAndPrintStackTrace")
