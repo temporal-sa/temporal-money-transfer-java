@@ -1,7 +1,6 @@
 # Money Transfer Example
 
-The Money Transfer sample has four separate Gradle tasks.
-One to host Workflow Executions, another to host Activity Executions, a Web UI for running transfers, and a CLI for doing the same.
+Demos various aspects of [Temporal](https://temporal.io) using the Java SDK.
 
 ![UI Screenshot](./ui.png)
 
