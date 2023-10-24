@@ -20,6 +20,7 @@
 package io.temporal.samples.moneytransfer.web;
 
 import static io.temporal.samples.moneytransfer.TransferRequester.*;
+import static io.temporal.samples.moneytransfer.TransferScheduler.runSchedule;
 
 import io.javalin.Javalin;
 import io.temporal.samples.moneytransfer.dataclasses.ResultObj;
@@ -57,6 +58,14 @@ public class WebServer {
           String transferId = runWorkflow(workflowParameterObj);
 
           ctx.json(new AbstractMap.SimpleEntry<>("transferId", transferId));
+        });
+
+    app.get(
+        "/runSchedule",
+        ctx -> {
+          runSchedule();
+
+          // ctx.json(new AbstractMap.SimpleEntry<>("transferId", transferId));
         });
 
     app.post(

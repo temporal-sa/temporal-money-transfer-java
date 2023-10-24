@@ -21,6 +21,8 @@ package io.temporal.samples.moneytransfer;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
+import io.temporal.client.schedules.ScheduleClient;
+import io.temporal.client.schedules.ScheduleClientOptions;
 import io.temporal.common.converter.CodecDataConverter;
 import io.temporal.common.converter.DefaultDataConverter;
 import io.temporal.samples.moneytransfer.dataconverter.CryptCodec;
@@ -91,6 +93,34 @@ public class TemporalClient {
 
     // client that can be used to start and signal workflows
     WorkflowClient client = WorkflowClient.newInstance(service, clientOptions);
+    return client;
+  }
+
+  public static ScheduleClient getScheduleClient() throws FileNotFoundException, SSLException {
+    // TODO support local server
+    // Get worker to poll the common task queue.
+    // gRPC stubs wrapper that talks to the local docker instance of temporal service.
+    // WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+
+    WorkflowServiceStubs service = getWorkflowServiceStubs();
+
+    ScheduleClientOptions.Builder builder = ScheduleClientOptions.newBuilder();
+
+    // if environment variable ENCRYPT_PAYLOADS is set to true, then use CryptCodec
+    if (System.getenv("ENCRYPT_PAYLOADS") != null
+        && System.getenv("ENCRYPT_PAYLOADS").equals("true")) {
+      builder.setDataConverter(
+          new CodecDataConverter(
+              DefaultDataConverter.newDefaultInstance(),
+              Collections.singletonList(new CryptCodec()),
+              true /* encode failure attributes */));
+    }
+
+    System.out.println("<<<<SERVER INFO>>>>:\n " + ServerInfo.getServerInfo());
+    ScheduleClientOptions clientOptions = builder.setNamespace(ServerInfo.getNamespace()).build();
+
+    // client that can be used to start and signal workflows
+    ScheduleClient client = ScheduleClient.newInstance(service, clientOptions);
     return client;
   }
 }
