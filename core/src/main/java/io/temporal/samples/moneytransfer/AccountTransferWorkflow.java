@@ -38,4 +38,7 @@ public interface AccountTransferWorkflow {
 
   @UpdateMethod
   String approveTransferUpdate();
+
+  @UpdateValidatorMethod(updateName = "approveTransferUpdate")
+  void approveTransferUpdateValidator();
 }

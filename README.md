@@ -1,14 +1,11 @@
-## Money Transfer Example
+# Money Transfer Example
 
 The Money Transfer sample has four separate Gradle tasks.
 One to host Workflow Executions, another to host Activity Executions, a Web UI for running transfers, and a CLI for doing the same.
 
-### Demos
-- Activity retries (simulated API delay)
-- Recoverable failures
-- Unrecoverable failures
+![UI Screenshot](./ui.png)
 
-### Connecting to a Temporal Server
+## Connecting to a Temporal Server
 
 The sample is configured by default to connect to a [local Temporal Server](https://docs.temporal.io/cli#starting-the-temporal-server) running on localhost:7233.
 
@@ -26,7 +23,7 @@ TEMPORAL_KEY_PATH="/path/to/file.key"
 export TEMPORAL_MONEYTRANSFER_TASKQUEUE="MoneyTransferSampleJava"
 ```
 
-### Running the Workflow
+## Running the Workflow
 
 Note: Use a Java 18 SDK.
 
@@ -43,8 +40,17 @@ ENCRYPT_PAYLOADS=true ./gradlew -q execute -PmainClass=io.temporal.samples.money
 ```
 Then navigate to `http://localhost:7070/`
 
-Send approval signal (for transfers > $100):
+## Demo various failures and recoveries
 
+A dropdown menu simulates the following scenarios
+
+### Happy Path
+- The transfer will run to completion
+
+### Require Human-In-Loop Approval
+The transfer will pause and wait for approval. If the user doesn't approve the transfer within a set time, the workflow will fail.
+
+#### Approve a transfer using Signals
 ```bash
 # where TRANSFER-EZF-249 is the workflowId
 ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.TransferApprover -Parg=TRANSFER-XXX-XXX
@@ -59,31 +65,28 @@ temporal workflow signal \
  --reason 'approving transfer'
 ```
 
-Or in the Temporal workflow UI.
+#### Approve a transfer using Updates
 
-## Encryption
-
-Remove the `ENCRYPT_PAYLOADS` variable in each command to run without encryption.
-
-You can decrypt these payloads in Temporal Cloud's UI/cli using the codec server: `https://codec.tmprl-demo.cloud` ([source](https://github.com/steveandroulakis/temporal-codec-server)). Ensure you switch on "Pass the user access token with your endpoint". Note: The codec server is only compatible with workflows running in Temporal Cloud.
-
-## Demo various failures and recovery
-
-UI dropdown simulates the following scenarios
-
+You can do this through the `temporal` cli:
+```bash
+temporal workflow update \
+ --env prod \
+ --workflow-id TRANSFER-XXX-XXX \
+ --name approveTransferUpdate
 ```
-## Require Human-In-Loop Approval
-wait for approval signal # see 'Send approval signal' code above. Workflow will fail after 30s if not approved
 
-## Bug in Workflow (recoverable failure)
-comment out exception in workflow code (`AccountTransferWorkflowImpl.java`) and restart worker to fix
+The workflow's Update function has a [validator](https://docs.temporal.io/dev-guide/java/features#validate-an-update). It will reject an Update if:
+- The transfer isn't waiting for approval
+- The transfer has already been approved
 
-## API Downtime (recover on 5th attempt)
-activity timeout then recovery on 5th attempt
+### Bug in Workflow (recoverable failure)
+Comment out the RuntimeException in the workflow code (`AccountTransferWorkflowImpl.java`) and restart the worker to fix the 'bug'.
 
-## Insufficient Funds (unrecoverable failure)
-Fails workflow
-```
+### API Downtime (recover on 5th attempt)
+Will introduce artifical delays in the `charge` activity's API calls. This will cause activity retries. After 5 retries, the delay will be removed and the workflow will proceed.
+
+### Insufficient Funds (unrecoverable failure)
+Fails a workflow with a message.
 
 Advanced: You can also simulate these scenarios using the Temporal CLI
 ```
@@ -98,6 +101,14 @@ temporal workflow show --env prod --workflow-id=<your failed workflow ID>
 # then reset to a point before that, e.g.
 temporal workflow reset --workflow-id=your failed workflow ID> --event-id 8 --reason "fix"
 ```
+
+Or in the Temporal workflow UI.
+
+## Enable Encryption
+
+Remove the `ENCRYPT_PAYLOADS` variable in each command to run without encryption.
+
+You can decrypt these payloads in Temporal Cloud's UI/cli using the codec server: `https://codec.tmprl-demo.cloud` ([source](https://github.com/steveandroulakis/temporal-codec-server)). Ensure you switch on "Pass the user access token with your endpoint". Note: The codec server is only compatible with workflows running in Temporal Cloud.
 
 ## Test for non-determinism errors (Replay)
 

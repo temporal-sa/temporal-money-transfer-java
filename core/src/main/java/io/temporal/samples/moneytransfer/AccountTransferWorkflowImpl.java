@@ -55,7 +55,7 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
 
     progressPercentage = 25;
 
-    Workflow.sleep(Duration.ofSeconds(5));
+    Workflow.sleep(Duration.ofSeconds(10));
 
     progressPercentage = 50;
     transferState = "running";
@@ -98,7 +98,7 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
             idempotencyKey, params.getAmount(), params.getScenario());
 
     progressPercentage = 80;
-    Workflow.sleep(Duration.ofSeconds(5));
+    Workflow.sleep(Duration.ofSeconds(3));
 
     progressPercentage = 100;
     transferState = "finished";
@@ -121,8 +121,19 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
 
   @Override
   public String approveTransferUpdate() {
-    log.info("\n\nApprove Signal Received\n\n");
+    log.info("\n\nApprove Update Validated: Approving Transfer\n\n");
     this.approved = true;
     return "successfully approved transfer";
+  }
+
+  @Override
+  public void approveTransferUpdateValidator() {
+    log.info("\n\nApprove Update Received: Validating\n\n");
+    if (this.approved) {
+      throw new IllegalStateException("Validation Failed: Transfer already approved");
+    }
+    if (!transferState.equals("waiting")) {
+      throw new IllegalStateException("Validation Failed: Transfer doesn't require approval");
+    }
   }
 }
