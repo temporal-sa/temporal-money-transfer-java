@@ -44,7 +44,7 @@ public class ServerInfo {
 
   public static String getTaskqueue() {
     String taskqueue = System.getenv("TEMPORAL_MONEYTRANSFER_TASKQUEUE");
-    return taskqueue != null && !taskqueue.isEmpty() ? taskqueue : "MoneyTransferSampleJava";
+    return taskqueue != null && !taskqueue.isEmpty() ? taskqueue : "MoneyTransferJava";
   }
 
   public static String getWebServerURL() {

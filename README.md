@@ -19,7 +19,7 @@ TEMPORAL_KEY_PATH="/path/to/file.key"
 
 (optional) set a task queue name
 ```bash
-export TEMPORAL_MONEYTRANSFER_TASKQUEUE="MoneyTransferSampleJava"
+export TEMPORAL_MONEYTRANSFER_TASKQUEUE="MoneyTransferJava"
 ```
 
 ## Run a Workflow
