@@ -112,9 +112,9 @@ public class TransferScheduler {
     String scheduleNumber = null;
     try {
       int amountCents = scheduleParameterObj.getAmount(); // amount to transfer
+      ExecutionScenarioObj executionScenarioObj = scheduleParameterObj.getScenario();
 
-      WorkflowParameterObj params =
-          new WorkflowParameterObj(amountCents, ExecutionScenarioObj.HAPPY_PATH);
+      WorkflowParameterObj params = new WorkflowParameterObj(amountCents, executionScenarioObj);
 
       ScheduleClient scheduleClient = getScheduleClient();
 
@@ -153,16 +153,6 @@ public class TransferScheduler {
 
             builder.setSpec(
                 ScheduleSpec.newBuilder()
-                    // Run the schedule at 5pm on Friday
-                    .setCalendars(
-                        Collections.singletonList(
-                            ScheduleCalendarSpec.newBuilder()
-                                //
-                                // .setHour(Collections.singletonList(new ScheduleRange(17)))
-                                //
-                                // .setDayOfWeek(Collections.singletonList(new ScheduleRange(5)))
-                                .build()))
-                    // Run the schedule every 15s
                     .setIntervals(
                         Collections.singletonList(
                             new ScheduleIntervalSpec(
