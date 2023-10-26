@@ -87,6 +87,11 @@ Will introduce artifical delays in the `charge` activity's API calls. This will 
 #### Insufficient Funds (unrecoverable failure)
 Fails a workflow with a message.
 
+#### Schedule a recurring transfer
+Creates a [Schedule](https://docs.temporal.io/workflows#schedule) that will run a set of workflows on a cadence.
+
+Produces a schedule ID, which you can inspect in the Temporal UI's "Schedules" menu.
+
 ## Advanced: Reset workflows
 
 #### List failed workflows

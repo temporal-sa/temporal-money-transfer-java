@@ -24,15 +24,15 @@
 		<link rel="icon" href="./favicon.png" />
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta http-equiv="content-security-policy" content="">
-		<link href="./_app/immutable/assets/0.76a36759.css" rel="stylesheet">
-		<link href="./_app/immutable/assets/2.9c18cbc3.css" rel="stylesheet">
-		<link rel="modulepreload" href="./_app/immutable/entry/start.d992d713.js">
-		<link rel="modulepreload" href="./_app/immutable/chunks/index.2514b9dd.js">
-		<link rel="modulepreload" href="./_app/immutable/chunks/singletons.0540a93a.js">
-		<link rel="modulepreload" href="./_app/immutable/entry/app.902cfd4b.js">
-		<link rel="modulepreload" href="./_app/immutable/nodes/0.d4c4a7a1.js">
-		<link rel="modulepreload" href="./_app/immutable/nodes/2.850fa569.js">
-		<link rel="modulepreload" href="./_app/immutable/chunks/stores.677fd64f.js"><title>Money Transfer App</title><!-- HEAD_svelte-axg6d6_START --><link rel="icon" href="/_app/immutable/assets/favicon.54bd878e.ico"><link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIlRlbXBvcmFsIFdlYiBVSSIsCiAgInNob3J0X25hbWUiOiAiVGVtcG9yYWwiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICIuL2FuZHJvaWQtY2hyb21lLTE5MngxOTIucG5nIiwKICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICB9LAogICAgewogICAgICAic3JjIjogIi4vYW5kcm9pZC1jaHJvbWUtNTEyeDUxMi5wbmciLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgIH0KICBdLAogICJ0aGVtZV9jb2xvciI6ICIjZmZmZmZmIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZmZmZmZmIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIgp9Cg=="><link rel="apple-touch-icon" href="/_app/immutable/assets/apple-touch-icon.8685d9e4.png"><meta property="og:title" content="Money Transfer App"><meta property="og:type" content="website"><meta property="og:url" content="http://sveltekit-prerender/"><meta property="og:image" content="/_app/immutable/assets/banner.1e0667a3.png"><!-- HEAD_svelte-axg6d6_END -->
+		<link href="./_app/immutable/assets/0.a6ac6459.css" rel="stylesheet">
+		<link href="./_app/immutable/assets/2.c9fe43b4.css" rel="stylesheet">
+		<link rel="modulepreload" href="./_app/immutable/entry/start.86deb563.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/index.aac254dd.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/singletons.002d37c2.js">
+		<link rel="modulepreload" href="./_app/immutable/entry/app.94a93728.js">
+		<link rel="modulepreload" href="./_app/immutable/nodes/0.e9851cc5.js">
+		<link rel="modulepreload" href="./_app/immutable/nodes/2.371e6ca2.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/stores.5acca439.js"><title>Money Transfer App</title><!-- HEAD_svelte-axg6d6_START --><link rel="icon" href="/_app/immutable/assets/favicon.54bd878e.ico"><link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIlRlbXBvcmFsIFdlYiBVSSIsCiAgInNob3J0X25hbWUiOiAiVGVtcG9yYWwiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICIuL2FuZHJvaWQtY2hyb21lLTE5MngxOTIucG5nIiwKICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICB9LAogICAgewogICAgICAic3JjIjogIi4vYW5kcm9pZC1jaHJvbWUtNTEyeDUxMi5wbmciLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgIH0KICBdLAogICJ0aGVtZV9jb2xvciI6ICIjZmZmZmZmIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZmZmZmZmIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIgp9Cg=="><link rel="apple-touch-icon" href="/_app/immutable/assets/apple-touch-icon.8685d9e4.png"><meta property="og:title" content="Money Transfer App"><meta property="og:type" content="website"><meta property="og:url" content="http://sveltekit-prerender/"><meta property="og:image" content="/_app/immutable/assets/banner.1e0667a3.png"><!-- HEAD_svelte-axg6d6_END -->
 	
 	</head>
 	<body data-sveltekit-preload-data="hover">
@@ -51,7 +51,10 @@
 			<input id="amount" type="number" class="mt-1 block w-full text-4xl" value="0"></div>
 		<div class="sm:w-1/2 w-full border border-gray-200 p-4 rounded-md"><label for="simulate" class="block text-sm font-medium text-gray-400">Debug: Simulate</label>
 			<select id="simulate" class="mt-1 block w-full text-2xl"><option value="HAPPY_PATH">Normal "Happy Path" Execution</option><option value="HUMAN_IN_LOOP">Require Human-In-Loop Approval</option><option value="API_DOWNTIME">API Downtime (recover on 5th attempt)</option><option value="BUG_IN_WORKFLOW">Bug in Workflow (recoverable failure)</option><option value="INSUFFICIENT_FUNDS">Insufficient Funds (unrecoverable failure)</option></select></div>
-		<div class=""><button class="button primary undefined svelte-aw3l84" type="button" >
+		<div><input type="checkbox" id="schedule-checkbox" style="transform: scale(1.6); vertical-align: middle; margin-right:6px"> 
+			<label style="font-size: 1.0em;" for="schedule-checkbox">Schedule a recurring transfer</label></div>
+		
+		<div class=""><button class="button primary undefined s-FenSIQCdFdFd" type="button" >
     Transfer
     </button></div>
 
@@ -65,7 +68,7 @@
 			
 			<script>
 				{
-					__sveltekit_l0z7n8 = {
+					__sveltekit_1ob21en = {
 						base: new URL(".", location).pathname.slice(0, -1),
 						env: {}
 					};
@@ -75,8 +78,8 @@
 					const data = [null,null];
 
 					Promise.all([
-						import("./_app/immutable/entry/start.d992d713.js"),
-						import("./_app/immutable/entry/app.902cfd4b.js")
+						import("./_app/immutable/entry/start.86deb563.js"),
+						import("./_app/immutable/entry/app.94a93728.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element, {
 							node_ids: [0, 2],
