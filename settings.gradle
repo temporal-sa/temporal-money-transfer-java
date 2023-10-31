@@ -1,4 +1,2 @@
-rootProject.name = 'temporal-java-samples'
+rootProject.name = 'temporal-money-transfer'
 include 'core'
-include 'springboot'
-
