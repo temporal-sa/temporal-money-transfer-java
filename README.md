@@ -2,6 +2,8 @@
 
 Demos various aspects of [Temporal](https://temporal.io) using the Java SDK.
 
+A [Typescript SDK version](https://github.com/steveandroulakis/temporal-money-transfer) of this example is also available.
+
 ![UI Screenshot](./ui.png)
 
 ## Configuration
