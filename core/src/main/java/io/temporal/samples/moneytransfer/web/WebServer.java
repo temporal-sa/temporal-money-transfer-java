@@ -128,6 +128,18 @@ public class WebServer {
           }
         });
 
+    app.post(
+        "/approveTransfer",
+        ctx -> {
+          // get workflowId from request POST body
+          WorkflowIdObj workflowIdObj = ctx.bodyAsClass(WorkflowIdObj.class);
+          String workflowId = workflowIdObj.getWorkflowId();
+
+          runApproveSignal(workflowId);
+
+          ctx.result("{\"signal\": \"sent\"}");
+        });
+
     app.start(7070);
   }
 }

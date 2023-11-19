@@ -55,7 +55,7 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
 
     progressPercentage = 25;
 
-    Workflow.sleep(Duration.ofSeconds(10));
+    Workflow.sleep(Duration.ofSeconds(5));
 
     progressPercentage = 50;
     transferState = "running";
@@ -98,7 +98,7 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
             idempotencyKey, params.getAmount(), params.getScenario());
 
     progressPercentage = 80;
-    Workflow.sleep(Duration.ofSeconds(3));
+    Workflow.sleep(Duration.ofSeconds(8));
 
     progressPercentage = 100;
     transferState = "finished";
