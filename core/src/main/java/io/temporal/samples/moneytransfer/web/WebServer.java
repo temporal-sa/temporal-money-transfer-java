@@ -19,12 +19,14 @@
 
 package io.temporal.samples.moneytransfer.web;
 
+import static io.temporal.samples.moneytransfer.TransferLister.listWorkflows;
 import static io.temporal.samples.moneytransfer.TransferRequester.*;
 import static io.temporal.samples.moneytransfer.TransferScheduler.runSchedule;
 
 import io.javalin.Javalin;
 import io.temporal.samples.moneytransfer.dataclasses.*;
 import java.util.AbstractMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class WebServer {
@@ -101,6 +103,14 @@ public class WebServer {
           ctx.json(workflowOutcome);
         });
 
+    app.get(
+        "/listWorkflows",
+        ctx -> {
+          List<WorkflowStatusObj> workflowList = listWorkflows();
+
+          ctx.json(workflowList);
+        });
+
     app.get("/test", ctx -> ctx.result("Hello Javalin!"));
 
     app.get(
@@ -116,6 +126,18 @@ public class WebServer {
           } else {
             ctx.result("use query param s to specify seconds to delay");
           }
+        });
+
+    app.post(
+        "/approveTransfer",
+        ctx -> {
+          // get workflowId from request POST body
+          WorkflowIdObj workflowIdObj = ctx.bodyAsClass(WorkflowIdObj.class);
+          String workflowId = workflowIdObj.getWorkflowId();
+
+          runApproveSignal(workflowId);
+
+          ctx.result("{\"signal\": \"sent\"}");
         });
 
     app.start(7070);

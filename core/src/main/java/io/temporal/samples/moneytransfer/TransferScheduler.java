@@ -70,19 +70,6 @@ public class TransferScheduler {
     return result;
   }
 
-  public static void runApproveSignal(String workflowId) {
-
-    try {
-      WorkflowClient client = TemporalClient.get();
-
-      WorkflowStub workflowStub = client.newUntypedWorkflowStub(workflowId);
-
-      workflowStub.signal("approveTransfer");
-    } catch (Exception e) {
-      System.out.println("Exception: " + e);
-    }
-  }
-
   public static String runWorkflow(WorkflowParameterObj workflowParameterObj)
       throws FileNotFoundException, SSLException {
     // generate a random reference number
