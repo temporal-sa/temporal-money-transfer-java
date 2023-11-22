@@ -37,10 +37,18 @@ public class AccountTransferActivitiesImpl implements AccountTransferActivities 
   private static final Logger log = LoggerFactory.getLogger(AccountTransferActivitiesImpl.class);
 
   @Override
-  public ChargeResponseObj createCharge(
-      String idempotencyKey, float amountDollars, ExecutionScenarioObj scenario) {
+  public Boolean validate(ExecutionScenarioObj scenario) {
+    log.info("\n\nAPI /validate\n");
 
-    log.info("\n\nCalled API /charge\n");
+    if (scenario == ExecutionScenarioObj.HUMAN_IN_LOOP) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public String withdraw(float amountDollars, ExecutionScenarioObj scenario) {
+    log.info("\n\nAPI /withdraw amount = " + amountDollars + " \n");
 
     ActivityExecutionContext ctx = Activity.getExecutionContext();
     ActivityInfo info = ctx.getInfo();
@@ -55,14 +63,32 @@ public class AccountTransferActivitiesImpl implements AccountTransferActivities 
       }
     }
 
-    if (scenario == ExecutionScenarioObj.INSUFFICIENT_FUNDS) {
+    return "SUCCESS";
+  }
+
+  @Override
+  public ChargeResponseObj deposit(
+      String idempotencyKey, float amountDollars, ExecutionScenarioObj scenario) {
+
+    log.info("\n\nAPI /deposit amount = " + amountDollars + " \n");
+
+    if (scenario == ExecutionScenarioObj.INVALID_ACCOUNT) {
+      InvalidAccountException invalidAccountException =
+          new InvalidAccountException("Invalid Account");
       throw ApplicationFailure.newNonRetryableFailure(
-          "Insufficient Funds", "createCharge Activity Failed");
+          invalidAccountException.getMessage(), invalidAccountException.getClass().getName());
     }
 
     ChargeResponseObj response = new ChargeResponseObj("example-charge-id");
 
     return response;
+  }
+
+  @Override
+  public boolean undoWithdraw(float amountDollars) {
+    log.info("\n\nAPI /undoWithdraw amount = " + amountDollars + " \n");
+
+    return true;
   }
 
   private static String simulateDelay(int seconds) {
@@ -73,6 +99,13 @@ public class AccountTransferActivitiesImpl implements AccountTransferActivities 
       return response.body().string();
     } catch (IOException e) {
       throw new RuntimeException(e);
+    }
+  }
+
+  // InvalidAccountException
+  public static class InvalidAccountException extends RuntimeException {
+    public InvalidAccountException(String message) {
+      super(message);
     }
   }
 }

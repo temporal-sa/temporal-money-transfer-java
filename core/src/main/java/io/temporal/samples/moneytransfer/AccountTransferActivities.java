@@ -25,6 +25,12 @@ import io.temporal.samples.moneytransfer.dataclasses.ExecutionScenarioObj;
 
 @ActivityInterface
 public interface AccountTransferActivities {
-  ChargeResponseObj createCharge(
+  Boolean validate(ExecutionScenarioObj scenario);
+
+  String withdraw(float amountDollars, ExecutionScenarioObj scenario);
+
+  ChargeResponseObj deposit(
       String idempotencyKey, float amountDollars, ExecutionScenarioObj scenario);
+
+  boolean undoWithdraw(float amountDollars);
 }

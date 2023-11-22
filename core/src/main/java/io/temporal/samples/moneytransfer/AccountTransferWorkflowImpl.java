@@ -20,7 +20,7 @@
 package io.temporal.samples.moneytransfer;
 
 import io.temporal.activity.ActivityOptions;
-import io.temporal.common.RetryOptions;
+import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
 import io.temporal.samples.moneytransfer.dataclasses.*;
 import io.temporal.workflow.Workflow;
@@ -32,11 +32,7 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
 
   private static final Logger log = LoggerFactory.getLogger(AccountTransferWorkflowImpl.class);
   private final ActivityOptions options =
-      ActivityOptions.newBuilder()
-          .setStartToCloseTimeout(Duration.ofSeconds(5))
-          .setRetryOptions(
-              RetryOptions.newBuilder().setDoNotRetry("StripeInvalidRequestError").build())
-          .build();
+      ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(5)).build();
 
   private final AccountTransferActivities accountTransferActivities =
       Workflow.newActivityStub(AccountTransferActivities.class, options);
@@ -53,15 +49,14 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
   @Override
   public ResultObj transfer(WorkflowParameterObj params) {
 
+    transferState = "starting";
     progressPercentage = 25;
-
     Workflow.sleep(Duration.ofSeconds(5));
-
     progressPercentage = 50;
     transferState = "running";
 
-    // Wait for approval
-    if (params.getScenario() == ExecutionScenarioObj.HUMAN_IN_LOOP) {
+    // validate activity
+    if (!accountTransferActivities.validate(params.getScenario())) {
       log.info(
           "\n\nWaiting on 'approveTransfer' Signal or Update for workflow ID: "
               + Workflow.getInfo().getWorkflowId()
@@ -83,23 +78,41 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
       }
     }
 
+    progressPercentage = 60;
+    transferState = "running";
+
+    // withdraw activity
+    accountTransferActivities.withdraw(params.getAmount(), params.getScenario());
+    Workflow.sleep(Duration.ofSeconds(2)); // for dramatic effect
+
     // Simulate bug in workflow
     if (params.getScenario() == ExecutionScenarioObj.BUG_IN_WORKFLOW) {
+      // throw an error to simulate a bug in the workflow
+      // uncomment the following line and restart workers to 'fix' the bug
       log.info("\n\nSimulating workflow task failure.\n\n");
-      throw new RuntimeException("simulated"); // comment out to fix the workflow
+      throw new RuntimeException("Workflow Bug!");
     }
-
-    transferState = "running";
 
     // run activity
     String idempotencyKey = Workflow.randomUUID().toString();
-    chargeResult =
-        accountTransferActivities.createCharge(
-            idempotencyKey, params.getAmount(), params.getScenario());
+
+    try {
+      chargeResult =
+          accountTransferActivities.deposit(
+              idempotencyKey, params.getAmount(), params.getScenario());
+    } catch (ActivityFailure e) {
+      // if it's an invalid account, fail the workflow
+      if (e.getCause() instanceof AccountTransferActivitiesImpl.InvalidAccountException) {
+        log.info("\n\nDeposit failed unrecoverably, reverting withdraw\n\n");
+        throw ApplicationFailure.newNonRetryableFailure(e.getMessage(), e.getClass().getName());
+      } else {
+        // this will suspend the workflow, awaiting debugging
+        throw e;
+      }
+    }
 
     progressPercentage = 80;
-    Workflow.sleep(Duration.ofSeconds(8));
-
+    Workflow.sleep(Duration.ofSeconds(6));
     progressPercentage = 100;
     transferState = "finished";
 

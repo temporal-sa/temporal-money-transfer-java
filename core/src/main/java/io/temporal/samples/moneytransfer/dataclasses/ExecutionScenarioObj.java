@@ -24,5 +24,5 @@ public enum ExecutionScenarioObj {
   HUMAN_IN_LOOP,
   API_DOWNTIME,
   BUG_IN_WORKFLOW,
-  INSUFFICIENT_FUNDS
+  INVALID_ACCOUNT
 }
