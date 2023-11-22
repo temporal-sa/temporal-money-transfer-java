@@ -84,10 +84,10 @@ The workflow's Update function has a [validator](https://docs.temporal.io/dev-gu
 Comment out the RuntimeException in the workflow code (`AccountTransferWorkflowImpl.java`) and restart the worker to fix the 'bug'.
 
 #### Simulate API Downtime (recover on 5th attempt)
-Will introduce artifical delays in the `charge` activity's API calls. This will cause activity retries. After 5 retries, the delay will be removed and the workflow will proceed.
+Will introduce artifical delays in the `withdraw` activity's API calls. This will cause activity retries. After 5 retries, the delay will be removed and the workflow will proceed.
 
-#### Insufficient Funds (unrecoverable failure)
-Fails a workflow with a message.
+#### Invalid Account (unrecoverable failure)
+Introduces an unrecoverable failure in the `deposit` activity (invalid account). The workflow will fail after running compensation activities (`undoWithdraw`).
 
 #### Schedule a recurring transfer
 Creates a [Schedule](https://docs.temporal.io/workflows#schedule) that will run a set of workflows on a cadence.
@@ -98,16 +98,6 @@ Produces a schedule ID, which you can inspect in the Temporal UI's "Schedules" m
 
 #### List failed workflows
 temporal workflow list --env prod -q 'ExecutionStatus="Failed" OR ExecutionStatus="Terminated"'
-
-#### Simulating a reset that re-runs a failed workflow which becomes successful
-`temporal workflow show --env prod --workflow-id=<your failed workflow ID>`
-
-From the event list, find a [WorkflowTaskScheduled +1, WorkflowTaskStarted + 1] event id before the charge activity
-
-Then reset to a point before that, e.g.
-`temporal workflow reset --workflow-id=your failed workflow ID> --event-id 8 --reason "fix"`
-
-You can also reset workflows in the Temporal UI.
 
 ## Enable Encryption
 
