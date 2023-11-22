@@ -20,133 +20,144 @@
 package io.temporal.samples.moneytransfer;
 
 import io.temporal.activity.ActivityOptions;
+import io.temporal.common.RetryOptions;
 import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
 import io.temporal.samples.moneytransfer.dataclasses.*;
 import io.temporal.workflow.Workflow;
+
 import java.time.Duration;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
 
-  private static final Logger log = LoggerFactory.getLogger(AccountTransferWorkflowImpl.class);
-  private final ActivityOptions options =
-      ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(5)).build();
+    private static final Logger log = LoggerFactory.getLogger(AccountTransferWorkflowImpl.class);
 
-  private final AccountTransferActivities accountTransferActivities =
-      Workflow.newActivityStub(AccountTransferActivities.class, options);
+    private final ActivityOptions options =
+            ActivityOptions.newBuilder()
+                    .setStartToCloseTimeout(Duration.ofSeconds(5))
+                    .setRetryOptions(
+                            RetryOptions.newBuilder()
+                                    .setDoNotRetry(
+                                            AccountTransferActivitiesImpl.InvalidAccountException.class.getName())
+                                    .build())
+                    .build();
 
-  private int progressPercentage = 10;
-  private String transferState = "starting";
+    private final AccountTransferActivities accountTransferActivities =
+            Workflow.newActivityStub(AccountTransferActivities.class, options);
 
-  private ChargeResponseObj chargeResult = new ChargeResponseObj("");
+    private int progressPercentage = 10;
+    private String transferState = "starting";
 
-  private int approvalTime = 30;
+    private ChargeResponseObj chargeResult = new ChargeResponseObj("");
 
-  private boolean approved = false;
+    private int approvalTime = 30;
 
-  @Override
-  public ResultObj transfer(WorkflowParameterObj params) {
+    private boolean approved = false;
 
-    transferState = "starting";
-    progressPercentage = 25;
-    Workflow.sleep(Duration.ofSeconds(5));
-    progressPercentage = 50;
-    transferState = "running";
+    @Override
+    public ResultObj transfer(WorkflowParameterObj params) {
 
-    // validate activity
-    if (!accountTransferActivities.validate(params.getScenario())) {
-      log.info(
-          "\n\nWaiting on 'approveTransfer' Signal or Update for workflow ID: "
-              + Workflow.getInfo().getWorkflowId()
-              + "\n\n");
-      transferState = "waiting";
+        transferState = "starting";
+        progressPercentage = 25;
+        Workflow.sleep(Duration.ofSeconds(5));
+        progressPercentage = 50;
+        transferState = "running";
 
-      // Wait for the approval signal for up to approvalTime
-      boolean receivedSignal = Workflow.await(Duration.ofSeconds(approvalTime), () -> approved);
+        // validate activity
+        if (!accountTransferActivities.validate(params.getScenario())) {
+            log.info(
+                    "\n\nWaiting on 'approveTransfer' Signal or Update for workflow ID: "
+                            + Workflow.getInfo().getWorkflowId()
+                            + "\n\n");
+            transferState = "waiting";
 
-      // If the signal was not received within the timeout, fail the workflow
-      if (!receivedSignal) {
-        log.error(
-            "Approval not received within the "
-                + approvalTime
-                + "-second time window: "
-                + "Failing the workflow.");
-        throw ApplicationFailure.newFailure(
-            "Approval not received within " + approvalTime + " seconds", "ApprovalTimeout");
-      }
+            // Wait for the approval signal for up to approvalTime
+            boolean receivedSignal = Workflow.await(Duration.ofSeconds(approvalTime), () -> approved);
+
+            // If the signal was not received within the timeout, fail the workflow
+            if (!receivedSignal) {
+                log.error(
+                        "Approval not received within the "
+                                + approvalTime
+                                + "-second time window: "
+                                + "Failing the workflow.");
+                throw ApplicationFailure.newFailure(
+                        "Approval not received within " + approvalTime + " seconds", "ApprovalTimeout");
+            }
+        }
+
+        progressPercentage = 60;
+        transferState = "running";
+
+        // withdraw activity
+        accountTransferActivities.withdraw(params.getAmount(), params.getScenario());
+        Workflow.sleep(Duration.ofSeconds(2)); // for dramatic effect
+
+        // Simulate bug in workflow
+        if (params.getScenario() == ExecutionScenarioObj.BUG_IN_WORKFLOW) {
+            // throw an error to simulate a bug in the workflow
+            // uncomment the following line and restart workers to 'fix' the bug
+            log.info("\n\nSimulating workflow task failure.\n\n");
+            throw new RuntimeException("Workflow Bug!");
+        }
+
+        // run activity
+        String idempotencyKey = Workflow.randomUUID().toString();
+
+        try {
+            chargeResult =
+                    accountTransferActivities.deposit(
+                            idempotencyKey, params.getAmount(), params.getScenario());
+        } catch (ActivityFailure e) {
+            // if it's an invalid account, fail the workflow
+            String message = ((ApplicationFailure) e.getCause()).getOriginalMessage();
+            log.info("\n\nDeposit failed unrecoverably, reverting withdraw\n\n");
+
+            // undoWithdraw activity
+            accountTransferActivities.undoWithdraw(params.getAmount());
+
+            throw ApplicationFailure.newNonRetryableFailure(message, "DepositFailed");
+        }
+
+        progressPercentage = 80;
+        Workflow.sleep(Duration.ofSeconds(6));
+        progressPercentage = 100;
+        transferState = "finished";
+
+        return new ResultObj(chargeResult);
     }
 
-    progressPercentage = 60;
-    transferState = "running";
-
-    // withdraw activity
-    accountTransferActivities.withdraw(params.getAmount(), params.getScenario());
-    Workflow.sleep(Duration.ofSeconds(2)); // for dramatic effect
-
-    // Simulate bug in workflow
-    if (params.getScenario() == ExecutionScenarioObj.BUG_IN_WORKFLOW) {
-      // throw an error to simulate a bug in the workflow
-      // uncomment the following line and restart workers to 'fix' the bug
-      log.info("\n\nSimulating workflow task failure.\n\n");
-      throw new RuntimeException("Workflow Bug!");
+    @Override
+    public StateObj getStateQuery() {
+        StateObj stateObj =
+                new StateObj(progressPercentage, transferState, "", chargeResult, approvalTime);
+        return stateObj;
     }
 
-    // run activity
-    String idempotencyKey = Workflow.randomUUID().toString();
-
-    try {
-      chargeResult =
-          accountTransferActivities.deposit(
-              idempotencyKey, params.getAmount(), params.getScenario());
-    } catch (ActivityFailure e) {
-      // if it's an invalid account, fail the workflow
-      if (e.getCause() instanceof AccountTransferActivitiesImpl.InvalidAccountException) {
-        log.info("\n\nDeposit failed unrecoverably, reverting withdraw\n\n");
-        throw ApplicationFailure.newNonRetryableFailure(e.getMessage(), e.getClass().getName());
-      } else {
-        // this will suspend the workflow, awaiting debugging
-        throw e;
-      }
+    @Override
+    public void approveTransfer() {
+        log.info("\n\nApprove Signal Received\n\n");
+        this.approved = true;
     }
 
-    progressPercentage = 80;
-    Workflow.sleep(Duration.ofSeconds(6));
-    progressPercentage = 100;
-    transferState = "finished";
-
-    return new ResultObj(chargeResult);
-  }
-
-  @Override
-  public StateObj getStateQuery() {
-    StateObj stateObj =
-        new StateObj(progressPercentage, transferState, "", chargeResult, approvalTime);
-    return stateObj;
-  }
-
-  @Override
-  public void approveTransfer() {
-    log.info("\n\nApprove Signal Received\n\n");
-    this.approved = true;
-  }
-
-  @Override
-  public String approveTransferUpdate() {
-    log.info("\n\nApprove Update Validated: Approving Transfer\n\n");
-    this.approved = true;
-    return "successfully approved transfer";
-  }
-
-  @Override
-  public void approveTransferUpdateValidator() {
-    log.info("\n\nApprove Update Received: Validating\n\n");
-    if (this.approved) {
-      throw new IllegalStateException("Validation Failed: Transfer already approved");
+    @Override
+    public String approveTransferUpdate() {
+        log.info("\n\nApprove Update Validated: Approving Transfer\n\n");
+        this.approved = true;
+        return "successfully approved transfer";
     }
-    if (!transferState.equals("waiting")) {
-      throw new IllegalStateException("Validation Failed: Transfer doesn't require approval");
+
+    @Override
+    public void approveTransferUpdateValidator() {
+        log.info("\n\nApprove Update Received: Validating\n\n");
+        if (this.approved) {
+            throw new IllegalStateException("Validation Failed: Transfer already approved");
+        }
+        if (!transferState.equals("waiting")) {
+            throw new IllegalStateException("Validation Failed: Transfer doesn't require approval");
+        }
     }
-  }
 }

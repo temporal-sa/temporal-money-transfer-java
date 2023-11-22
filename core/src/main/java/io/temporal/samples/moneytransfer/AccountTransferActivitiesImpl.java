@@ -22,7 +22,6 @@ package io.temporal.samples.moneytransfer;
 import io.temporal.activity.Activity;
 import io.temporal.activity.ActivityExecutionContext;
 import io.temporal.activity.ActivityInfo;
-import io.temporal.failure.ApplicationFailure;
 import io.temporal.samples.moneytransfer.dataclasses.ChargeResponseObj;
 import io.temporal.samples.moneytransfer.dataclasses.ExecutionScenarioObj;
 import io.temporal.samples.moneytransfer.web.ServerInfo;
@@ -75,8 +74,7 @@ public class AccountTransferActivitiesImpl implements AccountTransferActivities 
     if (scenario == ExecutionScenarioObj.INVALID_ACCOUNT) {
       InvalidAccountException invalidAccountException =
           new InvalidAccountException("Invalid Account");
-      throw ApplicationFailure.newNonRetryableFailure(
-          invalidAccountException.getMessage(), invalidAccountException.getClass().getName());
+      throw Activity.wrap(invalidAccountException);
     }
 
     ChargeResponseObj response = new ChargeResponseObj("example-charge-id");
