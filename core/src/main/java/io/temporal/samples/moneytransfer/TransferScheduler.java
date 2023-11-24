@@ -23,6 +23,7 @@ import static io.temporal.samples.moneytransfer.TemporalClient.getScheduleClient
 import static io.temporal.samples.moneytransfer.TemporalClient.getWorkflowServiceStubs;
 
 import io.temporal.api.common.v1.WorkflowExecution;
+import io.temporal.api.enums.v1.ScheduleOverlapPolicy;
 import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionRequest;
 import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionResponse;
 import io.temporal.api.workflowservice.v1.WorkflowServiceGrpc;
@@ -148,10 +149,16 @@ public class TransferScheduler {
             // Make the schedule paused to demonstrate how to unpause a schedule
             builder.setState(
                 ScheduleState.newBuilder()
-                    //                                .setPaused(true)
                     .setLimitedAction(true)
                     .setRemainingActions(scheduleParameterObj.getCount())
                     .build());
+
+            // Temporal's default schedule policy is 'skip'
+            builder.setPolicy(
+                SchedulePolicy.newBuilder()
+                    .setOverlap(ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_SKIP)
+                    .build());
+
             return new ScheduleUpdate(builder.build());
           });
 
