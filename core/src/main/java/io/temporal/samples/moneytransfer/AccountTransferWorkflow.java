@@ -27,7 +27,7 @@ import io.temporal.workflow.*;
 
 @WorkflowInterface
 public interface AccountTransferWorkflow {
-  @WorkflowMethod(name = "transfer")
+  @WorkflowMethod(name = "moneyTransferWorkflow")
   ResultObj transfer(WorkflowParameterObj params);
 
   @QueryMethod(name = "transferStatus")

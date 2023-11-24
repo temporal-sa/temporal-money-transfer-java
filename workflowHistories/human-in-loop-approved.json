@@ -9,7 +9,7 @@
       "workerMayIgnore": false,
       "workflowExecutionStartedEventAttributes": {
         "workflowType": {
-          "name": "transfer"
+          "name": "moneyTransferWorkflow"
         },
         "parentWorkflowNamespace": "",
         "parentWorkflowNamespaceId": "",

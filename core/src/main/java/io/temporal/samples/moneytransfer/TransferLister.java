@@ -50,7 +50,8 @@ public class TransferLister {
                 ListOpenWorkflowExecutionsRequest.newBuilder()
                     .setStartTimeFilter(
                         StartTimeFilter.newBuilder().setEarliestTime(getOneHourAgo()).build())
-                    .setTypeFilter(WorkflowTypeFilter.newBuilder().setName("transfer").build())
+                    .setTypeFilter(
+                        WorkflowTypeFilter.newBuilder().setName("moneyTransferWorkflow").build())
                     .setNamespace(ServerInfo.getNamespace())
                     .build());
 
@@ -63,7 +64,8 @@ public class TransferLister {
                     .newBuilder()
                     .setStartTimeFilter(
                         StartTimeFilter.newBuilder().setEarliestTime(getOneHourAgo()).build())
-                    .setTypeFilter(WorkflowTypeFilter.newBuilder().setName("transfer").build())
+                    .setTypeFilter(
+                        WorkflowTypeFilter.newBuilder().setName("moneyTransferWorkflow").build())
                     .setNamespace(ServerInfo.getNamespace())
                     .build());
 
