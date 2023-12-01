@@ -60,7 +60,14 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
 
     transferState = "starting";
     progressPercentage = 25;
-    Workflow.sleep(Duration.ofSeconds(5));
+
+    // Set longer sleep for human-in-loop scenario to show signal lack of error handling
+    if (!accountTransferActivities.validate(params.getScenario())) {
+      Workflow.sleep(Duration.ofSeconds(15));
+    } else {
+      Workflow.sleep(Duration.ofSeconds(5));
+    }
+
     progressPercentage = 50;
     transferState = "running";
 
