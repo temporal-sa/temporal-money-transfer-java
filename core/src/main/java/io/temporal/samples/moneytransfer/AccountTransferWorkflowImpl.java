@@ -24,6 +24,7 @@ import io.temporal.common.RetryOptions;
 import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
 import io.temporal.samples.moneytransfer.dataclasses.*;
+import io.temporal.samples.moneytransfer.web.ServerInfo;
 import io.temporal.workflow.Workflow;
 import java.time.Duration;
 import org.slf4j.Logger;
@@ -61,12 +62,7 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
     transferState = "starting";
     progressPercentage = 25;
 
-    // Set longer sleep for human-in-loop scenario to show signal lack of error handling
-    if (!accountTransferActivities.validate(params.getScenario())) {
-      Workflow.sleep(Duration.ofSeconds(15));
-    } else {
-      Workflow.sleep(Duration.ofSeconds(5));
-    }
+    Workflow.sleep(Duration.ofSeconds(ServerInfo.getWorkflowSleepDuration()));
 
     progressPercentage = 50;
     transferState = "running";
