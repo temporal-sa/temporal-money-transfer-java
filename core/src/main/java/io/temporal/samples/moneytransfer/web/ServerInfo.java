@@ -52,6 +52,21 @@ public class ServerInfo {
     return webServerURL != null && !webServerURL.isEmpty() ? webServerURL : "http://localhost:7070";
   }
 
+  public static int getWorkflowSleepDuration() {
+    String workflowSleepDurationString = System.getenv("TEMPORAL_MONEYTRANSFER_SLEEP");
+    int workflowSleepDuration = 0;
+
+    if (workflowSleepDurationString != null && !workflowSleepDurationString.isEmpty()) {
+      try {
+        workflowSleepDuration = Integer.parseInt(workflowSleepDurationString);
+      } catch (NumberFormatException e) {
+        System.err.println("Error parsing environment variable as an integer: " + e.getMessage());
+      }
+    }
+
+    return workflowSleepDuration != 0 ? workflowSleepDuration : 5;
+  }
+
   public static Map<String, String> getServerInfo() {
     Map<String, String> info = new HashMap<>();
     info.put("certPath", getCertPath());
