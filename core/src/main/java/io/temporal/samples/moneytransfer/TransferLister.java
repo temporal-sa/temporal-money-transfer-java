@@ -60,8 +60,6 @@ public class TransferLister {
             .blockingStub()
             .listClosedWorkflowExecutions(
                 ListClosedWorkflowExecutionsRequest.newBuilder()
-                    .build()
-                    .newBuilder()
                     .setStartTimeFilter(
                         StartTimeFilter.newBuilder().setEarliestTime(getOneHourAgo()).build())
                     .setTypeFilter(
