@@ -37,6 +37,7 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
 
   private static final Logger log = LoggerFactory.getLogger(AccountTransferWorkflowImpl.class);
 
+  // activity retry policy
   private final ActivityOptions options =
       ActivityOptions.newBuilder()
           .setStartToCloseTimeout(Duration.ofSeconds(5))
@@ -47,18 +48,23 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
                   .build())
           .build();
 
+  // activity stub
   private final AccountTransferActivities accountTransferActivities =
       Workflow.newActivityStub(AccountTransferActivities.class, options);
 
+  // these variables are reflected in the UI
   private int progressPercentage = 10;
   private String transferState = "starting";
 
+  // workflow response object
   private ChargeResponseObj chargeResult = new ChargeResponseObj("");
 
+  // time to allow for transfer approval
   private int approvalTime = 30;
 
   private boolean approved = false;
 
+  // workflow
   @Override
   public ResultObj transfer(WorkflowParameterObj params) {
 
@@ -70,7 +76,7 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
     progressPercentage = 50;
     transferState = "running";
 
-    // validate activity
+    // The validate activity will return false if approval is required
     if (!accountTransferActivities.validate(params.getScenario())) {
       log.info(
           "\n\nWaiting on 'approveTransfer' Signal or Update for workflow ID: "
@@ -93,6 +99,7 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
       }
     }
 
+    // these variables are reflected in the UI
     progressPercentage = 60;
     transferState = "running";
 
@@ -113,28 +120,30 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
       throw new RuntimeException("Workflow Bug!");
     }
 
-    // deposit activity
-    String idempotencyKey = Workflow.randomUUID().toString();
-
     if (params.getScenario() == ExecutionScenarioObj.ADVANCED_VISIBILITY) {
       Workflow.upsertTypedSearchAttributes(WORKFLOW_STEP.valueSet("Deposit"));
     }
 
     try {
+      String idempotencyKey = Workflow.randomUUID().toString();
+      // deposit activity
       chargeResult =
           accountTransferActivities.deposit(
               idempotencyKey, params.getAmount(), params.getScenario());
-    } catch (ActivityFailure e) {
-      // if it's an invalid account, fail the workflow
-      String message = ((ApplicationFailure) e.getCause()).getOriginalMessage();
+    }
+    // if deposit() fails in an unrecoverable way, rollback the withdrawal and fail the workflow
+    catch (ActivityFailure e) {
       log.info("\n\nDeposit failed unrecoverably, reverting withdraw\n\n");
 
-      // undoWithdraw activity
+      // undoWithdraw activity (rollback)
       accountTransferActivities.undoWithdraw(params.getAmount());
 
+      // return failure message
+      String message = ((ApplicationFailure) e.getCause()).getOriginalMessage();
       throw ApplicationFailure.newNonRetryableFailure(message, "DepositFailed");
     }
 
+    // these variables are reflected in the UI
     progressPercentage = 80;
     Workflow.sleep(Duration.ofSeconds(6));
     progressPercentage = 100;
