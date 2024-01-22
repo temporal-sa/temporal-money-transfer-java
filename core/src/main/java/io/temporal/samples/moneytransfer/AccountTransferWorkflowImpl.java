@@ -21,6 +21,7 @@ package io.temporal.samples.moneytransfer;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
+import io.temporal.common.SearchAttributeKey;
 import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
 import io.temporal.samples.moneytransfer.dataclasses.*;
@@ -32,9 +33,10 @@ import org.slf4j.LoggerFactory;
 
 public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
 
+  static final SearchAttributeKey<String> WORKFLOW_STEP = SearchAttributeKey.forKeyword("Step");
+
   private static final Logger log = LoggerFactory.getLogger(AccountTransferWorkflowImpl.class);
 
-  // activity retry policy
   private final ActivityOptions options =
       ActivityOptions.newBuilder()
           .setStartToCloseTimeout(Duration.ofSeconds(5))
@@ -45,30 +47,30 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
                   .build())
           .build();
 
-  // activity stub
   private final AccountTransferActivities accountTransferActivities =
       Workflow.newActivityStub(AccountTransferActivities.class, options);
 
-  // these variables are reflected in the UI
   private int progressPercentage = 10;
   private String transferState = "starting";
 
-  private ChargeResponseObj chargeResult = new ChargeResponseObj(""); // workflow response object
-  private int approvalTime = 30; // time to allow for transfer approval
+  private ChargeResponseObj chargeResult = new ChargeResponseObj("");
+
+  private int approvalTime = 30;
+
   private boolean approved = false;
 
-  // workflow
   @Override
   public ResultObj transfer(WorkflowParameterObj params) {
 
-    // these variables are reflected in the UI
     transferState = "starting";
     progressPercentage = 25;
+
     Workflow.sleep(Duration.ofSeconds(ServerInfo.getWorkflowSleepDuration()));
+
     progressPercentage = 50;
     transferState = "running";
 
-    // The validate activity will return false if approval is required
+    // validate activity
     if (!accountTransferActivities.validate(params.getScenario())) {
       log.info(
           "\n\nWaiting on 'approveTransfer' Signal or Update for workflow ID: "
@@ -91,11 +93,15 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
       }
     }
 
-    // these variables are reflected in the UI
     progressPercentage = 60;
     transferState = "running";
 
     // withdraw activity
+    if (params.getScenario() == ExecutionScenarioObj.ADVANCED_VISIBILITY) {
+      Workflow.upsertTypedSearchAttributes(WORKFLOW_STEP.valueSet("Withdraw"));
+      Workflow.sleep(Duration.ofSeconds(5)); // for dramatic effect
+    }
+
     accountTransferActivities.withdraw(params.getAmount(), params.getScenario());
     Workflow.sleep(Duration.ofSeconds(2)); // for dramatic effect
 
@@ -107,26 +113,28 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
       throw new RuntimeException("Workflow Bug!");
     }
 
+    // deposit activity
+    String idempotencyKey = Workflow.randomUUID().toString();
+
+    if (params.getScenario() == ExecutionScenarioObj.ADVANCED_VISIBILITY) {
+      Workflow.upsertTypedSearchAttributes(WORKFLOW_STEP.valueSet("Deposit"));
+    }
+
     try {
-      String idempotencyKey = Workflow.randomUUID().toString();
-      // deposit activity
       chargeResult =
           accountTransferActivities.deposit(
               idempotencyKey, params.getAmount(), params.getScenario());
-
-      // if deposit() fails in an unrecoverable way, rollback the withdrawal and fail the workflow
     } catch (ActivityFailure e) {
-      log.info("\n\nDeposit failed unrecoverably, undoing withdraw\n\n");
+      // if it's an invalid account, fail the workflow
+      String message = ((ApplicationFailure) e.getCause()).getOriginalMessage();
+      log.info("\n\nDeposit failed unrecoverably, reverting withdraw\n\n");
 
       // undoWithdraw activity
       accountTransferActivities.undoWithdraw(params.getAmount());
 
-      // return failure message
-      String message = ((ApplicationFailure) e.getCause()).getOriginalMessage();
       throw ApplicationFailure.newNonRetryableFailure(message, "DepositFailed");
     }
 
-    // these variables are reflected in the UI
     progressPercentage = 80;
     Workflow.sleep(Duration.ofSeconds(6));
     progressPercentage = 100;

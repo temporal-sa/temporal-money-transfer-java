@@ -21,6 +21,7 @@ package io.temporal.samples.moneytransfer.dataclasses;
 
 public enum ExecutionScenarioObj {
   HAPPY_PATH,
+  ADVANCED_VISIBILITY,
   HUMAN_IN_LOOP,
   API_DOWNTIME,
   BUG_IN_WORKFLOW,

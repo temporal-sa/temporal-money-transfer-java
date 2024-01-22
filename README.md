@@ -48,6 +48,11 @@ A dropdown menu simulates the following scenarios
 #### Happy Path
 - The transfer will run to completion
 
+#### Advanced Visibility
+The transfer will in addition to running to completion, upsert a search attribute called Step. The Step search attribute defines what part of the workflow is being executed: withdraw or deposit. By upserting a search attribute we are able to search workflows by not only execution status, time, duration but also, based on business logic exposed by the search attribute.
+
+In order to demonstrate this feature the [search attribute](https://docs.temporal.io/visibility#search-attribute) ```Step``` which is a ```Keyword``` must be created in the Temporal namespace. This can be accomplished using the UI or CLI.
+
 #### Require Human-In-Loop Approval
 The transfer will pause and wait for approval. If the user doesn't approve the transfer within a set time, the workflow will fail.
 
