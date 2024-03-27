@@ -15,3 +15,5 @@ target
 .project
 .settings/
 bin/
+.github/workflows/SA_TOKEN
+.local/
