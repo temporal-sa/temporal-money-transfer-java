@@ -49,7 +49,7 @@ jobs:
 
       - name: Check out the repo
         uses: actions/checkout@v3
-      - uses: azure/setup-kubectl@v2.0
+      - uses: azure/setup-kubectl@v3.2
       - name: set kubernetes context
         uses: azure/k8s-set-context@v1
         with:
