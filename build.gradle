@@ -14,7 +14,7 @@ subprojects {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     ext {
-        otelVersion = '1.26.0'
+        otelVersion = '1.36.0'
         otelVersionAlpha = "${otelVersion}-alpha"
         javaSDKVersion = '1.22.2'
         jarVersion = '1.0.0'
