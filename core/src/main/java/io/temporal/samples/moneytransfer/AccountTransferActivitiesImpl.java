@@ -52,17 +52,26 @@ public class AccountTransferActivitiesImpl implements AccountTransferActivities 
     ActivityExecutionContext ctx = Activity.getExecutionContext();
     ActivityInfo info = ctx.getInfo();
 
-    if (scenario == ExecutionScenarioObj.API_DOWNTIME) {
-      log.info("\n\n*** Simulating API Downtime\n");
-      if (info.getAttempt() < 5) {
-        log.info("\n*** Activity Attempt: #" + info.getAttempt() + "***\n");
-        int delaySeconds = 7;
-        log.info("\n\n/API/simulateDelay Seconds" + delaySeconds + "\n");
-        simulateDelay(delaySeconds);
+    int totalDuration = 20; // Total duration in seconds
+    int interval = 1; // Progress interval in seconds
+
+    System.out.println(
+        "Running activity: " + info.getActivityType() + " for " + totalDuration + " seconds");
+
+    for (int i = 0; i <= totalDuration; i += interval) {
+      int progress = (i * 100) / totalDuration;
+      System.out.println("Activity progress: " + progress + "%");
+
+      if (i < totalDuration) {
+        try {
+          Thread.sleep(interval * 1000); // Sleep for the interval duration
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
       }
     }
-
-    return "SUCCESS";
+    System.out.println(info.getActivityType() + " execution completed.");
+    return "DONE";
   }
 
   @Override

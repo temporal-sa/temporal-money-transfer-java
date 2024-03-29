@@ -26,21 +26,24 @@ import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
 import io.temporal.samples.moneytransfer.dataclasses.*;
 import io.temporal.samples.moneytransfer.web.ServerInfo;
+import io.temporal.workflow.Async;
+import io.temporal.workflow.Promise;
 import io.temporal.workflow.Workflow;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
 
   static final SearchAttributeKey<String> WORKFLOW_STEP = SearchAttributeKey.forKeyword("Step");
 
-  private static final Logger log = LoggerFactory.getLogger(AccountTransferWorkflowImpl.class);
+  private static final Logger log = Workflow.getLogger(AccountTransferWorkflowImpl.class);
 
   // activity retry policy
   private final ActivityOptions options =
       ActivityOptions.newBuilder()
-          .setStartToCloseTimeout(Duration.ofSeconds(5))
+          .setStartToCloseTimeout(Duration.ofSeconds(60))
           .setRetryOptions(
               RetryOptions.newBuilder()
                   .setDoNotRetry(
@@ -76,41 +79,65 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
     progressPercentage = 50;
     transferState = "running";
 
-    // The validate activity will return false if approval is required
-    if (!accountTransferActivities.validate(params.getScenario())) {
-      log.info(
-          "\n\nWaiting on 'approveTransfer' Signal or Update for workflow ID: "
-              + Workflow.getInfo().getWorkflowId()
-              + "\n\n");
-      transferState = "waiting";
-
-      // Wait for the approval signal for up to approvalTime
-      boolean receivedSignal = Workflow.await(Duration.ofSeconds(approvalTime), () -> approved);
-
-      // If the signal was not received within the timeout, fail the workflow
-      if (!receivedSignal) {
-        log.error(
-            "Approval not received within the "
-                + approvalTime
-                + "-second time window: "
-                + "Failing the workflow.");
-        throw ApplicationFailure.newFailure(
-            "Approval not received within " + approvalTime + " seconds", "ApprovalTimeout");
-      }
-    }
-
     // these variables are reflected in the UI
     progressPercentage = 60;
     transferState = "running";
 
-    // withdraw activity
-    if (params.getScenario() == ExecutionScenarioObj.ADVANCED_VISIBILITY) {
-      Workflow.upsertTypedSearchAttributes(WORKFLOW_STEP.valueSet("Withdraw"));
-      Workflow.sleep(Duration.ofSeconds(5)); // for dramatic effect
-    }
+    // modified code to run withdraw activity and a set of timers at the same time
+    List<Promise<Void>> promises = new ArrayList<>();
 
-    accountTransferActivities.withdraw(params.getAmount(), params.getScenario());
-    Workflow.sleep(Duration.ofSeconds(2)); // for dramatic effect
+    // Start the activity
+    Promise<Void> activityPromise =
+        Async.procedure(
+            () -> {
+              accountTransferActivities.withdraw(params.getAmount(), params.getScenario());
+            });
+    promises.add(activityPromise);
+
+    log.info("Starting timers for 2, 5, and 10 seconds.");
+
+    // Start the timers
+    Promise<Void> timer2SecPromise =
+        Async.procedure(
+            () -> {
+              Workflow.sleep(Duration.ofSeconds(2));
+              log.info("2 second timer fired");
+            });
+    promises.add(timer2SecPromise);
+
+    Promise<Void> timer5SecPromise =
+        Async.procedure(
+            () -> {
+              Workflow.sleep(Duration.ofSeconds(5));
+              log.info("5 second timer fired");
+            });
+    promises.add(timer5SecPromise);
+
+    Promise<Void> timer10SecPromise =
+        Async.procedure(
+            () -> {
+              Workflow.sleep(Duration.ofSeconds(10));
+              log.info("10 second timer fired");
+            });
+    promises.add(timer10SecPromise);
+
+    // Wait for any of the promises to complete
+    while (!promises.isEmpty()) {
+      Workflow.await(() -> promises.stream().anyMatch(Promise::isCompleted));
+      // Check which promise completed and print the corresponding message
+      if (activityPromise.isCompleted()) {
+        promises.remove(activityPromise);
+      }
+      if (timer10SecPromise.isCompleted()) {
+        promises.remove(timer10SecPromise);
+      }
+      if (timer5SecPromise.isCompleted()) {
+        promises.remove(timer5SecPromise);
+      }
+      if (timer2SecPromise.isCompleted()) {
+        promises.remove(timer2SecPromise);
+      }
+    }
 
     // Simulate bug in workflow
     if (params.getScenario() == ExecutionScenarioObj.BUG_IN_WORKFLOW) {
