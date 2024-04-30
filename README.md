@@ -94,7 +94,7 @@ Will introduce artifical delays in the `withdraw` activity's API calls. This wil
 #### Invalid Account (unrecoverable failure)
 Introduces an unrecoverable failure in the `deposit` activity (invalid account). The workflow will fail after running compensation activities (`undoWithdraw`).
 
-#### Schedule a recurring transfer
+#### USE THE CRON EXPRESSION IN TransferScheduler.java
 Creates a [Schedule](https://docs.temporal.io/workflows#schedule) that will run a set of workflows on a cadence.
 
 Produces a schedule ID, which you can inspect in the Temporal UI's "Schedules" menu.

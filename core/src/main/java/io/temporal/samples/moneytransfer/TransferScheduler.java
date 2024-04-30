@@ -23,7 +23,6 @@ import static io.temporal.samples.moneytransfer.TemporalClient.getScheduleClient
 import static io.temporal.samples.moneytransfer.TemporalClient.getWorkflowServiceStubs;
 
 import io.temporal.api.common.v1.WorkflowExecution;
-import io.temporal.api.enums.v1.ScheduleOverlapPolicy;
 import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionRequest;
 import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionResponse;
 import io.temporal.api.workflowservice.v1.WorkflowServiceGrpc;
@@ -35,7 +34,6 @@ import io.temporal.samples.moneytransfer.dataclasses.*;
 import io.temporal.samples.moneytransfer.web.ServerInfo;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import java.io.FileNotFoundException;
-import java.time.Duration;
 import java.util.Collections;
 import javax.net.ssl.SSLException;
 
@@ -95,78 +93,48 @@ public class TransferScheduler {
     return referenceNumber;
   }
 
-  public static String runSchedule(ScheduleParameterObj scheduleParameterObj) {
+  public static String runSchedule(ScheduleParameterObj scheduleParameterObj)
+      throws FileNotFoundException, SSLException {
 
     String scheduleNumber = null;
-    try {
-      int amountCents = scheduleParameterObj.getAmount(); // amount to transfer
-      ExecutionScenarioObj executionScenarioObj = scheduleParameterObj.getScenario();
 
-      WorkflowParameterObj params = new WorkflowParameterObj(amountCents, executionScenarioObj);
+    int amountCents = scheduleParameterObj.getAmount(); // amount to transfer
+    ExecutionScenarioObj executionScenarioObj = scheduleParameterObj.getScenario();
 
-      ScheduleClient scheduleClient = getScheduleClient();
+    WorkflowParameterObj params = new WorkflowParameterObj(amountCents, executionScenarioObj);
 
-      String referenceNumber = generateReferenceNumber(); // random reference number
-      scheduleNumber = referenceNumber + "-schedule";
-      final String TASK_QUEUE = ServerInfo.getTaskqueue();
+    ScheduleClient scheduleClient = getScheduleClient();
 
-      WorkflowOptions options =
-          WorkflowOptions.newBuilder()
-              .setWorkflowId(referenceNumber)
-              .setTaskQueue(TASK_QUEUE)
-              .build();
+    String referenceNumber = generateReferenceNumber(); // random reference number
+    scheduleNumber = referenceNumber + "-schedule";
+    final String TASK_QUEUE = ServerInfo.getTaskqueue();
 
-      ScheduleActionStartWorkflow action =
-          ScheduleActionStartWorkflow.newBuilder()
-              .setWorkflowType(AccountTransferWorkflow.class)
-              .setArguments(params)
-              .setOptions(options)
-              .build();
+    WorkflowOptions options =
+        WorkflowOptions.newBuilder()
+            .setWorkflowId(referenceNumber)
+            .setTaskQueue(TASK_QUEUE)
+            .build();
 
-      // Define the schedule we want to create
-      Schedule schedule =
-          Schedule.newBuilder()
-              .setAction(action)
-              .setSpec(ScheduleSpec.newBuilder().build())
-              .build();
+    ScheduleActionStartWorkflow action =
+        ScheduleActionStartWorkflow.newBuilder()
+            .setWorkflowType(AccountTransferWorkflow.class)
+            .setArguments(params)
+            .setOptions(options)
+            .build();
 
-      ScheduleHandle handle =
-          scheduleClient.createSchedule(
-              scheduleNumber, schedule, ScheduleOptions.newBuilder().build());
+    // Define the schedule spec
+    // https://cronprompt.com/ "every second friday at 12am"
+    ScheduleSpec spec =
+        ScheduleSpec.newBuilder()
+            .setCronExpressions(Collections.singletonList("0 0 * * 5#2"))
+            .build();
 
-      // Update the schedule with a spec, so it will run periodically
-      handle.update(
-          (ScheduleUpdateInput input) -> {
-            Schedule.Builder builder = Schedule.newBuilder(input.getDescription().getSchedule());
+    // Define the schedule we want to create
+    Schedule schedule = Schedule.newBuilder().setAction(action).setSpec(spec).build();
 
-            builder.setSpec(
-                ScheduleSpec.newBuilder()
-                    .setIntervals(
-                        Collections.singletonList(
-                            new ScheduleIntervalSpec(
-                                Duration.ofSeconds(scheduleParameterObj.getInterval()))))
-                    .build());
-            // Make the schedule paused to demonstrate how to unpause a schedule
-            builder.setState(
-                ScheduleState.newBuilder()
-                    .setLimitedAction(true)
-                    .setRemainingActions(scheduleParameterObj.getCount())
-                    .build());
+    // Create a schedule on the server
+    scheduleClient.createSchedule(scheduleNumber, schedule, ScheduleOptions.newBuilder().build());
 
-            // Temporal's default schedule policy is 'skip'
-            builder.setPolicy(
-                SchedulePolicy.newBuilder()
-                    .setOverlap(ScheduleOverlapPolicy.SCHEDULE_OVERLAP_POLICY_SKIP)
-                    .build());
-
-            return new ScheduleUpdate(builder.build());
-          });
-
-      // Unpause schedule
-      //      handle.unpause();
-    } catch (Exception e) {
-      System.out.println("Exception: " + e);
-    }
     return scheduleNumber;
   }
 
