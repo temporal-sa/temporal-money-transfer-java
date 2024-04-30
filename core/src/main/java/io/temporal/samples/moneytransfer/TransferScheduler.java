@@ -34,7 +34,8 @@ import io.temporal.samples.moneytransfer.dataclasses.*;
 import io.temporal.samples.moneytransfer.web.ServerInfo;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import java.io.FileNotFoundException;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
 import javax.net.ssl.SSLException;
 
 public class TransferScheduler {
@@ -123,11 +124,9 @@ public class TransferScheduler {
             .build();
 
     // Define the schedule spec
-    // https://cronprompt.com/ "every second friday at 12am"
-    ScheduleSpec spec =
-        ScheduleSpec.newBuilder()
-            .setCronExpressions(Collections.singletonList("0 0 * * 5#2"))
-            .build();
+    // First friday of every month and third friday of every month
+    List<String> cronExpressions = Arrays.asList("0 0 1-7 * 5", "0 0 15-21 * 5");
+    ScheduleSpec spec = ScheduleSpec.newBuilder().setCronExpressions(cronExpressions).build();
 
     // Define the schedule we want to create
     Schedule schedule = Schedule.newBuilder().setAction(action).setSpec(spec).build();
