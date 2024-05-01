@@ -125,3 +125,25 @@ Introduce a non-determinism error by adding Workflow.Sleep or re-arranging activ
   No command scheduled that corresponds to event_id: 15
 ```
 Note: This replayer doesn't work with histories using ENCRYPT_PAYLOADS=true
+
+---
+
+## Where is the UI code?
+
+_The organization of UI code is 'less than perfect'. It's a todo list item for the future to refactor it._
+
+* The UI code is based on the [SvelteKit](https://kit.svelte.dev/) framework.
+* It lives in the [Typescript version of the Money Transfer example](https://github.com/steveandroulakis/temporal-money-transfer) under `./ui`.
+* A compiled version was built and copied to this Java example repository 
+* To modify and test the UI:
+  * Deploy the Typescript version of the Money Transfer example
+  * Modify the UI code in the Typescript version
+  * Run and test that version, it will build the UI
+  * If the UI works in the Typescript version, it will work in the Java one
+* Deploy a new version of the UI into the Java example
+    * Remove the existing UI directory: `temporal-money-transfer-java/core/src/main/resources/svelte_ui/build`
+    * Copy the UI from the Typescript example to the Java example:
+```bash
+cp -r /path/to/temporal-money-transfer/server/build \
+      /path/to/temporal-money-transfer-java/core/src/main/resources/svelte_ui
+```
