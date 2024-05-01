@@ -1,65 +1,93 @@
-/*
- *  Copyright (c) 2020 Temporal Technologies, Inc. All Rights Reserved
- *
- *  Copyright 2012-2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- *  Modifications copyright (C) 2017 Uber Technologies, Inc.
- *
- *  Licensed under the Apache License, Version 2.0 (the "License"). You may not
- *  use this file except in compliance with the License. A copy of the License is
- *  located at
- *
- *  http://aws.amazon.com/apache2.0
- *
- *  or in the "license" file accompanying this file. This file is distributed on
- *  an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *  express or implied. See the License for the specific language governing
- *  permissions and limitations under the License.
- */
+package io.temporal.samples.moneytransfer;
 
-//
-// package io.temporal.samples.moneytransfer;
-//
-// import static org.mockito.ArgumentMatchers.eq;
-// import static org.mockito.Mockito.mock;
-// import static org.mockito.Mockito.verify;
-//
-// import io.temporal.client.WorkflowOptions;
-// import io.temporal.testing.TestWorkflowRule;
-// import org.junit.Rule;
-// import org.junit.Test;
-//
-// public class TransferWorkflowTest {
-//
-//  @Rule
-//  public TestWorkflowRule testWorkflowRule =
-//      TestWorkflowRule.newBuilder()
-//          .setWorkflowTypes(AccountTransferWorkflowImpl.class)
-//          .setDoNotStart(true)
-//          .build();
-//
-//  @Test
-//  public void testTransfer() {
-//    TransferService activities = mock(TransferService.class);
-//    testWorkflowRule.getWorker().registerActivitiesImplementations(activities);
-//
-//    testWorkflowRule.getTestEnvironment().start();
-//
-//    WorkflowOptions options =
-//        WorkflowOptions.newBuilder().setTaskQueue(testWorkflowRule.getTaskQueue()).build();
-//    AccountTransferWorkflow workflow =
-//        testWorkflowRule
-//            .getWorkflowClient()
-//            .newWorkflowStub(AccountTransferWorkflow.class, options);
-//    long starty = testWorkflowRule.getTestEnvironment().currentTimeMillis();
-//    Account fromAccount = new Account("account1", 1000);
-//    Account toAccount = new Account("account2", 0);
-//    workflow.transfer(fromAccount, toAccount, "reference1", 123, false);
-//    verify(activities).withdraw(eq(fromAccount), eq("reference1"), eq(123));
-//    verify(activities).deposit(eq(toAccount), eq("reference1"), eq(123), false);
-//    long duration = testWorkflowRule.getTestEnvironment().currentTimeMillis() - starty;
-//    System.out.println("Duration: " + duration);
-//
-//    testWorkflowRule.getTestEnvironment().shutdown();
-//  }
-// }
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
+
+import io.temporal.client.WorkflowOptions;
+import io.temporal.samples.moneytransfer.dataclasses.ChargeResponseObj;
+import io.temporal.samples.moneytransfer.dataclasses.ExecutionScenarioObj;
+import io.temporal.samples.moneytransfer.dataclasses.ResultObj;
+import io.temporal.samples.moneytransfer.dataclasses.WorkflowParameterObj;
+import io.temporal.testing.TestWorkflowRule;
+import org.junit.After;
+import org.junit.Rule;
+import org.junit.Test;
+
+public class TransferWorkflowTest {
+
+  @Rule
+  public TestWorkflowRule testWorkflowRule =
+      TestWorkflowRule.newBuilder()
+          .setWorkflowTypes(AccountTransferWorkflowImpl.class)
+          .setDoNotStart(true)
+          .build();
+
+  /** Test workflow with real activities */
+  @Test
+  public void testActivityImpl() {
+    testWorkflowRule
+        .getWorker()
+        .registerActivitiesImplementations(new AccountTransferActivitiesImpl());
+    testWorkflowRule.getTestEnvironment().start();
+
+    // Get a workflow stub using the same task queue the worker uses.
+    AccountTransferWorkflow workflow =
+        testWorkflowRule
+            .getWorkflowClient()
+            .newWorkflowStub(
+                AccountTransferWorkflow.class,
+                WorkflowOptions.newBuilder().setTaskQueue(testWorkflowRule.getTaskQueue()).build());
+    // Execute a workflow waiting for it to complete.
+    WorkflowParameterObj workflowParameterObj = new WorkflowParameterObj();
+    workflowParameterObj.setAmount(100);
+    workflowParameterObj.setScenario(ExecutionScenarioObj.HAPPY_PATH);
+
+    ResultObj result = workflow.transfer(workflowParameterObj);
+    assertEquals(
+        new ResultObj(new ChargeResponseObj("example-charge-id"))
+            .getChargeResponseObj()
+            .getChargeId(),
+        result.getChargeResponseObj().getChargeId());
+  }
+
+  /** Test workflow with mocked activities */
+  @Test
+  public void testMockedActivity() {
+    AccountTransferActivities activities =
+        mock(AccountTransferActivities.class, withSettings().withoutAnnotations());
+
+    ChargeResponseObj chargeResponseObj = new ChargeResponseObj("example-charge-id");
+
+    when(activities.validate(ExecutionScenarioObj.HAPPY_PATH)).thenReturn(true);
+    when(activities.withdraw(100.0f, ExecutionScenarioObj.HAPPY_PATH)).thenReturn("SUCCESS");
+    when(activities.deposit(anyString(), eq(100.0f), eq(ExecutionScenarioObj.HAPPY_PATH)))
+        .thenReturn(chargeResponseObj);
+    testWorkflowRule.getWorker().registerActivitiesImplementations(activities);
+    testWorkflowRule.getTestEnvironment().start();
+
+    // Get a workflow stub using the same task queue the worker uses.
+    AccountTransferWorkflow workflow =
+        testWorkflowRule
+            .getWorkflowClient()
+            .newWorkflowStub(
+                AccountTransferWorkflow.class,
+                WorkflowOptions.newBuilder().setTaskQueue(testWorkflowRule.getTaskQueue()).build());
+    // Execute a workflow waiting for it to complete.
+    WorkflowParameterObj workflowParameterObj = new WorkflowParameterObj();
+    workflowParameterObj.setAmount(100);
+    workflowParameterObj.setScenario(ExecutionScenarioObj.HAPPY_PATH);
+
+    ResultObj result = workflow.transfer(workflowParameterObj);
+    assertEquals(
+        new ResultObj(new ChargeResponseObj("example-charge-id"))
+            .getChargeResponseObj()
+            .getChargeId(),
+        result.getChargeResponseObj().getChargeId());
+  }
+
+  // Clean up test environment after tests are completed
+  @After
+  public void tearDown() {
+    testWorkflowRule.getTestEnvironment().shutdown();
+  }
+}

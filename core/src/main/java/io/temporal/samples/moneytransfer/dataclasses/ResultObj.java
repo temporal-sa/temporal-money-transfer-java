@@ -30,17 +30,16 @@ public class ResultObj {
 
   // Constructor with JsonProperty annotation
   @JsonCreator
-  public ResultObj(@JsonProperty("chargeResponse") ChargeResponseObj chargeResponseObj) {
+  public ResultObj(@JsonProperty("chargeResponseObj") ChargeResponseObj chargeResponseObj) {
     this.chargeResponseObj = chargeResponseObj;
   }
 
-  // Getter
-  public ChargeResponseObj getChargeResponse() {
+  // Getters and Setters
+  public ChargeResponseObj getChargeResponseObj() {
     return chargeResponseObj;
   }
 
-  // Setter
-  public void setChargeResponse(ChargeResponseObj chargeResponseObj) {
+  public void setChargeResponseObj(ChargeResponseObj chargeResponseObj) {
     this.chargeResponseObj = chargeResponseObj;
   }
 }
