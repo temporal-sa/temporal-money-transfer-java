@@ -1,3 +1,9 @@
+Debug: Search attributes
+Run a bunch of workflows in the UI. They will start and upsert a random search attribute from a list.
+Then the workflow will pause for 15 mins.
+
+Good for demonstrating filters on running workflows.
+
 # Money Transfer Example
 
 Demos various aspects of [Temporal](https://temporal.io) using the Java SDK.
