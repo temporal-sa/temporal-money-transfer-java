@@ -26,6 +26,7 @@ import io.temporal.samples.moneytransfer.dataclasses.ChargeResponseObj;
 import io.temporal.samples.moneytransfer.dataclasses.ExecutionScenarioObj;
 import io.temporal.samples.moneytransfer.web.ServerInfo;
 import java.io.IOException;
+import java.util.Random;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -43,6 +44,12 @@ public class AccountTransferActivitiesImpl implements AccountTransferActivities 
       return false;
     }
     return true;
+  }
+
+  @Override
+  public String getRandomString() {
+    String[] options = {"validating", "deposit", "withdraw", "waitingForApproval"};
+    return options[new Random().nextInt(options.length)];
   }
 
   @Override

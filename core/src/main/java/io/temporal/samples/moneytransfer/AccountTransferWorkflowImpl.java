@@ -25,7 +25,6 @@ import io.temporal.common.SearchAttributeKey;
 import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
 import io.temporal.samples.moneytransfer.dataclasses.*;
-import io.temporal.samples.moneytransfer.web.ServerInfo;
 import io.temporal.workflow.Workflow;
 import java.time.Duration;
 import org.slf4j.Logger;
@@ -68,13 +67,12 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
   @Override
   public ResultObj transfer(WorkflowParameterObj params) {
 
-    transferState = "starting";
-    progressPercentage = 25;
-
-    Workflow.sleep(Duration.ofSeconds(ServerInfo.getWorkflowSleepDuration()));
-
     progressPercentage = 50;
     transferState = "running";
+
+    String randomString = accountTransferActivities.getRandomString();
+    Workflow.upsertTypedSearchAttributes(WORKFLOW_STEP.valueSet(randomString));
+    Workflow.sleep(Duration.ofSeconds(900));
 
     // The validate activity will return false if approval is required
     if (!accountTransferActivities.validate(params.getScenario())) {

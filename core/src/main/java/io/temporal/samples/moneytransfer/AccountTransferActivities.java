@@ -32,5 +32,7 @@ public interface AccountTransferActivities {
   ChargeResponseObj deposit(
       String idempotencyKey, float amountDollars, ExecutionScenarioObj scenario);
 
+  String getRandomString();
+
   boolean undoWithdraw(float amountDollars);
 }
