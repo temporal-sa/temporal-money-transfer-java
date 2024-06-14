@@ -1,0 +1,825 @@
+{
+  "events": [
+    {
+      "eventId": "1",
+      "eventTime": "2024-06-14T19:17:02.466400524Z",
+      "eventType": "WorkflowExecutionStarted",
+      "version": "1302",
+      "taskId": "12126667",
+      "workerMayIgnore": false,
+      "workflowExecutionStartedEventAttributes": {
+        "workflowType": {
+          "name": "moneyTransferWorkflow"
+        },
+        "parentWorkflowNamespace": "",
+        "parentWorkflowNamespaceId": "",
+        "parentWorkflowExecution": null,
+        "parentInitiatedEventId": "0",
+        "taskQueue": {
+          "name": "MoneyTransferSampleJava24",
+          "kind": "Normal",
+          "normalName": ""
+        },
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJzY2VuYXJpbyI6IkhBUFBZX1BBVEgiLCJhbW91bnQiOjF9"
+            }
+          ]
+        },
+        "workflowExecutionTimeout": "0s",
+        "workflowRunTimeout": "0s",
+        "workflowTaskTimeout": "10s",
+        "continuedExecutionRunId": "",
+        "initiator": "Unspecified",
+        "continuedFailure": null,
+        "lastCompletionResult": null,
+        "originalExecutionRunId": "9b80f596-b50f-4ea2-866c-f70ea80d39e9",
+        "identity": "12220@Steves-MBP",
+        "firstExecutionRunId": "9b80f596-b50f-4ea2-866c-f70ea80d39e9",
+        "retryPolicy": null,
+        "attempt": 1,
+        "workflowExecutionExpirationTime": null,
+        "cronSchedule": "",
+        "firstWorkflowTaskBackoff": "0s",
+        "memo": null,
+        "searchAttributes": null,
+        "prevAutoResetPoints": null,
+        "header": {
+          "fields": {}
+        },
+        "parentInitiatedEventVersion": "0",
+        "workflowId": "TRANSFER-WSR-719",
+        "sourceVersionStamp": null
+      }
+    },
+    {
+      "eventId": "2",
+      "eventTime": "2024-06-14T19:17:02.466538358Z",
+      "eventType": "WorkflowTaskScheduled",
+      "version": "1302",
+      "taskId": "12126668",
+      "workerMayIgnore": false,
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "MoneyTransferSampleJava24",
+          "kind": "Normal",
+          "normalName": ""
+        },
+        "startToCloseTimeout": "10s",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "3",
+      "eventTime": "2024-06-14T19:17:02.480172872Z",
+      "eventType": "WorkflowTaskStarted",
+      "version": "1302",
+      "taskId": "12126673",
+      "workerMayIgnore": false,
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "2",
+        "identity": "12385@Steves-MBP",
+        "requestId": "2acd08cd-051b-4932-a1f9-cd96a22a4e58",
+        "suggestContinueAsNew": false,
+        "historySizeBytes": "352"
+      }
+    },
+    {
+      "eventId": "4",
+      "eventTime": "2024-06-14T19:17:02.681724377Z",
+      "eventType": "WorkflowTaskCompleted",
+      "version": "1302",
+      "taskId": "12126677",
+      "workerMayIgnore": false,
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "2",
+        "startedEventId": "3",
+        "identity": "12385@Steves-MBP",
+        "binaryChecksum": "",
+        "workerVersion": {
+          "buildId": "",
+          "bundleId": "",
+          "useVersioning": false
+        },
+        "sdkMetadata": {
+          "coreUsedFlags": [],
+          "langUsedFlags": [
+            1
+          ],
+          "sdkName": "",
+          "sdkVersion": ""
+        },
+        "meteringMetadata": {
+          "nonfirstLocalActivityExecutionAttempts": 0
+        }
+      }
+    },
+    {
+      "eventId": "5",
+      "eventTime": "2024-06-14T19:17:02.681761487Z",
+      "eventType": "TimerStarted",
+      "version": "1302",
+      "taskId": "12126678",
+      "workerMayIgnore": false,
+      "timerStartedEventAttributes": {
+        "timerId": "62c790df-a901-3e79-9100-49948a1223bf",
+        "startToFireTimeout": "5s",
+        "workflowTaskCompletedEventId": "4"
+      }
+    },
+    {
+      "eventId": "6",
+      "eventTime": "2024-06-14T19:17:07.683243631Z",
+      "eventType": "TimerFired",
+      "version": "1302",
+      "taskId": "12126685",
+      "workerMayIgnore": false,
+      "timerFiredEventAttributes": {
+        "timerId": "62c790df-a901-3e79-9100-49948a1223bf",
+        "startedEventId": "5"
+      }
+    },
+    {
+      "eventId": "7",
+      "eventTime": "2024-06-14T19:17:07.683251572Z",
+      "eventType": "WorkflowTaskScheduled",
+      "version": "1302",
+      "taskId": "12126686",
+      "workerMayIgnore": false,
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "12385@Steves-MBP:36c76b9c-7534-4828-824e-dae4a1b613d1",
+          "kind": "Sticky",
+          "normalName": "MoneyTransferSampleJava24"
+        },
+        "startToCloseTimeout": "10s",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "8",
+      "eventTime": "2024-06-14T19:17:07.690922667Z",
+      "eventType": "WorkflowTaskStarted",
+      "version": "1302",
+      "taskId": "12126690",
+      "workerMayIgnore": false,
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "7",
+        "identity": "12385@Steves-MBP",
+        "requestId": "9ef66416-21cd-466e-963a-e82aa7190945",
+        "suggestContinueAsNew": false,
+        "historySizeBytes": "772"
+      }
+    },
+    {
+      "eventId": "9",
+      "eventTime": "2024-06-14T19:17:07.759432621Z",
+      "eventType": "WorkflowTaskCompleted",
+      "version": "1302",
+      "taskId": "12126695",
+      "workerMayIgnore": false,
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "7",
+        "startedEventId": "8",
+        "identity": "12385@Steves-MBP",
+        "binaryChecksum": "",
+        "workerVersion": {
+          "buildId": "",
+          "bundleId": "",
+          "useVersioning": false
+        },
+        "sdkMetadata": null,
+        "meteringMetadata": {
+          "nonfirstLocalActivityExecutionAttempts": 0
+        }
+      }
+    },
+    {
+      "eventId": "10",
+      "eventTime": "2024-06-14T19:17:07.759521293Z",
+      "eventType": "ActivityTaskScheduled",
+      "version": "1302",
+      "taskId": "12126696",
+      "workerMayIgnore": false,
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "3de70c04-c918-3c88-b234-b9020dc5e34a",
+        "activityType": {
+          "name": "Validate"
+        },
+        "taskQueue": {
+          "name": "MoneyTransferSampleJava24",
+          "kind": "Normal",
+          "normalName": ""
+        },
+        "header": {
+          "fields": {}
+        },
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "IkhBUFBZX1BBVEgi"
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": "0s",
+        "scheduleToStartTimeout": "0s",
+        "startToCloseTimeout": "5s",
+        "heartbeatTimeout": "0s",
+        "workflowTaskCompletedEventId": "9",
+        "retryPolicy": {
+          "initialInterval": "1s",
+          "backoffCoefficient": 2,
+          "maximumInterval": "100s",
+          "maximumAttempts": 0,
+          "nonRetryableErrorTypes": [
+            "io.temporal.samples.moneytransfer.AccountTransferActivitiesImpl$InvalidAccountException"
+          ]
+        },
+        "useCompatibleVersion": false
+      }
+    },
+    {
+      "eventId": "11",
+      "eventTime": "2024-06-14T19:17:07.759555713Z",
+      "eventType": "ActivityTaskStarted",
+      "version": "1302",
+      "taskId": "12126699",
+      "workerMayIgnore": false,
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "10",
+        "identity": "12385@Steves-MBP",
+        "requestId": "8fad6636-60eb-43a8-9ea5-95e55c578811",
+        "attempt": 1,
+        "lastFailure": null
+      }
+    },
+    {
+      "eventId": "12",
+      "eventTime": "2024-06-14T19:17:07.789404369Z",
+      "eventType": "ActivityTaskCompleted",
+      "version": "1302",
+      "taskId": "12126700",
+      "workerMayIgnore": false,
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "dHJ1ZQ=="
+            }
+          ]
+        },
+        "scheduledEventId": "10",
+        "startedEventId": "11",
+        "identity": "12385@Steves-MBP",
+        "workerVersion": null
+      }
+    },
+    {
+      "eventId": "13",
+      "eventTime": "2024-06-14T19:17:07.789415659Z",
+      "eventType": "WorkflowTaskScheduled",
+      "version": "1302",
+      "taskId": "12126701",
+      "workerMayIgnore": false,
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "12385@Steves-MBP:36c76b9c-7534-4828-824e-dae4a1b613d1",
+          "kind": "Sticky",
+          "normalName": "MoneyTransferSampleJava24"
+        },
+        "startToCloseTimeout": "10s",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "14",
+      "eventTime": "2024-06-14T19:17:07.797316911Z",
+      "eventType": "WorkflowTaskStarted",
+      "version": "1302",
+      "taskId": "12126705",
+      "workerMayIgnore": false,
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "13",
+        "identity": "12385@Steves-MBP",
+        "requestId": "01054788-b5dd-442e-b532-9b3a2b7015a5",
+        "suggestContinueAsNew": false,
+        "historySizeBytes": "1498"
+      }
+    },
+    {
+      "eventId": "15",
+      "eventTime": "2024-06-14T19:17:07.841859726Z",
+      "eventType": "WorkflowTaskCompleted",
+      "version": "1302",
+      "taskId": "12126710",
+      "workerMayIgnore": false,
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "13",
+        "startedEventId": "14",
+        "identity": "12385@Steves-MBP",
+        "binaryChecksum": "",
+        "workerVersion": {
+          "buildId": "",
+          "bundleId": "",
+          "useVersioning": false
+        },
+        "sdkMetadata": null,
+        "meteringMetadata": {
+          "nonfirstLocalActivityExecutionAttempts": 0
+        }
+      }
+    },
+    {
+      "eventId": "16",
+      "eventTime": "2024-06-14T19:17:07.841943257Z",
+      "eventType": "ActivityTaskScheduled",
+      "version": "1302",
+      "taskId": "12126711",
+      "workerMayIgnore": false,
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "09b7ee4e-4089-3756-8890-3255c574f6b5",
+        "activityType": {
+          "name": "Withdraw"
+        },
+        "taskQueue": {
+          "name": "MoneyTransferSampleJava24",
+          "kind": "Normal",
+          "normalName": ""
+        },
+        "header": {
+          "fields": {}
+        },
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "MS4w"
+            },
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "IkhBUFBZX1BBVEgi"
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": "0s",
+        "scheduleToStartTimeout": "0s",
+        "startToCloseTimeout": "5s",
+        "heartbeatTimeout": "0s",
+        "workflowTaskCompletedEventId": "15",
+        "retryPolicy": {
+          "initialInterval": "1s",
+          "backoffCoefficient": 2,
+          "maximumInterval": "100s",
+          "maximumAttempts": 0,
+          "nonRetryableErrorTypes": [
+            "io.temporal.samples.moneytransfer.AccountTransferActivitiesImpl$InvalidAccountException"
+          ]
+        },
+        "useCompatibleVersion": false
+      }
+    },
+    {
+      "eventId": "17",
+      "eventTime": "2024-06-14T19:17:07.841967528Z",
+      "eventType": "ActivityTaskStarted",
+      "version": "1302",
+      "taskId": "12126714",
+      "workerMayIgnore": false,
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "16",
+        "identity": "12385@Steves-MBP",
+        "requestId": "9940b92a-8307-470b-aa7b-0b3744fbc93f",
+        "attempt": 1,
+        "lastFailure": null
+      }
+    },
+    {
+      "eventId": "18",
+      "eventTime": "2024-06-14T19:17:07.868142074Z",
+      "eventType": "ActivityTaskCompleted",
+      "version": "1302",
+      "taskId": "12126715",
+      "workerMayIgnore": false,
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "IlNVQ0NFU1Mi"
+            }
+          ]
+        },
+        "scheduledEventId": "16",
+        "startedEventId": "17",
+        "identity": "12385@Steves-MBP",
+        "workerVersion": null
+      }
+    },
+    {
+      "eventId": "19",
+      "eventTime": "2024-06-14T19:17:07.868147494Z",
+      "eventType": "WorkflowTaskScheduled",
+      "version": "1302",
+      "taskId": "12126716",
+      "workerMayIgnore": false,
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "12385@Steves-MBP:36c76b9c-7534-4828-824e-dae4a1b613d1",
+          "kind": "Sticky",
+          "normalName": "MoneyTransferSampleJava24"
+        },
+        "startToCloseTimeout": "10s",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "20",
+      "eventTime": "2024-06-14T19:17:07.876223259Z",
+      "eventType": "WorkflowTaskStarted",
+      "version": "1302",
+      "taskId": "12126720",
+      "workerMayIgnore": false,
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "19",
+        "identity": "12385@Steves-MBP",
+        "requestId": "125e88ce-e594-4dab-954b-b984549fb482",
+        "suggestContinueAsNew": false,
+        "historySizeBytes": "2260"
+      }
+    },
+    {
+      "eventId": "21",
+      "eventTime": "2024-06-14T19:17:07.905562594Z",
+      "eventType": "WorkflowTaskCompleted",
+      "version": "1302",
+      "taskId": "12126724",
+      "workerMayIgnore": false,
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "19",
+        "startedEventId": "20",
+        "identity": "12385@Steves-MBP",
+        "binaryChecksum": "",
+        "workerVersion": {
+          "buildId": "",
+          "bundleId": "",
+          "useVersioning": false
+        },
+        "sdkMetadata": null,
+        "meteringMetadata": {
+          "nonfirstLocalActivityExecutionAttempts": 0
+        }
+      }
+    },
+    {
+      "eventId": "22",
+      "eventTime": "2024-06-14T19:17:07.905591746Z",
+      "eventType": "TimerStarted",
+      "version": "1302",
+      "taskId": "12126725",
+      "workerMayIgnore": false,
+      "timerStartedEventAttributes": {
+        "timerId": "169cce68-f93a-3272-84dc-508f19d03f3a",
+        "startToFireTimeout": "2s",
+        "workflowTaskCompletedEventId": "21"
+      }
+    },
+    {
+      "eventId": "23",
+      "eventTime": "2024-06-14T19:17:09.907490863Z",
+      "eventType": "TimerFired",
+      "version": "1302",
+      "taskId": "12126728",
+      "workerMayIgnore": false,
+      "timerFiredEventAttributes": {
+        "timerId": "169cce68-f93a-3272-84dc-508f19d03f3a",
+        "startedEventId": "22"
+      }
+    },
+    {
+      "eventId": "24",
+      "eventTime": "2024-06-14T19:17:09.907498093Z",
+      "eventType": "WorkflowTaskScheduled",
+      "version": "1302",
+      "taskId": "12126729",
+      "workerMayIgnore": false,
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "12385@Steves-MBP:36c76b9c-7534-4828-824e-dae4a1b613d1",
+          "kind": "Sticky",
+          "normalName": "MoneyTransferSampleJava24"
+        },
+        "startToCloseTimeout": "10s",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "25",
+      "eventTime": "2024-06-14T19:17:09.915580859Z",
+      "eventType": "WorkflowTaskStarted",
+      "version": "1302",
+      "taskId": "12126733",
+      "workerMayIgnore": false,
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "24",
+        "identity": "12385@Steves-MBP",
+        "requestId": "af3c7ec7-2e13-49bd-8702-9aef4791eb30",
+        "suggestContinueAsNew": false,
+        "historySizeBytes": "2675"
+      }
+    },
+    {
+      "eventId": "26",
+      "eventTime": "2024-06-14T19:17:09.955531383Z",
+      "eventType": "WorkflowTaskCompleted",
+      "version": "1302",
+      "taskId": "12126738",
+      "workerMayIgnore": false,
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "24",
+        "startedEventId": "25",
+        "identity": "12385@Steves-MBP",
+        "binaryChecksum": "",
+        "workerVersion": {
+          "buildId": "",
+          "bundleId": "",
+          "useVersioning": false
+        },
+        "sdkMetadata": null,
+        "meteringMetadata": {
+          "nonfirstLocalActivityExecutionAttempts": 0
+        }
+      }
+    },
+    {
+      "eventId": "27",
+      "eventTime": "2024-06-14T19:17:09.955609525Z",
+      "eventType": "ActivityTaskScheduled",
+      "version": "1302",
+      "taskId": "12126739",
+      "workerMayIgnore": false,
+      "activityTaskScheduledEventAttributes": {
+        "activityId": "2d69a75e-9171-3f9f-9347-852f0adc60fb",
+        "activityType": {
+          "name": "Deposit"
+        },
+        "taskQueue": {
+          "name": "MoneyTransferSampleJava24",
+          "kind": "Normal",
+          "normalName": ""
+        },
+        "header": {
+          "fields": {}
+        },
+        "input": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "IjRkYjI2ZWZlLWIyZmItM2YwZS04NjFkLTQ1YTAyNTkwZTRlOSI="
+            },
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "MS4w"
+            },
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "IkhBUFBZX1BBVEgi"
+            }
+          ]
+        },
+        "scheduleToCloseTimeout": "0s",
+        "scheduleToStartTimeout": "0s",
+        "startToCloseTimeout": "5s",
+        "heartbeatTimeout": "0s",
+        "workflowTaskCompletedEventId": "26",
+        "retryPolicy": {
+          "initialInterval": "1s",
+          "backoffCoefficient": 2,
+          "maximumInterval": "100s",
+          "maximumAttempts": 0,
+          "nonRetryableErrorTypes": [
+            "io.temporal.samples.moneytransfer.AccountTransferActivitiesImpl$InvalidAccountException"
+          ]
+        },
+        "useCompatibleVersion": false
+      }
+    },
+    {
+      "eventId": "28",
+      "eventTime": "2024-06-14T19:17:09.955642345Z",
+      "eventType": "ActivityTaskStarted",
+      "version": "1302",
+      "taskId": "12126742",
+      "workerMayIgnore": false,
+      "activityTaskStartedEventAttributes": {
+        "scheduledEventId": "27",
+        "identity": "12385@Steves-MBP",
+        "requestId": "852b0050-c102-4fcd-8a55-7e07552adc7c",
+        "attempt": 1,
+        "lastFailure": null
+      }
+    },
+    {
+      "eventId": "29",
+      "eventTime": "2024-06-14T19:17:09.989504828Z",
+      "eventType": "ActivityTaskCompleted",
+      "version": "1302",
+      "taskId": "12126743",
+      "workerMayIgnore": false,
+      "activityTaskCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJjaGFyZ2VJZCI6ImV4YW1wbGUtY2hhcmdlLWlkIn0="
+            }
+          ]
+        },
+        "scheduledEventId": "27",
+        "startedEventId": "28",
+        "identity": "12385@Steves-MBP",
+        "workerVersion": null
+      }
+    },
+    {
+      "eventId": "30",
+      "eventTime": "2024-06-14T19:17:09.989511749Z",
+      "eventType": "WorkflowTaskScheduled",
+      "version": "1302",
+      "taskId": "12126744",
+      "workerMayIgnore": false,
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "12385@Steves-MBP:36c76b9c-7534-4828-824e-dae4a1b613d1",
+          "kind": "Sticky",
+          "normalName": "MoneyTransferSampleJava24"
+        },
+        "startToCloseTimeout": "10s",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "31",
+      "eventTime": "2024-06-14T19:17:09.996637743Z",
+      "eventType": "WorkflowTaskStarted",
+      "version": "1302",
+      "taskId": "12126748",
+      "workerMayIgnore": false,
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "30",
+        "identity": "12385@Steves-MBP",
+        "requestId": "7eff4fb5-45e9-4cf7-a55a-86f41d2049aa",
+        "suggestContinueAsNew": false,
+        "historySizeBytes": "3526"
+      }
+    },
+    {
+      "eventId": "32",
+      "eventTime": "2024-06-14T19:17:10.073225641Z",
+      "eventType": "WorkflowTaskCompleted",
+      "version": "1302",
+      "taskId": "12126752",
+      "workerMayIgnore": false,
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "30",
+        "startedEventId": "31",
+        "identity": "12385@Steves-MBP",
+        "binaryChecksum": "",
+        "workerVersion": {
+          "buildId": "",
+          "bundleId": "",
+          "useVersioning": false
+        },
+        "sdkMetadata": null,
+        "meteringMetadata": {
+          "nonfirstLocalActivityExecutionAttempts": 0
+        }
+      }
+    },
+    {
+      "eventId": "33",
+      "eventTime": "2024-06-14T19:17:10.073250762Z",
+      "eventType": "TimerStarted",
+      "version": "1302",
+      "taskId": "12126753",
+      "workerMayIgnore": false,
+      "timerStartedEventAttributes": {
+        "timerId": "8ac353cc-e88e-38e3-beed-8f7cf894e36b",
+        "startToFireTimeout": "6s",
+        "workflowTaskCompletedEventId": "32"
+      }
+    },
+    {
+      "eventId": "34",
+      "eventTime": "2024-06-14T19:17:16.075120923Z",
+      "eventType": "TimerFired",
+      "version": "1302",
+      "taskId": "12126756",
+      "workerMayIgnore": false,
+      "timerFiredEventAttributes": {
+        "timerId": "8ac353cc-e88e-38e3-beed-8f7cf894e36b",
+        "startedEventId": "33"
+      }
+    },
+    {
+      "eventId": "35",
+      "eventTime": "2024-06-14T19:17:16.075126534Z",
+      "eventType": "WorkflowTaskScheduled",
+      "version": "1302",
+      "taskId": "12126757",
+      "workerMayIgnore": false,
+      "workflowTaskScheduledEventAttributes": {
+        "taskQueue": {
+          "name": "12385@Steves-MBP:36c76b9c-7534-4828-824e-dae4a1b613d1",
+          "kind": "Sticky",
+          "normalName": "MoneyTransferSampleJava24"
+        },
+        "startToCloseTimeout": "10s",
+        "attempt": 1
+      }
+    },
+    {
+      "eventId": "36",
+      "eventTime": "2024-06-14T19:17:16.082858952Z",
+      "eventType": "WorkflowTaskStarted",
+      "version": "1302",
+      "taskId": "12126761",
+      "workerMayIgnore": false,
+      "workflowTaskStartedEventAttributes": {
+        "scheduledEventId": "35",
+        "identity": "12385@Steves-MBP",
+        "requestId": "581ac767-f785-49c8-a8b1-1119aed67eae",
+        "suggestContinueAsNew": false,
+        "historySizeBytes": "3937"
+      }
+    },
+    {
+      "eventId": "37",
+      "eventTime": "2024-06-14T19:17:16.132819444Z",
+      "eventType": "WorkflowTaskCompleted",
+      "version": "1302",
+      "taskId": "12126765",
+      "workerMayIgnore": false,
+      "workflowTaskCompletedEventAttributes": {
+        "scheduledEventId": "35",
+        "startedEventId": "36",
+        "identity": "12385@Steves-MBP",
+        "binaryChecksum": "",
+        "workerVersion": {
+          "buildId": "",
+          "bundleId": "",
+          "useVersioning": false
+        },
+        "sdkMetadata": null,
+        "meteringMetadata": {
+          "nonfirstLocalActivityExecutionAttempts": 0
+        }
+      }
+    },
+    {
+      "eventId": "38",
+      "eventTime": "2024-06-14T19:17:16.132889486Z",
+      "eventType": "WorkflowExecutionCompleted",
+      "version": "1302",
+      "taskId": "12126766",
+      "workerMayIgnore": false,
+      "workflowExecutionCompletedEventAttributes": {
+        "result": {
+          "payloads": [
+            {
+              "metadata": {
+                "encoding": "anNvbi9wbGFpbg=="
+              },
+              "data": "eyJjaGFyZ2VSZXNwb25zZU9iaiI6eyJjaGFyZ2VJZCI6ImV4YW1wbGUtY2hhcmdlLWlkIn19"
+            }
+          ]
+        },
+        "workflowTaskCompletedEventId": "37",
+        "newExecutionRunId": ""
+      }
+    }
+  ]
+}

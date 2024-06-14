@@ -114,6 +114,8 @@ You can decrypt these payloads in Temporal Cloud's UI/cli using the codec server
 
 ### Replaying the most recently run workflow executions
 
+When step-debugging, ensure environment variable `TEMPORAL_DEBUG=true` is set, to avoid deadlock detection.
+
 Example command (run from root directory)
 ```bash
 ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.RecentHistoryReplayer
@@ -133,7 +135,7 @@ Introduce a non-determinism error by adding Workflow.Sleep or re-arranging activ
 Example command (run from root directory)
 ```bash
 ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.Replayer \
- -Parg=../workflowHistories/non-deterministic.json
+ -Parg=../workflowHistories/non-deterministic.json # or happy-path.json
 ```
 
 ---
