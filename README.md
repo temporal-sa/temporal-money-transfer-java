@@ -112,10 +112,11 @@ You can decrypt these payloads in Temporal Cloud's UI/cli using the codec server
 
 ## Test for non-determinism errors (Replay)
 
+### Replaying the most recently run workflow executions
+
 Example command (run from root directory)
 ```bash
-./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.Replayer \
- -Parg=../workflowHistories/human-in-loop-approved.json
+./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.RecentHistoryReplayer
 ```
 
 Introduce a non-determinism error by adding Workflow.Sleep or re-arranging activity executions:
@@ -123,8 +124,17 @@ Introduce a non-determinism error by adding Workflow.Sleep or re-arranging activ
  error=io.temporal.worker.NonDeterministicException:
   Failure handling event 15 of type 'EVENT_TYPE_ACTIVITY_TASK_SCHEDULED' during replay.
   No command scheduled that corresponds to event_id: 15
+  
+  # Note: This replayer doesn't work with histories using ENCRYPT_PAYLOADS=true
 ```
-Note: This replayer doesn't work with histories using ENCRYPT_PAYLOADS=true
+
+### Using a test workflow history
+
+Example command (run from root directory)
+```bash
+./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.Replayer \
+ -Parg=../workflowHistories/non-deterministic.json
+```
 
 ---
 
