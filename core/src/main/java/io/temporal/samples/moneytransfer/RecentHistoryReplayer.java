@@ -21,8 +21,6 @@ package io.temporal.samples.moneytransfer;
 
 import static io.temporal.samples.moneytransfer.TemporalClient.getWorkflowServiceStubs;
 
-import io.temporal.api.filter.v1.StartTimeFilter;
-import io.temporal.api.filter.v1.WorkflowTypeFilter;
 import io.temporal.api.workflowservice.v1.*;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.common.WorkflowExecutionHistory;
@@ -35,6 +33,7 @@ import io.temporal.testing.TestEnvironmentOptions;
 import io.temporal.testing.TestWorkflowEnvironmentInternal;
 import io.temporal.testing.WorkflowReplayer;
 import io.temporal.worker.Worker;
+
 import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.List;
@@ -43,80 +42,79 @@ import javax.net.ssl.SSLException;
 
 public class RecentHistoryReplayer {
 
-  public static List<WorkflowExecutionHistory> getWorkflowHistories()
-      throws FileNotFoundException, SSLException {
+    public static List<WorkflowExecutionHistory> getWorkflowHistories()
+            throws FileNotFoundException, SSLException {
 
-    WorkflowServiceStubs service = getWorkflowServiceStubs();
+        WorkflowServiceStubs service = getWorkflowServiceStubs();
 
-    ListClosedWorkflowExecutionsResponse responseClosed =
-        service
-            .blockingStub()
-            .listClosedWorkflowExecutions(
-                ListClosedWorkflowExecutionsRequest.newBuilder()
-                    .setStartTimeFilter(StartTimeFilter.newBuilder().build())
-                    .setMaximumPageSize(5)
-                    .setTypeFilter(
-                        WorkflowTypeFilter.newBuilder().setName("moneyTransferWorkflow").build())
-                    .setNamespace(ServerInfo.getNamespace())
-                    .build());
+        String query = "WorkflowType = 'moneyTransferWorkflow'";
 
-    List<WorkflowExecutionHistory> histories =
-        responseClosed.getExecutionsList().stream()
-            .map(
-                (info) -> {
-                  GetWorkflowExecutionHistoryResponse weh =
-                      service
-                          .blockingStub()
-                          .getWorkflowExecutionHistory(
-                              GetWorkflowExecutionHistoryRequest.newBuilder()
-                                  .setNamespace(ServerInfo.getNamespace())
-                                  .setExecution(info.getExecution())
-                                  .build());
-                  return new WorkflowExecutionHistory(
-                      weh.getHistory(), info.getExecution().getWorkflowId());
-                })
-            .collect(Collectors.toList());
+        ListWorkflowExecutionsRequest listWorkflowExecutionRequest =
+                ListWorkflowExecutionsRequest.newBuilder()
+                        .setNamespace(ServerInfo.getNamespace())
+                        .setPageSize(5)
+                        .setQuery(query)
+                        .build();
+        ListWorkflowExecutionsResponse listWorkflowExecutionsResponse =
+                service.blockingStub().listWorkflowExecutions(listWorkflowExecutionRequest);
 
-    return histories;
-  }
+        List<WorkflowExecutionHistory> histories =
+                listWorkflowExecutionsResponse.getExecutionsList().stream()
+                        .map(
+                                (info) -> {
+                                    GetWorkflowExecutionHistoryResponse weh =
+                                            service
+                                                    .blockingStub()
+                                                    .getWorkflowExecutionHistory(
+                                                            GetWorkflowExecutionHistoryRequest.newBuilder()
+                                                                    .setNamespace(ServerInfo.getNamespace())
+                                                                    .setExecution(info.getExecution())
+                                                                    .build());
+                                    return new WorkflowExecutionHistory(
+                                            weh.getHistory(), info.getExecution().getWorkflowId());
+                                })
+                        .collect(Collectors.toList());
 
-  public static void main(String[] args) throws Exception {
-
-    List<WorkflowExecutionHistory> histories = getWorkflowHistories();
-
-    // Make replayer compatible with data converter
-    TestWorkflowEnvironmentInternal testEnv =
-        new TestWorkflowEnvironmentInternal(
-            TestEnvironmentOptions.newBuilder()
-                .setWorkflowClientOptions(
-                    WorkflowClientOptions.newBuilder()
-                        .setDataConverter(
-                            new CodecDataConverter(
-                                DefaultDataConverter.newDefaultInstance(),
-                                Collections.singletonList(new CryptCodec()),
-                                true /* encode failure attributes */))
-                        .build())
-                .build());
-
-    Worker worker = testEnv.newWorker("my-task-queue");
-    worker.registerWorkflowImplementationTypes(AccountTransferWorkflowImpl.class);
-
-    // history length
-    System.out.println("Replaying " + histories.size() + " most recent workflow executions.");
-
-    for (WorkflowExecutionHistory history : histories) {
-      System.out.println("Replaying workflow: " + history.getWorkflowExecution().getWorkflowId());
-
-      try {
-        WorkflowReplayer.replayWorkflowExecution(history, worker);
-        System.out.println("Replay completed successfully");
-      } catch (Exception e) {
-        System.out.println(e.getMessage());
-        System.out.println(
-            "Replay failed, check above output for io.temporal.worker.NonDeterministicException");
-      }
+        return histories;
     }
 
-    testEnv.close();
-  }
+    public static void main(String[] args) throws Exception {
+
+        List<WorkflowExecutionHistory> histories = getWorkflowHistories();
+
+        // Make replayer compatible with data converter
+        TestWorkflowEnvironmentInternal testEnv =
+                new TestWorkflowEnvironmentInternal(
+                        TestEnvironmentOptions.newBuilder()
+                                .setWorkflowClientOptions(
+                                        WorkflowClientOptions.newBuilder()
+                                                .setDataConverter(
+                                                        new CodecDataConverter(
+                                                                DefaultDataConverter.newDefaultInstance(),
+                                                                Collections.singletonList(new CryptCodec()),
+                                                                true /* encode failure attributes */))
+                                                .build())
+                                .build());
+
+        Worker worker = testEnv.newWorker("my-task-queue");
+        worker.registerWorkflowImplementationTypes(AccountTransferWorkflowImpl.class);
+
+        // history length
+        System.out.println("Replaying " + histories.size() + " most recent workflow executions.");
+
+        for (WorkflowExecutionHistory history : histories) {
+            System.out.println("Replaying workflow: " + history.getWorkflowExecution().getWorkflowId());
+
+            try {
+                WorkflowReplayer.replayWorkflowExecution(history, worker);
+                System.out.println("Replay completed successfully");
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                System.out.println(
+                        "Replay failed, check above output for io.temporal.worker.NonDeterministicException");
+            }
+        }
+
+        testEnv.close();
+    }
 }
