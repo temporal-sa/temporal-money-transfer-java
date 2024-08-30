@@ -36,6 +36,9 @@ public class DescribeTaskQueue {
 
   public static void main(String[] args) throws FileNotFoundException, SSLException {
     DescribeTaskQueueResponse res = getTaskQueueInfo();
+
+    // https://docs.temporal.io/cli/task-queue#describe
+    // Workers are removed if 5 minutes have passed since the last poll request.
     System.out.println("Workflow Task Pollers: " + res.getPollersCount());
   }
 }
