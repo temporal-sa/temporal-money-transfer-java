@@ -112,9 +112,13 @@ public class TransferRequester {
     int amountCents = 45; // amount to transfer
 
     WorkflowParameterObj params =
-        new WorkflowParameterObj(amountCents, ExecutionScenarioObj.HAPPY_PATH);
+        new WorkflowParameterObj(amountCents, ExecutionScenarioObj.STRESS_TEST);
 
-    runWorkflow(params);
+    // run 100 workflows
+    for (int i = 0; i < 10; i++) {
+      String transferId = runWorkflow(params);
+      System.out.println("Transfer ID: " + transferId);
+    }
 
     System.exit(0);
   }
