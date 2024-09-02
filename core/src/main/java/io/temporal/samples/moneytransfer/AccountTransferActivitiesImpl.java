@@ -42,6 +42,14 @@ public class AccountTransferActivitiesImpl implements AccountTransferActivities 
     if (scenario == ExecutionScenarioObj.HUMAN_IN_LOOP) {
       return false;
     }
+
+    if (scenario == ExecutionScenarioObj.STRESS_TEST) {
+      ActivityExecutionContext ctx = Activity.getExecutionContext();
+      ActivityInfo info = ctx.getInfo();
+      if (info.getAttempt() <= 1) {
+        stressCpuAndMemory(50 * 1024 * 1024); // 50 MB in bytes
+      }
+    }
     return true;
   }
 
@@ -105,5 +113,32 @@ public class AccountTransferActivitiesImpl implements AccountTransferActivities 
     public InvalidAccountException(String message) {
       super(message);
     }
+  }
+
+  public static void stressCpuAndMemory(int sizeInBytes) {
+    // Allocate a byte array of the specified size
+    byte[] memoryChunk = new byte[sizeInBytes];
+
+    long startTime = System.currentTimeMillis();
+    long duration = 30 * 1000; // 30 seconds in milliseconds
+
+    // Perform CPU-intensive task for approximately 30 seconds
+    while (System.currentTimeMillis() - startTime < duration) {
+      // Fill the array with some data to simulate memory usage
+      for (int i = 0; i < memoryChunk.length; i++) {
+        memoryChunk[i] = (byte) (i % 256);
+      }
+
+      // Simple CPU work: sum up all elements in the array
+      long sum = 0;
+      for (byte b : memoryChunk) {
+        sum += b;
+      }
+
+      // Print the sum to avoid the compiler optimizing away the loop
+      System.out.println("Current sum: " + sum);
+    }
+
+    System.out.println("Finished stressing CPU and memory.");
   }
 }

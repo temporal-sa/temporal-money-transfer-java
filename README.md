@@ -110,6 +110,10 @@ Remove the `ENCRYPT_PAYLOADS` variable in each command to run without encryption
 
 You can decrypt these payloads in Temporal Cloud's UI/cli using the codec server: `https://codec.tmprl-demo.cloud` ([source](https://github.com/steveandroulakis/temporal-codec-server)). Ensure you switch on "Pass the user access token with your endpoint". Note: The codec server is only compatible with workflows running in Temporal Cloud.
 
+## Worker Auto-Tuning
+
+See the [Worker Auto Tuning guide](./worker-auto-tuning.md) for information on how to use [Worker Auto-Tuning](https://temporal.io/change-log/announcing-auto-tuning-for-workers-in-pre-release) to optimize worker resource usage.
+
 ## Test for non-determinism errors (Replay)
 
 ### Replaying the most recently run workflow executions
