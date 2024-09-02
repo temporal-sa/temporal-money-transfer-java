@@ -22,6 +22,9 @@ package io.temporal.samples.moneytransfer;
 import io.temporal.samples.moneytransfer.web.ServerInfo;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
+import io.temporal.worker.WorkerOptions;
+import io.temporal.worker.tuning.ResourceBasedControllerOptions;
+import io.temporal.worker.tuning.ResourceBasedTuner;
 
 public class AccountTransferWorker {
 
@@ -30,9 +33,18 @@ public class AccountTransferWorker {
 
     final String TASK_QUEUE = ServerInfo.getTaskqueue();
 
+    WorkerOptions workerOptions =
+        WorkerOptions.newBuilder()
+            .setWorkerTuner(
+                ResourceBasedTuner.newBuilder()
+                    .setControllerOptions(
+                        ResourceBasedControllerOptions.newBuilder(0.7, 0.7).build())
+                    .build())
+            .build();
+
     // worker factory that can be used to create workers for specific task queues
     WorkerFactory factory = WorkerFactory.newInstance(TemporalClient.get());
-    Worker workerForCommonTaskQueue = factory.newWorker(TASK_QUEUE);
+    Worker workerForCommonTaskQueue = factory.newWorker(TASK_QUEUE, workerOptions);
     workerForCommonTaskQueue.registerWorkflowImplementationTypes(AccountTransferWorkflowImpl.class);
     AccountTransferActivities accountTransferActivities = new AccountTransferActivitiesImpl();
     workerForCommonTaskQueue.registerActivitiesImplementations(accountTransferActivities);
