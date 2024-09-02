@@ -15,7 +15,8 @@ Sets the worker tuner to ResourceBasedTuner with controller options of 0.7 and 0
 
 Run the worker with Xms and Xmx options:
 ```bash
-./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.AccountTransferWorker --console=plain -Dorg.gradle.jvmargs="-Xms8m -Xmx1024m"
+./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.AccountTransferWorker \
+-Dorg.gradle.jvmargs="-Xms8m -Xmx1024m"
 ```
 This means that your JVM will be started with Xms amount of memory and will be able to use a maximum of Xmx amount of memory.
 

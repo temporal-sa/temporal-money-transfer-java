@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Step 1: Get all processes matching the specific Gradle command
-PIDS=$(pgrep -f 'org.gradle.wrapper.GradleWrapperMain -q execute -PmainClass=io.temporal.samples.moneytransfer.AccountTransferWorker --console=plain')
+PIDS=$(pgrep -f 'org.gradle.wrapper.GradleWrapperMain -q execute -PmainClass=io.temporal.samples.moneytransfer.AccountTransferWorker')
 
 if [ -z "$PIDS" ]; then
   echo "No matching processes found."
