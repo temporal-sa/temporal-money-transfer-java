@@ -19,9 +19,8 @@
 
 package io.temporal.samples.moneytransfer;
 
-import static io.temporal.samples.moneytransfer.TemporalClient.getWorkflowServiceStubs;
-
 import io.temporal.api.workflowservice.v1.*;
+import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.common.WorkflowExecutionHistory;
 import io.temporal.common.converter.CodecDataConverter;
@@ -44,7 +43,8 @@ public class RecentHistoryReplayer {
   public static List<WorkflowExecutionHistory> getWorkflowHistories()
       throws FileNotFoundException, SSLException {
 
-    WorkflowServiceStubs service = getWorkflowServiceStubs();
+    WorkflowClient client = TemporalClient.get();
+    WorkflowServiceStubs service = client.getWorkflowServiceStubs();
 
     String query = "WorkflowType = 'moneyTransferWorkflow'";
 

@@ -19,12 +19,9 @@
 
 package io.temporal.samples.moneytransfer;
 
-import static io.temporal.samples.moneytransfer.TemporalClient.getWorkflowServiceStubs;
-
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionRequest;
 import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionResponse;
-import io.temporal.api.workflowservice.v1.WorkflowServiceGrpc;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.client.WorkflowStub;
@@ -33,7 +30,6 @@ import io.temporal.samples.moneytransfer.dataclasses.ResultObj;
 import io.temporal.samples.moneytransfer.dataclasses.StateObj;
 import io.temporal.samples.moneytransfer.dataclasses.WorkflowParameterObj;
 import io.temporal.samples.moneytransfer.web.ServerInfo;
-import io.temporal.serviceclient.WorkflowServiceStubs;
 import java.io.FileNotFoundException;
 import javax.net.ssl.SSLException;
 
@@ -142,14 +138,18 @@ public class TransferRequester {
   private static String getWorkflowStatus(String workflowId)
       throws FileNotFoundException, SSLException {
     WorkflowClient client = TemporalClient.get();
-    WorkflowServiceStubs service = getWorkflowServiceStubs();
-    WorkflowServiceGrpc.WorkflowServiceBlockingStub stub = service.blockingStub();
+    WorkflowStub workflowStub = client.newUntypedWorkflowStub(workflowId);
+    WorkflowExecution exec = workflowStub.getExecution();
+
     DescribeWorkflowExecutionRequest request =
         DescribeWorkflowExecutionRequest.newBuilder()
             .setNamespace(client.getOptions().getNamespace())
-            .setExecution(WorkflowExecution.newBuilder().setWorkflowId(workflowId))
+            .setExecution(exec)
             .build();
-    DescribeWorkflowExecutionResponse response = stub.describeWorkflowExecution(request);
+
+    DescribeWorkflowExecutionResponse response =
+        client.getWorkflowServiceStubs().blockingStub().describeWorkflowExecution(request);
+
     return response.getWorkflowExecutionInfo().getStatus().name();
   }
 }

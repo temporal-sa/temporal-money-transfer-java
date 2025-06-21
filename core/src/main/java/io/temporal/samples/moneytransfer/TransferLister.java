@@ -19,14 +19,13 @@
 
 package io.temporal.samples.moneytransfer;
 
-import static io.temporal.samples.moneytransfer.TemporalClient.getWorkflowServiceStubs;
-
 import com.google.common.base.Splitter;
 import com.google.protobuf.Timestamp;
 import io.temporal.api.filter.v1.StartTimeFilter;
 import io.temporal.api.filter.v1.WorkflowTypeFilter;
 import io.temporal.api.workflow.v1.WorkflowExecutionInfo;
 import io.temporal.api.workflowservice.v1.*;
+import io.temporal.client.WorkflowClient;
 import io.temporal.samples.moneytransfer.dataclasses.WorkflowStatusObj;
 import io.temporal.samples.moneytransfer.web.ServerInfo;
 import io.temporal.serviceclient.WorkflowServiceStubs;
@@ -42,7 +41,8 @@ public class TransferLister {
 
   public static List<WorkflowStatusObj> listWorkflows() throws FileNotFoundException, SSLException {
 
-    WorkflowServiceStubs service = getWorkflowServiceStubs();
+    WorkflowClient client = TemporalClient.get();
+    WorkflowServiceStubs service = client.getWorkflowServiceStubs();
 
     // Try with minimal request first
     ListOpenWorkflowExecutionsResponse responseOpen;
