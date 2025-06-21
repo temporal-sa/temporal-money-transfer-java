@@ -23,55 +23,73 @@ import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.client.schedules.ScheduleClient;
 import io.temporal.client.schedules.ScheduleClientOptions;
+import io.temporal.common.converter.CodecDataConverter;
+import io.temporal.common.converter.DefaultDataConverter;
+import io.temporal.samples.moneytransfer.dataconverter.CryptCodec;
 import io.temporal.samples.moneytransfer.web.ServerInfo;
+import io.temporal.serviceclient.SimpleSslContextBuilder;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.Collections;
 import javax.net.ssl.SSLException;
 
 public class TemporalClient {
 
   /**
    * Centralized method to create and configure WorkflowServiceStubs. This is the single source of
-   * truth for connecting to Temporal.
+   * truth for connecting to Temporal. Supports three connection methods: 1. Certificate-based
+   * (mTLS) - requires TEMPORAL_CERT_PATH and TEMPORAL_KEY_PATH 2. API Key-based - requires
+   * TEMPORAL_API_KEY 3. Local - fallback when neither certificates nor API key are provided
    */
-  private static WorkflowServiceStubs createWorkflowServiceStubs() {
-    // These are the values for connecting to Temporal Cloud
-    String temporalCloudEndpoint = ServerInfo.getAddress();
-    String temporalCloudNamespace = ServerInfo.getNamespace();
-    String temporalApiKey = ServerInfo.getApiKey();
+  private static WorkflowServiceStubs createWorkflowServiceStubs()
+      throws FileNotFoundException, SSLException {
+    String endpoint = ServerInfo.getAddress();
+    String namespace = ServerInfo.getNamespace();
+    String apiKey = ServerInfo.getApiKey();
+    String certPath = ServerInfo.getCertPath();
+    String keyPath = ServerInfo.getKeyPath();
 
-    System.out.println("TEMPORAL_ADDRESS: " + temporalCloudEndpoint);
-    System.out.println("TEMPORAL_NAMESPACE: " + temporalCloudNamespace);
-    if (temporalApiKey != null && !temporalApiKey.isEmpty()) {
-      System.out.println("TEMPORAL_API_KEY length: " + temporalApiKey.length());
-    } else {
-      System.out.println("TEMPORAL_API_KEY: Not set");
-    }
+    System.out.println("TEMPORAL_ADDRESS: " + endpoint);
+    System.out.println("TEMPORAL_NAMESPACE: " + namespace);
 
-    // If the environment variables for cloud are not set, assume local connection.
-    // This check makes the code work for both local dev and cloud deployments.
-    boolean isCloudConnection =
-        temporalCloudEndpoint != null
-            && !temporalCloudEndpoint.isEmpty()
-            && temporalCloudNamespace != null
-            && !temporalCloudNamespace.isEmpty()
-            && temporalApiKey != null
-            && !temporalApiKey.isEmpty();
+    WorkflowServiceStubsOptions.Builder optionsBuilder =
+        WorkflowServiceStubsOptions.newBuilder().setTarget(endpoint);
 
-    if (isCloudConnection) {
-      System.out.println("--- Connecting to Temporal Cloud ---");
-      System.out.println("Endpoint: " + temporalCloudEndpoint);
-      System.out.println("Namespace: " + temporalCloudNamespace);
-      System.out.println("API key length: " + temporalApiKey.length());
+    // Check if certificates are provided (mTLS connection)
+    boolean hasCertificates = !certPath.isEmpty() && !keyPath.isEmpty();
+
+    // Check if API key is provided
+    boolean hasApiKey = apiKey != null && !apiKey.isEmpty();
+
+    // Check if using local server
+    boolean isLocal = "localhost:7233".equals(endpoint);
+
+    if (hasCertificates) {
+      System.out.println("--- Connecting with Certificate Authentication ---");
+      System.out.println("Cert path: " + certPath);
+      System.out.println("Key path: " + keyPath);
+      System.out.println("Endpoint: " + endpoint);
+      System.out.println("---------------------------------");
+
+      InputStream clientCert = new FileInputStream(certPath);
+      InputStream clientKey = new FileInputStream(keyPath);
+
+      optionsBuilder.setSslContext(SimpleSslContextBuilder.forPKCS8(clientCert, clientKey).build());
+
+      return WorkflowServiceStubs.newServiceStubs(optionsBuilder.build());
+
+    } else if (hasApiKey && !isLocal) {
+      System.out.println("--- Connecting with API Key Authentication ---");
+      System.out.println("Endpoint: " + endpoint);
+      System.out.println("API key length: " + apiKey.length());
       System.out.println("---------------------------------");
 
       return WorkflowServiceStubs.newServiceStubs(
-          WorkflowServiceStubsOptions.newBuilder()
-              .setTarget(temporalCloudEndpoint)
-              .setEnableHttps(true)
-              .addApiKey(() -> temporalApiKey)
-              .build());
+          optionsBuilder.setEnableHttps(true).addApiKey(() -> apiKey).build());
+
     } else {
       System.out.println("--- Connecting to Local Temporal ---");
       return WorkflowServiceStubs.newLocalServiceStubs();
@@ -91,17 +109,25 @@ public class TemporalClient {
   public static WorkflowClient get() throws FileNotFoundException, SSLException {
     WorkflowServiceStubs service = createWorkflowServiceStubs();
 
-    // Use the correct namespace for the client options
     String namespace = ServerInfo.getNamespace();
     if (namespace == null || namespace.isEmpty()) {
-      namespace = "default"; // Fallback for local development
+      namespace = "default";
     }
 
-    WorkflowClientOptions clientOptions =
-        WorkflowClientOptions.newBuilder()
-            .setNamespace(namespace)
-            // .setDataConverter(...) // Your custom data converter can be added here
-            .build();
+    WorkflowClientOptions.Builder builder = WorkflowClientOptions.newBuilder();
+
+    // If environment variable ENCRYPT_PAYLOADS is set to true, then use CryptCodec
+    if (System.getenv("ENCRYPT_PAYLOADS") != null
+        && System.getenv("ENCRYPT_PAYLOADS").equals("true")) {
+      builder.setDataConverter(
+          new CodecDataConverter(
+              DefaultDataConverter.newDefaultInstance(),
+              Collections.singletonList(new CryptCodec()),
+              true /* encode failure attributes */));
+    }
+
+    System.out.println("<<<<SERVER INFO>>>>:\n " + ServerInfo.getServerInfo());
+    WorkflowClientOptions clientOptions = builder.setNamespace(namespace).build();
 
     return WorkflowClient.newInstance(service, clientOptions);
   }
