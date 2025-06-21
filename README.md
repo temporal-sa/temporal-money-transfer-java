@@ -34,6 +34,18 @@ Start a worker:
 ENCRYPT_PAYLOADS=true ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.AccountTransferWorker --console=plain
 ```
 
+Start a new workflow:
+
+```bash
+./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.TransferRequester --console=plain
+```
+
+Check the status of an existing workflow:
+
+```bash
+./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.TransferRequester --args="--status WORKFLOW_ID" --console=plain
+```
+
 Run the money transfer web UI:
 
 ```bash

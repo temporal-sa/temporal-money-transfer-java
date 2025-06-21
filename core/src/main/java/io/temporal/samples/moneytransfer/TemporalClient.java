@@ -23,6 +23,7 @@ import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.client.schedules.ScheduleClient;
 import io.temporal.client.schedules.ScheduleClientOptions;
+import io.temporal.samples.moneytransfer.web.ServerInfo;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
 import java.io.FileNotFoundException;
@@ -36,9 +37,17 @@ public class TemporalClient {
    */
   private static WorkflowServiceStubs createWorkflowServiceStubs() {
     // These are the values for connecting to Temporal Cloud
-    String temporalCloudEndpoint = System.getenv("TEMPORAL_ADDRESS");
-    String temporalCloudNamespace = System.getenv("TEMPORAL_NAMESPACE");
-    String temporalApiKey = System.getenv("TEMPORAL_API_KEY");
+    String temporalCloudEndpoint = ServerInfo.getAddress();
+    String temporalCloudNamespace = ServerInfo.getNamespace();
+    String temporalApiKey = ServerInfo.getApiKey();
+
+    System.out.println("TEMPORAL_ADDRESS: " + temporalCloudEndpoint);
+    System.out.println("TEMPORAL_NAMESPACE: " + temporalCloudNamespace);
+    if (temporalApiKey != null && !temporalApiKey.isEmpty()) {
+      System.out.println("TEMPORAL_API_KEY length: " + temporalApiKey.length());
+    } else {
+      System.out.println("TEMPORAL_API_KEY: Not set");
+    }
 
     // If the environment variables for cloud are not set, assume local connection.
     // This check makes the code work for both local dev and cloud deployments.
@@ -54,7 +63,7 @@ public class TemporalClient {
       System.out.println("--- Connecting to Temporal Cloud ---");
       System.out.println("Endpoint: " + temporalCloudEndpoint);
       System.out.println("Namespace: " + temporalCloudNamespace);
-      // System.out.println("API Key: " + temporalApiKey);
+      System.out.println("API key length: " + temporalApiKey.length());
       System.out.println("---------------------------------");
 
       return WorkflowServiceStubs.newServiceStubs(
@@ -83,7 +92,7 @@ public class TemporalClient {
     WorkflowServiceStubs service = createWorkflowServiceStubs();
 
     // Use the correct namespace for the client options
-    String namespace = System.getenv("TEMPORAL_NAMESPACE");
+    String namespace = ServerInfo.getNamespace();
     if (namespace == null || namespace.isEmpty()) {
       namespace = "default"; // Fallback for local development
     }
@@ -101,7 +110,7 @@ public class TemporalClient {
   public static ScheduleClient getScheduleClient() throws FileNotFoundException, SSLException {
     WorkflowServiceStubs service = createWorkflowServiceStubs();
 
-    String namespace = System.getenv("TEMPORAL_NAMESPACE");
+    String namespace = ServerInfo.getNamespace();
     if (namespace == null || namespace.isEmpty()) {
       namespace = "default"; // Fallback for local development
     }

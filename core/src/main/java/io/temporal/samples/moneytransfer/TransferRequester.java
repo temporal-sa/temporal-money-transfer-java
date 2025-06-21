@@ -109,6 +109,15 @@ public class TransferRequester {
   @SuppressWarnings("CatchAndPrintStackTrace")
   public static void main(String[] args) throws Exception {
 
+    // Check if workflow ID is provided as argument to get status
+    if (args.length > 0 && args[0].equals("--status") && args.length > 1) {
+      String workflowId = args[1];
+      String status = getWorkflowStatus(workflowId);
+      System.out.println("Workflow " + workflowId + " status: " + status);
+      System.exit(0);
+    }
+
+    // Default behavior: start a new workflow
     int amountCents = 45; // amount to transfer
 
     WorkflowParameterObj params =
@@ -132,11 +141,12 @@ public class TransferRequester {
 
   private static String getWorkflowStatus(String workflowId)
       throws FileNotFoundException, SSLException {
+    WorkflowClient client = TemporalClient.get();
     WorkflowServiceStubs service = getWorkflowServiceStubs();
     WorkflowServiceGrpc.WorkflowServiceBlockingStub stub = service.blockingStub();
     DescribeWorkflowExecutionRequest request =
         DescribeWorkflowExecutionRequest.newBuilder()
-            .setNamespace(ServerInfo.getNamespace())
+            .setNamespace(client.getOptions().getNamespace())
             .setExecution(WorkflowExecution.newBuilder().setWorkflowId(workflowId))
             .build();
     DescribeWorkflowExecutionResponse response = stub.describeWorkflowExecution(request);

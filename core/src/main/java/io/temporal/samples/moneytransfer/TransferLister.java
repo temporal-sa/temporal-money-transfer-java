@@ -43,17 +43,21 @@ public class TransferLister {
   public static List<WorkflowStatusObj> listWorkflows() throws FileNotFoundException, SSLException {
 
     WorkflowServiceStubs service = getWorkflowServiceStubs();
-    ListOpenWorkflowExecutionsResponse responseOpen =
-        service
-            .blockingStub()
-            .listOpenWorkflowExecutions(
-                ListOpenWorkflowExecutionsRequest.newBuilder()
-                    .setStartTimeFilter(
-                        StartTimeFilter.newBuilder().setEarliestTime(getOneHourAgo()).build())
-                    .setTypeFilter(
-                        WorkflowTypeFilter.newBuilder().setName("moneyTransferWorkflow").build())
-                    .setNamespace(ServerInfo.getNamespace())
-                    .build());
+
+    // Try with minimal request first
+    ListOpenWorkflowExecutionsResponse responseOpen;
+    try {
+      responseOpen =
+          service
+              .blockingStub()
+              .listOpenWorkflowExecutions(
+                  ListOpenWorkflowExecutionsRequest.newBuilder()
+                      .setNamespace(ServerInfo.getNamespace())
+                      .build());
+    } catch (Exception e) {
+      System.err.println("Failed to list open workflows: " + e.getMessage());
+      throw e;
+    }
 
     ListClosedWorkflowExecutionsResponse responseClosed =
         service
@@ -62,9 +66,9 @@ public class TransferLister {
                 ListClosedWorkflowExecutionsRequest.newBuilder()
                     .setStartTimeFilter(
                         StartTimeFilter.newBuilder().setEarliestTime(getOneHourAgo()).build())
+                    .setNamespace(ServerInfo.getNamespace())
                     .setTypeFilter(
                         WorkflowTypeFilter.newBuilder().setName("moneyTransferWorkflow").build())
-                    .setNamespace(ServerInfo.getNamespace())
                     .build());
 
     // array of WorkflowStatusObj
