@@ -1,20 +1,20 @@
 /*
- *  Copyright (c) 2020 Temporal Technologies, Inc. All Rights Reserved
+ * Copyright (c) 2020 Temporal Technologies, Inc. All Rights Reserved
  *
- *  Copyright 2012-2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2012-2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
- *  Modifications copyright (C) 2017 Uber Technologies, Inc.
+ * Modifications copyright (C) 2017 Uber Technologies, Inc.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License"). You may not
- *  use this file except in compliance with the License. A copy of the License is
- *  located at
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not
+ * use this file except in compliance with the License. A copy of the License is
+ * located at
  *
- *  http://aws.amazon.com/apache2.0
+ * http://aws.amazon.com/apache2.0
  *
- *  or in the "license" file accompanying this file. This file is distributed on
- *  an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *  express or implied. See the License for the specific language governing
- *  permissions and limitations under the License.
+ * or in the "license" file accompanying this file. This file is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
  */
 
 package io.temporal.samples.moneytransfer;
@@ -23,104 +23,95 @@ import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.client.schedules.ScheduleClient;
 import io.temporal.client.schedules.ScheduleClientOptions;
-import io.temporal.common.converter.CodecDataConverter;
-import io.temporal.common.converter.DefaultDataConverter;
-import io.temporal.samples.moneytransfer.dataconverter.CryptCodec;
-import io.temporal.samples.moneytransfer.web.ServerInfo;
-import io.temporal.serviceclient.SimpleSslContextBuilder;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.Collections;
 import javax.net.ssl.SSLException;
 
 public class TemporalClient {
+
+  /**
+   * Centralized method to create and configure WorkflowServiceStubs. This is the single source of
+   * truth for connecting to Temporal.
+   */
+  private static WorkflowServiceStubs createWorkflowServiceStubs() {
+    // These are the values for connecting to Temporal Cloud
+    String temporalCloudEndpoint = System.getenv("TEMPORAL_ADDRESS");
+    String temporalCloudNamespace = System.getenv("TEMPORAL_NAMESPACE");
+    String temporalApiKey = System.getenv("TEMPORAL_API_KEY");
+
+    // If the environment variables for cloud are not set, assume local connection.
+    // This check makes the code work for both local dev and cloud deployments.
+    boolean isCloudConnection =
+        temporalCloudEndpoint != null
+            && !temporalCloudEndpoint.isEmpty()
+            && temporalCloudNamespace != null
+            && !temporalCloudNamespace.isEmpty()
+            && temporalApiKey != null
+            && !temporalApiKey.isEmpty();
+
+    if (isCloudConnection) {
+      System.out.println("--- Connecting to Temporal Cloud ---");
+      System.out.println("Endpoint: " + temporalCloudEndpoint);
+      System.out.println("Namespace: " + temporalCloudNamespace);
+      // System.out.println("API Key: " + temporalApiKey);
+      System.out.println("---------------------------------");
+
+      return WorkflowServiceStubs.newServiceStubs(
+          WorkflowServiceStubsOptions.newBuilder()
+              .setTarget(temporalCloudEndpoint)
+              .setEnableHttps(true)
+              .addApiKey(() -> temporalApiKey)
+              .build());
+    } else {
+      System.out.println("--- Connecting to Local Temporal ---");
+      return WorkflowServiceStubs.newLocalServiceStubs();
+    }
+  }
+
+  /**
+   * This method is preserved to prevent build failures across the project. It now uses the new,
+   * correct connection logic.
+   */
   public static WorkflowServiceStubs getWorkflowServiceStubs()
       throws FileNotFoundException, SSLException {
-    WorkflowServiceStubsOptions.Builder workflowServiceStubsOptionsBuilder =
-        WorkflowServiceStubsOptions.newBuilder();
-
-    if (!ServerInfo.getCertPath().equals("") && !"".equals(ServerInfo.getKeyPath())) {
-      InputStream clientCert = new FileInputStream(ServerInfo.getCertPath());
-
-      InputStream clientKey = new FileInputStream(ServerInfo.getKeyPath());
-
-      workflowServiceStubsOptionsBuilder.setSslContext(
-          SimpleSslContextBuilder.forPKCS8(clientCert, clientKey).build());
-    }
-
-    // For temporal cloud this would likely be ${namespace}.tmprl.cloud:7233
-    String targetEndpoint = ServerInfo.getAddress();
-    // Your registered namespace.
-
-    workflowServiceStubsOptionsBuilder.setTarget(targetEndpoint);
-    WorkflowServiceStubs service = null;
-
-    if (!ServerInfo.getAddress().equals("localhost:7233")) {
-      // if not local server, then use the workflowServiceStubsOptionsBuilder
-      service = WorkflowServiceStubs.newServiceStubs(workflowServiceStubsOptionsBuilder.build());
-    } else {
-      service = WorkflowServiceStubs.newLocalServiceStubs();
-    }
-
-    return service;
+    return createWorkflowServiceStubs();
   }
 
+  /** Gets a fully configured WorkflowClient. */
   public static WorkflowClient get() throws FileNotFoundException, SSLException {
-    // TODO support local server
-    // Get worker to poll the common task queue.
-    // gRPC stubs wrapper that talks to the local docker instance of temporal service.
-    // WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+    WorkflowServiceStubs service = createWorkflowServiceStubs();
 
-    WorkflowServiceStubs service = getWorkflowServiceStubs();
-
-    WorkflowClientOptions.Builder builder = WorkflowClientOptions.newBuilder();
-
-    // if environment variable ENCRYPT_PAYLOADS is set to true, then use CryptCodec
-    if (System.getenv("ENCRYPT_PAYLOADS") != null
-        && System.getenv("ENCRYPT_PAYLOADS").equals("true")) {
-      builder.setDataConverter(
-          new CodecDataConverter(
-              DefaultDataConverter.newDefaultInstance(),
-              Collections.singletonList(new CryptCodec()),
-              true /* encode failure attributes */));
+    // Use the correct namespace for the client options
+    String namespace = System.getenv("TEMPORAL_NAMESPACE");
+    if (namespace == null || namespace.isEmpty()) {
+      namespace = "default"; // Fallback for local development
     }
 
-    System.out.println("<<<<SERVER INFO>>>>:\n " + ServerInfo.getServerInfo());
-    WorkflowClientOptions clientOptions = builder.setNamespace(ServerInfo.getNamespace()).build();
+    WorkflowClientOptions clientOptions =
+        WorkflowClientOptions.newBuilder()
+            .setNamespace(namespace)
+            // .setDataConverter(...) // Your custom data converter can be added here
+            .build();
 
-    // client that can be used to start and signal workflows
-    WorkflowClient client = WorkflowClient.newInstance(service, clientOptions);
-    return client;
+    return WorkflowClient.newInstance(service, clientOptions);
   }
 
+  /** Gets a fully configured ScheduleClient. */
   public static ScheduleClient getScheduleClient() throws FileNotFoundException, SSLException {
-    // TODO support local server
-    // Get worker to poll the common task queue.
-    // gRPC stubs wrapper that talks to the local docker instance of temporal service.
-    // WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+    WorkflowServiceStubs service = createWorkflowServiceStubs();
 
-    WorkflowServiceStubs service = getWorkflowServiceStubs();
-
-    ScheduleClientOptions.Builder builder = ScheduleClientOptions.newBuilder();
-
-    // if environment variable ENCRYPT_PAYLOADS is set to true, then use CryptCodec
-    if (System.getenv("ENCRYPT_PAYLOADS") != null
-        && System.getenv("ENCRYPT_PAYLOADS").equals("true")) {
-      builder.setDataConverter(
-          new CodecDataConverter(
-              DefaultDataConverter.newDefaultInstance(),
-              Collections.singletonList(new CryptCodec()),
-              true /* encode failure attributes */));
+    String namespace = System.getenv("TEMPORAL_NAMESPACE");
+    if (namespace == null || namespace.isEmpty()) {
+      namespace = "default"; // Fallback for local development
     }
 
-    System.out.println("<<<<SERVER INFO>>>>:\n " + ServerInfo.getServerInfo());
-    ScheduleClientOptions clientOptions = builder.setNamespace(ServerInfo.getNamespace()).build();
+    ScheduleClientOptions clientOptions =
+        ScheduleClientOptions.newBuilder()
+            .setNamespace(namespace)
+            // .setDataConverter(...) // Your custom data converter can be added here
+            .build();
 
-    // client that can be used to start and signal workflows
-    ScheduleClient client = ScheduleClient.newInstance(service, clientOptions);
-    return client;
+    return ScheduleClient.newInstance(service, clientOptions);
   }
 }
