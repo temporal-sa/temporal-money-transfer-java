@@ -19,9 +19,6 @@
 
 package io.temporal.samples.moneytransfer;
 
-import static io.temporal.samples.moneytransfer.TemporalClient.getScheduleClient;
-import static io.temporal.samples.moneytransfer.TemporalClient.getWorkflowServiceStubs;
-
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.enums.v1.ScheduleOverlapPolicy;
 import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionRequest;
@@ -104,7 +101,7 @@ public class TransferScheduler {
 
       WorkflowParameterObj params = new WorkflowParameterObj(amountCents, executionScenarioObj);
 
-      ScheduleClient scheduleClient = getScheduleClient();
+      ScheduleClient scheduleClient = TemporalClient.getScheduleClient();
 
       String referenceNumber = generateReferenceNumber(); // random reference number
       scheduleNumber = referenceNumber + "-schedule";
@@ -196,7 +193,8 @@ public class TransferScheduler {
 
   private static String getWorkflowStatus(String workflowId)
       throws FileNotFoundException, SSLException {
-    WorkflowServiceStubs service = getWorkflowServiceStubs();
+    WorkflowClient client = TemporalClient.get();
+    WorkflowServiceStubs service = client.getWorkflowServiceStubs();
     WorkflowServiceGrpc.WorkflowServiceBlockingStub stub = service.blockingStub();
     DescribeWorkflowExecutionRequest request =
         DescribeWorkflowExecutionRequest.newBuilder()

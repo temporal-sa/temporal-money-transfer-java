@@ -19,12 +19,9 @@
 
 package io.temporal.samples.moneytransfer;
 
-import static io.temporal.samples.moneytransfer.TemporalClient.getWorkflowServiceStubs;
-
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionRequest;
 import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionResponse;
-import io.temporal.api.workflowservice.v1.WorkflowServiceGrpc;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.client.WorkflowStub;
@@ -33,7 +30,6 @@ import io.temporal.samples.moneytransfer.dataclasses.ResultObj;
 import io.temporal.samples.moneytransfer.dataclasses.StateObj;
 import io.temporal.samples.moneytransfer.dataclasses.WorkflowParameterObj;
 import io.temporal.samples.moneytransfer.web.ServerInfo;
-import io.temporal.serviceclient.WorkflowServiceStubs;
 import java.io.FileNotFoundException;
 import javax.net.ssl.SSLException;
 
@@ -109,6 +105,15 @@ public class TransferRequester {
   @SuppressWarnings("CatchAndPrintStackTrace")
   public static void main(String[] args) throws Exception {
 
+    // Check if workflow ID is provided as argument to get status
+    if (args.length > 0 && args[0].equals("--status") && args.length > 1) {
+      String workflowId = args[1];
+      String status = getWorkflowStatus(workflowId);
+      System.out.println("Workflow " + workflowId + " status: " + status);
+      System.exit(0);
+    }
+
+    // Default behavior: start a new workflow
     int amountCents = 45; // amount to transfer
 
     WorkflowParameterObj params =
@@ -136,14 +141,19 @@ public class TransferRequester {
 
   private static String getWorkflowStatus(String workflowId)
       throws FileNotFoundException, SSLException {
-    WorkflowServiceStubs service = getWorkflowServiceStubs();
-    WorkflowServiceGrpc.WorkflowServiceBlockingStub stub = service.blockingStub();
+    WorkflowClient client = TemporalClient.get();
+    WorkflowStub workflowStub = client.newUntypedWorkflowStub(workflowId);
+    WorkflowExecution exec = workflowStub.getExecution();
+
     DescribeWorkflowExecutionRequest request =
         DescribeWorkflowExecutionRequest.newBuilder()
-            .setNamespace(ServerInfo.getNamespace())
-            .setExecution(WorkflowExecution.newBuilder().setWorkflowId(workflowId))
+            .setNamespace(client.getOptions().getNamespace())
+            .setExecution(exec)
             .build();
-    DescribeWorkflowExecutionResponse response = stub.describeWorkflowExecution(request);
+
+    DescribeWorkflowExecutionResponse response =
+        client.getWorkflowServiceStubs().blockingStub().describeWorkflowExecution(request);
+
     return response.getWorkflowExecutionInfo().getStatus().name();
   }
 }

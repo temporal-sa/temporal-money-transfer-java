@@ -10,18 +10,44 @@ A [Typescript SDK version](https://github.com/steveandroulakis/temporal-money-tr
 
 The sample is configured by default to connect to a [local Temporal Server](https://docs.temporal.io/cli#starting-the-temporal-server) running on localhost:7233.
 
-To instead connect to Temporal Cloud, set the following environment variables, replacing them with your own Temporal Cloud credentials:
+To connect to Temporal Cloud, you have two authentication options:
+
+### Option 1: Certificate-based Authentication (mTLS)
+
+Set the following environment variables with your certificate paths:
 
 ```bash
 TEMPORAL_ADDRESS=testnamespace.sdvdw.tmprl.cloud:7233
 TEMPORAL_NAMESPACE=testnamespace.sdvdw
 TEMPORAL_CERT_PATH="/path/to/file.pem"
 TEMPORAL_KEY_PATH="/path/to/file.key"
-````
+```
+
+### Option 2: API Key Authentication
+
+Set the following environment variables with your API key:
+
+```bash
+TEMPORAL_ADDRESS=us-west-2.aws.api.temporal.io:7233
+TEMPORAL_NAMESPACE=testnamespace.sdvdw
+TEMPORAL_API_KEY="your-api-key-here"
+```
+
+For more information about API keys, see the [Temporal Cloud API Keys documentation](https://docs.temporal.io/cloud/api-keys).
+
+**Note:** The application will prioritize certificate-based authentication if both certificate paths and API key are provided.
 
 (optional) set a task queue name
 ```bash
 export TEMPORAL_MONEYTRANSFER_TASKQUEUE="MoneyTransferJava"
+```
+
+## Run Tests
+
+Run all tests:
+
+```bash
+./gradlew test
 ```
 
 ## Run a Workflow
@@ -32,6 +58,18 @@ Start a worker:
 
 ```bash
 ENCRYPT_PAYLOADS=true ./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.AccountTransferWorker --console=plain
+```
+
+Start a new workflow:
+
+```bash
+./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.TransferRequester --console=plain
+```
+
+Check the status of an existing workflow:
+
+```bash
+./gradlew -q execute -PmainClass=io.temporal.samples.moneytransfer.TransferRequester --args="--status WORKFLOW_ID" --console=plain
 ```
 
 Run the money transfer web UI:

@@ -52,6 +52,11 @@ public class ServerInfo {
     return webServerURL != null && !webServerURL.isEmpty() ? webServerURL : "http://localhost:7070";
   }
 
+  public static String getApiKey() {
+    String apiKey = System.getenv("TEMPORAL_API_KEY");
+    return apiKey != null && !apiKey.isEmpty() ? apiKey : "";
+  }
+
   public static int getWorkflowSleepDuration() {
     String workflowSleepDurationString = System.getenv("TEMPORAL_MONEYTRANSFER_SLEEP");
     int workflowSleepDuration = 0;

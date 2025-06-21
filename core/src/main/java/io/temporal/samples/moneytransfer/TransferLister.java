@@ -19,14 +19,13 @@
 
 package io.temporal.samples.moneytransfer;
 
-import static io.temporal.samples.moneytransfer.TemporalClient.getWorkflowServiceStubs;
-
 import com.google.common.base.Splitter;
 import com.google.protobuf.Timestamp;
 import io.temporal.api.filter.v1.StartTimeFilter;
 import io.temporal.api.filter.v1.WorkflowTypeFilter;
 import io.temporal.api.workflow.v1.WorkflowExecutionInfo;
 import io.temporal.api.workflowservice.v1.*;
+import io.temporal.client.WorkflowClient;
 import io.temporal.samples.moneytransfer.dataclasses.WorkflowStatusObj;
 import io.temporal.samples.moneytransfer.web.ServerInfo;
 import io.temporal.serviceclient.WorkflowServiceStubs;
@@ -42,18 +41,23 @@ public class TransferLister {
 
   public static List<WorkflowStatusObj> listWorkflows() throws FileNotFoundException, SSLException {
 
-    WorkflowServiceStubs service = getWorkflowServiceStubs();
-    ListOpenWorkflowExecutionsResponse responseOpen =
-        service
-            .blockingStub()
-            .listOpenWorkflowExecutions(
-                ListOpenWorkflowExecutionsRequest.newBuilder()
-                    .setStartTimeFilter(
-                        StartTimeFilter.newBuilder().setEarliestTime(getOneHourAgo()).build())
-                    .setTypeFilter(
-                        WorkflowTypeFilter.newBuilder().setName("moneyTransferWorkflow").build())
-                    .setNamespace(ServerInfo.getNamespace())
-                    .build());
+    WorkflowClient client = TemporalClient.get();
+    WorkflowServiceStubs service = client.getWorkflowServiceStubs();
+
+    // Try with minimal request first
+    ListOpenWorkflowExecutionsResponse responseOpen;
+    try {
+      responseOpen =
+          service
+              .blockingStub()
+              .listOpenWorkflowExecutions(
+                  ListOpenWorkflowExecutionsRequest.newBuilder()
+                      .setNamespace(ServerInfo.getNamespace())
+                      .build());
+    } catch (Exception e) {
+      System.err.println("Failed to list open workflows: " + e.getMessage());
+      throw e;
+    }
 
     ListClosedWorkflowExecutionsResponse responseClosed =
         service
@@ -62,9 +66,9 @@ public class TransferLister {
                 ListClosedWorkflowExecutionsRequest.newBuilder()
                     .setStartTimeFilter(
                         StartTimeFilter.newBuilder().setEarliestTime(getOneHourAgo()).build())
+                    .setNamespace(ServerInfo.getNamespace())
                     .setTypeFilter(
                         WorkflowTypeFilter.newBuilder().setName("moneyTransferWorkflow").build())
-                    .setNamespace(ServerInfo.getNamespace())
                     .build());
 
     // array of WorkflowStatusObj
