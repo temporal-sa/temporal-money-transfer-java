@@ -58,7 +58,7 @@ jobs:
           k8s-secret: ${{ secrets.SA_TOKEN }}
         id: setcontext
 
-      - uses: Azure/k8s-deploy@v4
+      - uses: Azure/k8s-deploy@v5
         with:
           namespace: 'stevea-worker-as-a-service'
           images: ${{ env.DOCKER_TAG }}
